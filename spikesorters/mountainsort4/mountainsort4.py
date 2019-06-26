@@ -1,9 +1,12 @@
-import spikeextractors as se
-from ..basesorter import BaseSorter
 import copy
+
+import spikeextractors as se
+
+from ..basesorter import BaseSorter
 
 try:
     import ml_ms4alg
+
     HAVE_MS4 = True
 except ImportError:
     HAVE_MS4 = False
@@ -25,6 +28,7 @@ class Mountainsort4Sorter(BaseSorter):
         'filter': False,
         'curation': True,
         'whiten': True,  # Whether to do channel whitening as part of preprocessing
+        'num_workers': None,
         'clip_size': 50,
         'detect_threshold': 3,
         'detect_interval': 10,  # Minimum number of timepoints between events detected on the same channel
@@ -32,18 +36,25 @@ class Mountainsort4Sorter(BaseSorter):
     }
 
     _extra_gui_params = [
-        {'name': 'detect_sign', 'type': 'int', 'value':-1, 'default':-1,  'title': "Use -1, 0, or 1, depending on the sign of the spikes in the recording"},
-        {'name': 'adjacency_radius', 'type': 'int', 'value':-1, 'default':-1,  'title': "Use -1 to include all channels in every neighborhood"},
-        {'name': 'detect_sign', 'type': 'int', 'value':-1, 'default':-1,  'title': "Use -1, 0, or 1, depending on the sign of the spikes in the recording"},
-        {'name': 'freq_min', 'type': 'float', 'value':300.0, 'default':300.0, 'title': "Low-pass frequency"},
-        {'name': 'freq_max', 'type': 'float', 'value':6000.0, 'default':6000.0, 'title': "High-pass frequency"},
-        {'name': 'filter', 'type': 'bool', 'value':False, 'default':False,  'title': "Bandpass filters the recording if True"},
-        {'name': 'whiten', 'type': 'bool', 'value':True, 'default':True,  'title': "Whitens the recording if True"},
-        {'name': 'clip_size', 'type': 'int', 'value':50, 'default':50,  'title': "Clip size"},
-        {'name': 'detect_threshold', 'type': 'int', 'value':3, 'default':3,  'title': "Threshold for detection"},
-        {'name': 'clip_size', 'type': 'int', 'value':50, 'default':50,  'title': "Clip size"},
-        {'name': 'detect_interval', 'type': 'int', 'value':10, 'default':10,  'title': "Minimum number of timepoints between events detected on the same channel"},
-        {'name': 'noise_overlap_threshold', 'type': 'float', 'value':0.15, 'default':0.15,  'title': "Use None for no automated curation"},
+        {'name': 'detect_sign', 'type': 'int', 'value': -1, 'default': -1,
+         'title': "Use -1, 0, or 1, depending on the sign of the spikes in the recording"},
+        {'name': 'adjacency_radius', 'type': 'int', 'value': -1, 'default': -1,
+         'title': "Use -1 to include all channels in every neighborhood"},
+        {'name': 'detect_sign', 'type': 'int', 'value': -1, 'default': -1,
+         'title': "Use -1, 0, or 1, depending on the sign of the spikes in the recording"},
+        {'name': 'freq_min', 'type': 'float', 'value': 300.0, 'default': 300.0, 'title': "Low-pass frequency"},
+        {'name': 'freq_max', 'type': 'float', 'value': 6000.0, 'default': 6000.0, 'title': "High-pass frequency"},
+        {'name': 'filter', 'type': 'bool', 'value': False, 'default': False,
+         'title': "Bandpass filters the recording if True"},
+        {'name': 'whiten', 'type': 'bool', 'value': True, 'default': True, 'title': "Whitens the recording if True"},
+        {'name': 'num_workers', 'type': 'int', 'value': None, 'default': None, 'title': "Number of parallel workers"},
+        {'name': 'clip_size', 'type': 'int', 'value': 50, 'default': 50, 'title': "Clip size"},
+        {'name': 'detect_threshold', 'type': 'int', 'value': 3, 'default': 3, 'title': "Threshold for detection"},
+        {'name': 'clip_size', 'type': 'int', 'value': 50, 'default': 50, 'title': "Clip size"},
+        {'name': 'detect_interval', 'type': 'int', 'value': 10, 'default': 10,
+         'title': "Minimum number of timepoints between events detected on the same channel"},
+        {'name': 'noise_overlap_threshold', 'type': 'float', 'value': 0.15, 'default': 0.15,
+         'title': "Use None for no automated curation"},
     ]
 
     _gui_params = copy.deepcopy(BaseSorter._gui_params)
@@ -67,15 +78,10 @@ class Mountainsort4Sorter(BaseSorter):
         # Sort
         # alias to params
         p = self.params
-        print(p)
-
-        ind = self.recording_list.index(recording)
 
         # Bandpass filter
         if p['filter'] and p['freq_min'] is not None and p['freq_max'] is not None:
-            recording = bandpass_filter(recording=recording, freq_min=p['freq_min'],
-                                                         freq_max=p['freq_max'])
-
+            recording = bandpass_filter(recording=recording, freq_min=p['freq_min'], freq_max=p['freq_max'])
         # Whiten
         if p['whiten']:
             recording = whiten(recording=recording)
@@ -91,7 +97,8 @@ class Mountainsort4Sorter(BaseSorter):
             adjacency_radius=p['adjacency_radius'],
             clip_size=p['clip_size'],
             detect_threshold=p['detect_threshold'],
-            detect_interval=p['detect_interval']
+            detect_interval=p['detect_interval'],
+            num_workers=p['num_workers']
         )
 
         # Curate

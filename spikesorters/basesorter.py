@@ -23,7 +23,6 @@ from pathlib import Path
 import threading
 import shutil
 import os
-
 import spikeextractors as se
 
 
@@ -51,7 +50,7 @@ class BaseSorter:
         self.params = self.default_params()
 
         if output_folder is None:
-            output_folder = 'test_' + self.sorter_name
+            output_folder = 'tmp_' + self.sorter_name
         output_folder = Path(output_folder).absolute()
 
         if grouping_property is None:
