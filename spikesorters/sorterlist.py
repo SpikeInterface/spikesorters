@@ -57,7 +57,34 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
 
 
 def available_sorters():
+    '''
+    Lists available sorters.
+    '''
     return sorted(list(sorter_dict.keys()))
+
+def get_default_params(sorter_name_or_class):
+    '''
+    Returns default parameters for the specified sorter.
+
+    Parameters
+    ----------
+    sorter_name_or_class: str or SorterClass
+        The sorter to retrieve default parameters from
+
+    Returns
+    -------
+    default_params: dict
+        Dictionary with default params for the specified sorter
+
+    '''
+    if isinstance(sorter_name_or_class, str):
+        SorterClass = sorter_dict[sorter_name_or_class]
+    elif sorter_name_or_class in sorter_full_list:
+        SorterClass = sorter_name_or_class
+    else:
+        raise(ValueError('Unknown sorter'))
+
+    return SorterClass.default_params()
 
 
 # make aliases
