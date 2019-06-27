@@ -1,9 +1,8 @@
 import unittest
 import pytest
 
-from spiketoolkit.sorters import TridesclousSorter, run_tridesclous
-from spiketoolkit.sorters.tests.common_tests import SorterCommonTestSuite
-
+from spikesorters import TridesclousSorter, run_tridesclous
+from spikesorters.tests.common_tests import SorterCommonTestSuite
 import spikeextractors as se
 
 

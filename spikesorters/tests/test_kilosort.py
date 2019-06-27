@@ -1,9 +1,8 @@
 import unittest
 import pytest
 import spikeextractors as se
-from spiketoolkit.sorters import KilosortSorter
-
-from spiketoolkit.sorters.tests.common_tests import SorterCommonTestSuite
+from spikesorters import KilosortSorter
+from spikesorters.tests.common_tests import SorterCommonTestSuite
 
 # This run several tests
 @pytest.mark.skipif(not KilosortSorter.installed, reason='kilosort not installed')

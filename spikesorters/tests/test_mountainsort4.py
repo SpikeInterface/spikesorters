@@ -1,9 +1,8 @@
 import unittest
 import pytest
 import spikeextractors as se
-from spiketoolkit.sorters import Mountainsort4Sorter
-
-from spiketoolkit.sorters.tests.common_tests import SorterCommonTestSuite
+from spikesorters import Mountainsort4Sorter
+from spikesorters.tests.common_tests import SorterCommonTestSuite
 
 # This run several tests
 @pytest.mark.skipif(not Mountainsort4Sorter.installed, reason='moutainsort4 not installed')
