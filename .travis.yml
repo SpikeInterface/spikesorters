@@ -1,9 +1,9 @@
 language: python
 cache: pip
 os:
-  - linux
+- linux
 python:
-  - '3.6'
+- '3.6'
 sudo: enabled
 addons:
   apt:
@@ -15,26 +15,23 @@ addons:
     - packagekit-gtk3-module
     - libcanberra-gtk-module
 install:
-  # spikeextractors and spikewidgets are taken from github to get latest version
-  - pip install https://github.com/SpikeInterface/spikeextractors/archive/master.zip
-  - pip install .
-  - pip install pytest==4.3
-  - pip install numpy==1.16.2 scipy h5py six cython tqdm click # for klusta
-  - pip install klusta
-  - pip install klustakwik2==0.2.6
-  - pip install tridesclous==1.2.1
-  - pip install herdingspikes==0.3.2
-  - pip install spyking-circus
-  - pip install pyqt5
-  - pip install ml_ms4alg==0.3.0
-  - pip install spiketoolkit
-script:
-  # py.test -s
-  python -m pytest
+- pip install https://github.com/SpikeInterface/spikeextractors/archive/master.zip
+- pip install .
+- pip install pytest==4.3
+- pip install numpy==1.16.2 scipy h5py six cython tqdm click
+- pip install klusta
+- pip install klustakwik2==0.2.6
+- pip install tridesclous==1.2.1
+- pip install herdingspikes==0.3.2
+- pip install spyking-circus
+- pip install pyqt5
+- pip install ml_ms4alg==0.3.0
+- pip install spiketoolkit
+script: python -m pytest
 deploy:
   provider: pypi
   user: alejoe91
   on:
     tags: true
   password:
-    secure: Ya7Z6AouMhTiBA7G8sUNncA92h+j+JTW4a8AwyDklFB/0poxrhUZwpfMj80yaLfEGspTFaUCvc5oBQB3bLbrHmYAFP3TQKm2X8tQSR5XZXew1uvtGBVMebW4DHSFeQLEVyHjY6q8tzA0jSbHetVlc+Vfv3xtAeD4w7Ff2x4HoWQJUKMkdVvROi/OIjLeTqiMc7LOGfDtT0AJUFp86u1auv8Mriw9L06dKI9E9SFd1t85sOv/RosTtQD/f8o0kHZbkkkpQOSLsh5xQZ472pGk/zfvAk1BEB7hr1eaWNeJqdk/NQL1ONr5nvs5O0SzURz/PH8lAMBdV1tr5NzBWXy7dTtHPW7WXvJlvZR/s39XZFRnSWXJlhvZRoGrY54tzpYjnH5+dkzdZYcTcCIgpmNPGGZ8cckq5E4pQTAduhIwfTJ5v8EMBMFqXpr9+T+ynk/MXkDX2x1VSGetTpR2IR+mAx49xi7gC+4YmbJk7Y0lATNpoCSAcf0pSrYHtPsrUhU/2sd4PGFxkrqTTluf1LJb/g+IFSF8EnaQFCoBcxmJUVDyM+LReAhTjaENFKB9r7H75YZE9h0xcC0N/dGEeZGE3DVmfkfJIDGtdDezXuWlrWZQT6ICvItasA8RZn1v+MtwuenQI8050emwvaNvStypkQEpcYuTkV59FzT828pK5cE=
+    secure: GHlx3HY7vKEIjpQHnoyEDSe1IzFjj0RLebzMkbAvCHWKNUtBCacXY5Ydn/sQHbu2ouAqhPPylKS3/4y0I23654aEPZMLGGEsScUWNZ78UK8/estkF6L/E6GOSqfEJGqbnk1CeH2g3T/1w31G8oDz7C8IJ5RS1WjL8V4M+Vq4EJYVTfqIk1nBowklMalWZHCgpPFCLAAZbnwosJSOC5SbDgNhjKxwIJakh3sYtrbihXELRSpeebm8Gg6JdO2G+f79nz9DZrWIbpW6BTaSoF/4UiQYyq7+DaVgbLPgMVOV8hehtl1EjSIsJA/CITyjHX/N1l/2NcE159i/Hu+F1yleYdN8XKy7M7BuETjiyP1h/j0pgsrUoxXmIXpUICeRrNKfgmJqEGgTh+sPJ9UO5y3GN4f5ivXqtgw/vbDGPqGjAl3FG3OszZgM6bd/kU5KG96YV1HR3FX/6aK3sBDPT82OqwNHz4RmCVF6nPZn8C0dYHIeZzA4PFJbWNwt6WgQg4f20Fi4DCEEPB6W6rJ0hashp7Y9084PUYfRC1RJ5ovuAR5rf5XN7af2e1KUFFSgrybtOD9lGgbXNncBWbV+o++3AUUqfcRo5uJ3uqyzanuBLBiaMnsWYqUR8IIgnccD3rkILNFZM8i+fybrTidfHwqIlnfxnadURJDYnZ6Kl4ohq0Q=
