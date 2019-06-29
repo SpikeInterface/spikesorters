@@ -16,7 +16,7 @@ addons:
     - libcanberra-gtk-module
 install:
 - pip install https://github.com/SpikeInterface/spikeextractors/archive/master.zip
-- pip install spikesorters==0.1.0
+- pip install https://github.com/SpikeInterface/spiketoolkit/archive/master.zip
 - pip install .
 - pip install pytest==4.3
 - pip install numpy==1.16.2 scipy h5py six cython tqdm click
@@ -24,10 +24,9 @@ install:
 - pip install klustakwik2==0.2.6
 - pip install tridesclous==1.2.1
 - pip install herdingspikes==0.3.2
-- pip install spyking-circus
+- pip install spyking-circus==0.8.0
 - pip install pyqt5
-- pip install ml_ms4alg==0.3.0
-- pip install spiketoolkit
+- pip install ml_ms4alg==0.3.1
 script: python -m pytest
 deploy:
   provider: pypi
