@@ -17,8 +17,6 @@ radius         = auto       # Radius [in um] (if auto, read from the prb file)
 N_t            = {}         # Width of the templates [in ms]
 spike_thresh   = {}         # Threshold for spike detection
 peaks          = {}         # Can be negative (default), positive or both
-matched-filter = False      # If True, we perform spike detection with matched filters
-matched_thresh = 5          # Threshold for detection if matched filter is True
 alignment      = True       # Realign the waveforms by oversampling
 
 [filtering]
@@ -56,11 +54,11 @@ nb_repeats     = 3          # Number of passes used for the clustering
 smart_search   = True       # Activate the smart search mode
 sim_same_elec  = 3          # Distance within clusters under which they are re-merged
 sensitivity    = 3          # Single parameter for clustering sensitivity. The lower the more sensitive
-cc_merge       = 0.96       # If CC between two templates is higher, they are merged
+cc_merge       = 0.975      # If CC between two templates is higher, they are merged
 dispersion     = (5, 5)     # Min and Max dispersion allowed for amplitudes [in MAD]
 noise_thr      = 0.8        # Minimal amplitudes are such than amp*min(templates) < noise_thr*threshold in [0-1]
 remove_mixture = True       # At the end of the clustering, we remove mixtures of templates
-make_plots     =            # Generate sanity plots of the clustering [Nothing or None if no plots]
+make_plots     = png        # Generate sanity plots of the clustering [Nothing or None if no plots]
 
 [fitting]
 chunk_size     = 1          # Size of chunks used during fitting [in second] WAS 1
@@ -70,7 +68,7 @@ max_chunk      = inf        # Fit only up to max_chunk
 collect_all    = False      # If True, one garbage template per electrode is created, to store unfitted spikes
 
 [merging]
-cc_overlap     = 0.7        # Only templates with CC higher than cc_overlap may be merged CHANGED was(0.7)
+cc_overlap     = 0.85       # Only templates with CC higher than cc_overlap may be merged CHANGED was(0.7)
 cc_bin         = 2          # Bin size for computing CC [in ms]
 correct_lag    = True       # If spikes are aligned when merging. May be better for phy usage
 auto_mode      = {}         # If >0, merging will be automatic (see doc, 0.1 is a good value) [0-1]
