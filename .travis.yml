@@ -8,7 +8,7 @@ sudo: enabled
 addons:
   apt:
     packages:
-    - libopenmpi-dev
+    - mpich
     - libglib2.0-0
     - libgl1-mesa-glx
     - qt5-default
