@@ -8,7 +8,7 @@ sudo: enabled
 addons:
   apt:
     packages:
-    - mpich
+    - libmpich-dev
     - libglib2.0-0
     - libgl1-mesa-glx
     - qt5-default
@@ -19,13 +19,13 @@ install:
 - pip install https://github.com/SpikeInterface/spiketoolkit/archive/master.zip
 - pip install .
 - pip install pytest==4.3
-- pip install numpy==1.16.2 scipy h5py six cython tqdm click
+- pip install numpy==1.16.2 scipy==1.2 h5py six cython tqdm click
 - pip install klusta
 - pip install klustakwik2==0.2.6
 - pip install tridesclous==1.2.1
 - pip install herdingspikes==0.3.2
 - pip install pyqt5 mpi4py colorama psutil scikit-learn statsmodels
-- pip install spyking-circus==0.8.0
+- pip install spyking-circus==0.8.1
 - pip install ml_ms4alg==0.3.1
 script: python -m pytest
 deploy:
