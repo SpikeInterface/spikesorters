@@ -31,7 +31,7 @@ class SorterCommonTestSuite:
     def test_several_groups(self):
 
         # run sorter with several groups in paralel or not
-        recording, sorting_gt = se.example_datasets.toy_example(num_channels=8, duration=30, seed=0)
+        recording, sorting_gt = se.example_datasets.toy_example(num_channels=8, duration=30, seed=1)
 
         # make 2 artificial groups
         for ch_id in range(0, 4):

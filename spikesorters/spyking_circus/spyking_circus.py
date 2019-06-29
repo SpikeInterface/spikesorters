@@ -28,8 +28,9 @@ class SpykingcircusSorter(BaseSorter):
         'detect_threshold': 6,  # Threshold for detection
         'template_width_ms': 3,  # Spyking circus parameter
         'filter': True,
-        'merge_spikes': False,
-        'n_cores': None,
+        'merge_spikes': True,
+        'auto_merge': 0.5,
+        'num_workers': None,
         'electrode_dimensions': None,
         'whitening_max_elts': 1000,  # I believe it relates to subsampling and affects compute time
         'clustering_max_elts': 10000,  # I believe it relates to subsampling and affects compute time
@@ -38,10 +39,10 @@ class SpykingcircusSorter(BaseSorter):
     installation_mesg = """
         >>> pip install spyking-circus
 
-        Need OpenMPI working, for ubuntu do:
-            sudo apt install libopenmpi-dev"
+        Need MPICH working, for ubuntu do:
+            sudo apt install libmpich-dev
 
-        More information on Spyking-Circus at: "
+        More information on Spyking-Circus at: 
             https://spyking-circus.readthedocs.io/en/latest/
     """
 
@@ -75,7 +76,7 @@ class SpykingcircusSorter(BaseSorter):
         with (source_dir / 'config_default.params').open('r') as f:
             circus_config = f.readlines()
         if p['merge_spikes']:
-            auto = 1
+            auto = p['auto_merge']
         else:
             auto = 0
         circus_config = ''.join(circus_config).format(sample_rate, p['probe_file'], p['template_width_ms'],
@@ -84,25 +85,18 @@ class SpykingcircusSorter(BaseSorter):
         with (output_folder / (file_name + '.params')).open('w') as f:
             f.writelines(circus_config)
 
-        if p['n_cores'] is None:
-            p['n_cores'] = np.maximum(1, int(os.cpu_count() / 2))
+        if p['num_workers'] is None:
+            p['num_workers'] = np.maximum(1, int(os.cpu_count()))
 
     def _run(self,  recording, output_folder):
-        n_cores = self.params['n_cores']
-        cmd = 'spyking-circus {} -c {} '.format(output_folder / 'recording.npy', n_cores)
-        cmd_merge = 'spyking-circus {} -m merging -c {} '.format(output_folder / 'recording.npy', n_cores)
-        # cmd_convert = 'spyking-circus {} -m converting'.format(join(output_folder, 'recording.npy'))
+        num_workers = self.params['num_workers']
+        cmd = 'spyking-circus {} -c {} '.format(output_folder / 'recording.npy', num_workers)
+
         if self.debug:
             print(cmd)
         retcode = _run_command_and_print_output(cmd)
         if retcode != 0:
             raise Exception('Spyking circus returned a non-zero exit code')
-        if self.params['merge_spikes']:
-            if self.debug:
-                print(cmd_merge)
-            retcode = _run_command_and_print_output(cmd_merge)
-            if retcode != 0:
-                raise Exception('Spyking circus merging returned a non-zero exit code')
 
     @staticmethod
     def get_result_from_folder(output_folder):
