@@ -96,12 +96,14 @@ class Mountainsort4Sorter(BaseSorter):
             clip_size=p['clip_size'],
             detect_threshold=p['detect_threshold'],
             detect_interval=p['detect_interval'],
-            num_workers=p['num_workers']
+            num_workers=p['num_workers'],
+            verbose=self.debug
         )
 
         # Curate
         if p['noise_overlap_threshold'] is not None and p['curation'] is True:
-            print('Curating')
+            if self.debug:
+                print('Curating')
             sorting = ml_ms4alg.mountainsort4_curation(
                 recording=recording,
                 sorting=sorting,

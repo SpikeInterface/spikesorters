@@ -81,6 +81,12 @@ class BaseSorter:
         return copy.deepcopy(self._default_params)
 
     def set_params(self, **params):
+        bad_params = []
+        for p in params.keys():
+            if p not in self._default_params.keys():
+                bad_params.append(p)
+        if len(bad_params) > 0:
+            raise AttributeError('Bad parameters: ' + str(bad_params))
         self.params.update(params)
 
     def run(self):
