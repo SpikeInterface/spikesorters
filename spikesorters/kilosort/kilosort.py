@@ -68,7 +68,7 @@ class KilosortSorter(BaseSorter):
         >>> git clone https://github.com/cortex-lab/KiloSort
         >>> git clone https://github.com/kwikteam/npy-matlab\n
     and provide the installation path with the 'kilosort_path' and
-    npy_matlab_path' arguments or by setting the KILOSORT2_PATH
+    npy_matlab_path' arguments or by setting the KILOSORT_PATH
     and NPY_MATLAB_PATH environment variables.\n\n
 
     More information on KiloSort at:
