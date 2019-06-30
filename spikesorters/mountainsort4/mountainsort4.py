@@ -70,7 +70,6 @@ class Mountainsort4Sorter(BaseSorter):
 
     def _setup_recording(self, recording, output_folder):
         self._fs = recording.get_sampling_frequency()
-        pass
 
     def _run(self, recording, output_folder):
         from spiketoolkit.preprocessing import bandpass_filter, whiten
