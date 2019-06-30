@@ -114,5 +114,5 @@ class Mountainsort4Sorter(BaseSorter):
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        sorting = se.MdaSortingExtractor(str(output_folder / 'firings.mda'))
+        sorting = se.MdaSortingExtractor(str(Path(output_folder) / 'firings.mda'))
         return sorting
