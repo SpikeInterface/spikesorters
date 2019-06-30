@@ -1,8 +1,8 @@
 import copy
 
 import spikeextractors as se
-
 from ..basesorter import BaseSorter
+from pathlib import Path
 
 try:
     import ml_ms4alg
