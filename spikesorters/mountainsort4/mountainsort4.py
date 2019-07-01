@@ -100,8 +100,6 @@ class Mountainsort4Sorter(BaseSorter):
             verbose=self.debug
         )
 
-        sorting.set_sampling_frequency(self._fs)
-
         # Curate
         if p['noise_overlap_threshold'] is not None and p['curation'] is True:
             if self.debug:
@@ -114,7 +112,6 @@ class Mountainsort4Sorter(BaseSorter):
 
         se.MdaSortingExtractor.write_sorting(sorting, str(output_folder / 'firings.mda'))
 
-    @staticmethod
-    def get_result_from_folder(output_folder):
-        sorting = se.MdaSortingExtractor(str(Path(output_folder) / 'firings.mda'))
+    def get_result_from_folder(self, output_folder):
+        sorting = se.MdaSortingExtractor(str(Path(output_folder) / 'firings.mda'), sampling_frequency=self._fs)
         return sorting
