@@ -69,8 +69,8 @@ class Mountainsort4Sorter(BaseSorter):
         BaseSorter.__init__(self, **kargs)
 
     def _setup_recording(self, recording, output_folder):
-        self._fs = recording.get_sampling_frequency()
-
+        pass
+    
     def _run(self, recording, output_folder):
         from spiketoolkit.preprocessing import bandpass_filter, whiten
         # Sort
@@ -112,6 +112,7 @@ class Mountainsort4Sorter(BaseSorter):
 
         se.MdaSortingExtractor.write_sorting(sorting, str(output_folder / 'firings.mda'))
 
-    def get_result_from_folder(self, output_folder):
-        sorting = se.MdaSortingExtractor(str(Path(output_folder) / 'firings.mda'), sampling_frequency=self._fs)
+    @staticmethod
+    def get_result_from_folder(output_folder):
+        sorting = se.MdaSortingExtractor(str(Path(output_folder) / 'firings.mda'))
         return sorting

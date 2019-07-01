@@ -157,6 +157,7 @@ class BaseSorter:
                 if self.debug:
                     print("Removing ", str(out))
                 shutil.rmtree(str(out), ignore_errors=True)
+        sorting.set_sampling_frequency(self.recording_list[0].get_sampling_frequency())
         return sorting
 
     # new idea
