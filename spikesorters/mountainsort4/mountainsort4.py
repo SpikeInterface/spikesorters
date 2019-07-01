@@ -69,7 +69,7 @@ class Mountainsort4Sorter(BaseSorter):
         BaseSorter.__init__(self, **kargs)
 
     def _setup_recording(self, recording, output_folder):
-        self._fs = recording.get_sampling_frequency()
+        pass
 
     def _run(self, recording, output_folder):
         from spiketoolkit.preprocessing import bandpass_filter, whiten
@@ -99,8 +99,6 @@ class Mountainsort4Sorter(BaseSorter):
             num_workers=p['num_workers'],
             verbose=self.debug
         )
-
-        sorting.set_sampling_frequency(self._fs)
 
         # Curate
         if p['noise_overlap_threshold'] is not None and p['curation'] is True:

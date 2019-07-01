@@ -1,5 +1,6 @@
 import spikeextractors as se
 from ..basesorter import BaseSorter
+from pathlib import Path
 import copy
 
 try:
