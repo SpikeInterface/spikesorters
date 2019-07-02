@@ -28,8 +28,9 @@ class Kilosort2SorterNew(BaseSorter):
     """
     """
 
-    sorter_name: str = 'kilosort2'
+    sorter_name: str = 'kilosort2_new'
     kilosort2_path: Union[str, None] = os.getenv('KILOSORT2_PATH', None)
+    installed = check_if_installed(kilosort2_path)
 
     _default_params = {
         'detect_threshold': 5,
@@ -112,10 +113,12 @@ class Kilosort2SorterNew(BaseSorter):
             use_car = 1
         else:
             use_car = 0
+
         kilosort2_config_txt = kilosort2_config_txt.format(
             nchan=recording.get_num_channels(),
             sample_rate=recording.get_sampling_frequency(),
             dat_file=str((output_folder / 'recording.dat').absolute()),
+            minFR=p['minFR'],
             kilo_thresh=p['detect_threshold'],
             use_car=use_car
         )

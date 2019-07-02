@@ -40,7 +40,6 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
        >>> sorting = run_sorter(TridesclousSorter, recording)
 
     """
-
     if isinstance(sorter_name_or_class, str):
         SorterClass = sorter_dict[sorter_name_or_class]
     elif sorter_name_or_class in sorter_full_list:

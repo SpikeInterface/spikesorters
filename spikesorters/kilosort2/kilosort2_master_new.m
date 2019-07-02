@@ -1,4 +1,4 @@
-try:
+try
     % prepare for kilosort execution
     addpath(genpath('{kilosort2_path}'));
 
@@ -41,17 +41,17 @@ try:
     labels = rez.st3(:,2); %cluster
 
     timestamps_file = fopen([fpath filesep 'timestamps.txt'],'w');
-    fprintf('%g\n', timestamps)
-    fclose(timestamps_file)
+    fprintf(timestamps_file, '%g\n', timestamps);
+    fclose(timestamps_file);
 
     labels_file = fopen([fpath filesep 'labels.txt'],'w');
-    fprintf('%g\n', labels)
-    fclose(labels_file)
+    fprintf(labels_file, '%g\n', labels);
+    fclose(labels_file);
 
     % we wouldn't need to do the following if we had the recording extractor in get_result_from_folder()
     samplefreq_file = fopen([fpath filesep 'samplefreq.txt'],'w');
-    fprintf('%g\n', {sample_rate})
-    fclose(samplefreq_file)
+    fprintf(samplefreq_file, '%g\n', {sample_rate});
+    fclose(samplefreq_file);
 catch
     fprintf('----------------------------------------');
     fprintf(lasterr());
