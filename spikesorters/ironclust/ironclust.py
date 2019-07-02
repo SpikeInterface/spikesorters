@@ -1,11 +1,11 @@
-from pathlib import Path
 import os
-import sys
+from pathlib import Path
 from typing import Union
-from .shellscript import ShellScript
-from .mdarecordingextractor2 import MdaRecordingExtractor2
 
 import spikeextractors as se
+
+from .mdarecordingextractor2 import MdaRecordingExtractor2
+from .shellscript import ShellScript
 from ..basesorter import BaseSorter
 
 
@@ -105,11 +105,11 @@ class IronClustSorter(BaseSorter):
         for key0, val0 in self.params.items():
             txt += '{}={}\n'.format(key0, val0)
         txt += 'samplerate={}\n'.format(samplerate)
-        with open(dataset_dir / 'argfile.txt', 'w') as f:
+        with (dataset_dir / 'argfile.txt').open('w') as f:
             f.write(txt)
 
         tmpdir = output_folder / 'tmp'
-        os.mkdir(tmpdir)
+        os.mkdir(str(tmpdir))
         print('Running ironclust in {tmpdir}...'.format(tmpdir=str(tmpdir)))
         cmd = '''
             addpath('{source_dir}');
@@ -123,7 +123,8 @@ class IronClustSorter(BaseSorter):
             end
             quit(0);
         '''
-        cmd = cmd.format(ironclust_path=IronClustSorter.ironclust_path, tmpdir=str(tmpdir), dataset_dir=str(dataset_dir), source_dir=str(source_dir))
+        cmd = cmd.format(ironclust_path=IronClustSorter.ironclust_path, tmpdir=str(tmpdir),
+                         dataset_dir=str(dataset_dir), source_dir=str(source_dir))
 
         matlab_cmd = ShellScript(cmd, script_path=str(tmpdir / 'run_ironclust.m'))
         matlab_cmd.write()
