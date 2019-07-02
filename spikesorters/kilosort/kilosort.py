@@ -37,7 +37,6 @@ class KilosortSorter(BaseSorter):
         'detect_threshold': 6,
         'car': True,
         'useGPU': True,
-        'kilosort_path': None,
         'electrode_dimensions': None
     }
 
@@ -58,15 +57,10 @@ class KilosortSorter(BaseSorter):
         KilosortSorter.kilosort_path = kilosort_path
         KilosortSorter.installed = check_if_installed(KilosortSorter.kilosort_path)
         try:
-            print("Setting KILOSORT_PATH environment variable to:", kilosort_path)
+            print("Setting KILOSORT_PATH environment variable for subprocess calls to:", kilosort_path)
             os.environ["KILOSORT_PATH"] = kilosort_path
         except Exception as e:
             print("Could not set KILOSORT_PATH environment variable:", e)
-
-    def set_params(self, **params):
-        BaseSorter.set_params(self, **params)
-        if params.get('kilosort_path', None) is not None:
-            KilosortSorter.set_kilosort_path(params['kilosort_path'])
 
     def _setup_recording(self, recording, output_folder):
         source_dir = Path(__file__).parent

@@ -40,6 +40,10 @@ class BaseSorter:
 
     def __init__(self, recording=None, output_folder=None, debug=False,
                  grouping_property=None, parallel=False, delete_output_folder=False):
+
+        assert self.installed, """This sorter {} is not installed.
+        Please install it with:  \n{} """.format(self.sorter_name, self.installation_mesg)
+
         self.debug = debug
         self.grouping_property = grouping_property
         self.parallel = parallel
@@ -86,9 +90,6 @@ class BaseSorter:
         self.params.update(params)
 
     def run(self):
-        assert self.installed, """This sorter {} is not installed.
-                Please install it with:  \n{} """.format(self.sorter_name, self.installation_mesg)
-
         for i, recording in enumerate(self.recording_list):
             self._setup_recording(recording, self.output_folders[i])
 
