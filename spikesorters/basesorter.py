@@ -70,7 +70,7 @@ class BaseSorter:
         for output_folder in self.output_folders:
             if not output_folder.is_dir():
                 os.makedirs(str(output_folder))
-        self.delete_folders = delete_output_folder
+        self.delete_folders = delete_output_folder    
 
     @classmethod
     def gui_params(self):
@@ -115,6 +115,11 @@ class BaseSorter:
 
         return t1 - t0
 
+    @staticmethod
+    def get_sorter_version():
+        # need be iplemented in subclass
+        raise(NotImplementedError)
+    
     def _setup_recording(self, recording, output_folder):
         # need be iplemented in subclass
         # this setup ONE recording (or SubExtractor)

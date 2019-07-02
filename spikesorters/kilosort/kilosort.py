@@ -55,6 +55,10 @@ class KilosortSorter(BaseSorter):
         BaseSorter.__init__(self, **kargs)
 
     @staticmethod
+    def get_sorter_version():
+        return 'unknown'
+
+    @staticmethod
     def set_kilosort_path(kilosort_path: str):
         KilosortSorter.kilosort_path = kilosort_path
         KilosortSorter.installed = check_if_installed(KilosortSorter.kilosort_path)

@@ -82,6 +82,10 @@ class KlustaSorter(BaseSorter):
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
 
+    @staticmethod
+    def get_sorter_version():
+        return klusta.__version__
+
     def _setup_recording(self, recording, output_folder):
         source_dir = Path(__file__).parent
 

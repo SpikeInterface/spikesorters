@@ -62,6 +62,10 @@ class IronclustSorter(BaseSorter):
         BaseSorter.__init__(self, **kargs)
 
     @staticmethod
+    def get_sorter_version():
+        return 'unknown'
+
+    @staticmethod
     def set_ironclust_path(ironclust_path):
         os.environ["IRONCLUST_PATH"] = ironclust_path
         IronclustSorter.ironclust_path = ironclust_path
