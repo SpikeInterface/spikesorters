@@ -52,10 +52,10 @@ class IronClustSorter(BaseSorter):
         min_count=30,  # Minimum cluster size
         fGpu=True,  # Use GPU if available
         fft_thresh=8,  # FFT-based noise peak threshold
-        fft_thresh_low=4,  # FFT-based noise peak lower threshold (set to 0 to disable dual thresholding scheme
+        fft_thresh_low=0,  # FFT-based noise peak lower threshold (set to 0 to disable dual thresholding scheme
         nSites_whiten=32,  # Number of adjacent channels to whiten
         feature_type='gpca',  # gpca, pca, vpp, vmin, vminmax, cov, energy, xcov
-        delta_cut=1.1,  # Cluster detection threshold (delta-cutoff)
+        delta_cut=1,  # Cluster detection threshold (delta-cutoff)
         post_merge_mode=1,  # post merge mode
         sort_mode=1  # sort mode
     )
