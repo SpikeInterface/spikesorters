@@ -37,7 +37,10 @@ class Kilosort2Sorter(BaseSorter):
         'detect_threshold': 5,
         'car': True,
         'minFR': 0.1,
-        'electrode_dimensions': None
+        'electrode_dimensions': None,
+        'freq_min': 150,
+        'sigmaMask': 30,
+        'nPCs': 3
     }
 
     installation_mesg = """\nTo use Kilosort2 run:\n
@@ -118,8 +121,11 @@ class Kilosort2Sorter(BaseSorter):
             sample_rate=recording.get_sampling_frequency(),
             dat_file=str((output_folder / 'recording.dat').absolute()),
             minFR=p['minFR'],
+            freq_min=p['freq_min'],
+            sigmaMask=p['sigmaMask'],
             kilo_thresh=p['detect_threshold'],
-            use_car=use_car
+            use_car=use_car,
+            nPCs=p['nPCs']
         )
 
         kilosort2_channelmap_txt = kilosort2_channelmap_txt.format(
