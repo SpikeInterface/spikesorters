@@ -89,6 +89,11 @@ class Kilosort2SorterNew(BaseSorter):
         input_file_path = output_folder / 'recording'
         se.write_binary_dat_format(recording, input_file_path, dtype='int16')
 
+        if p['car']:
+            use_car = 1
+        else:
+            use_car = 0
+
         # read the template txt files
         with (source_dir / 'kilosort2_master_new.m').open('r') as f:
             kilosort2_master_txt = f.read()
@@ -105,13 +110,7 @@ class Kilosort2SorterNew(BaseSorter):
             channel_path=str(
                 (output_folder / 'kilosort2_channelmap.m').absolute()),
             config_path=str((output_folder / 'kilosort2_config.m').absolute()),
-            sample_rate=recording.get_sampling_frequency()
         )
-
-        if p['car']:
-            use_car = 1
-        else:
-            use_car = 0
 
         kilosort2_config_txt = kilosort2_config_txt.format(
             nchan=recording.get_num_channels(),

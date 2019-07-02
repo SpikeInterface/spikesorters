@@ -4,20 +4,19 @@ ops.parfor              = 0; % whether to use parfor to accelerate some parts of
 ops.verbose             = 1; % whether to print command line progress		
 ops.showfigures         = 0; % whether to plot figures during optimization		
 
-ops.NchanTOT            = {};           % total number of channels (omit if already in chanMap file)
-ops.Nchan               = {};           % number of active channels (omit if already in chanMap file)
-ops.fs                  = {};           % sampling rate
+ops.NchanTOT            = {nchanTOT};           % total number of channels (omit if already in chanMap file)
+ops.Nchan               = {nchan};           % number of active channels (omit if already in chanMap file)
+ops.fs                  = {sample_rate};     % sampling rate
 
-ops.datatype            = 'dat';  % binary ('dat', 'bin') or 'openEphys'		
-ops.fbinary             = fullfile('{}'); % will be created for 'openEphys'
+ops.datatype            = 'dat';  % binary ('dat', 'bin') or 'openEphys'
+ops.fbinary             = fullfile('{dat_file}'); % will be created for 'openEphys'
 ops.fproc               = fullfile(fpath, 'temp_wh.dat'); % residual from RAM of preprocessed data
-ops.root                = fpath; % 'openEphys' only: where raw files are		
-% define the channel map as a filename (string) or simply an array		
+ops.root                = fpath; % 'openEphys' only: where raw files are
+% define the channel map as a filename (string) or simply an array
 ops.chanMap             = fullfile('chanMap.mat'); % make this file using createChannelMapFile.m
-%ops.chanMap = 1:ops.Nchan; % treated as linear probe if unavailable chanMap file
 
 
-ops.Nfilt               = {};  % number of clusters to use (2-4 times more than Nchan, should be a multiple of 32)
+ops.Nfilt               = {Nfilt};  % number of clusters to use (2-4 times more than Nchan, should be a multiple of 32)
 ops.nNeighPC            = min(12, ops.Nchan); % visualization only (Phy): number of channnels to mask the PCs, leave empty to skip (12)
 ops.nNeigh              = 16; % visualization only (Phy): number of neighboring templates to retain projections of (16)
 		
@@ -29,14 +28,14 @@ ops.whiteningRange      = 32; % how many channels to whiten together (Inf for wh
 %ops.criterionNoiseChannels = 0.2; % fraction of "noise" templates allowed to span all channel groups (see createChannelMapFile for more info).
 
 % other options for controlling the model and optimization		
-ops.Nrank               = 3;    % matrix rank of spike template model (3)		
-ops.nfullpasses         = 6;    % number of complete passes through data during optimization (6)		
+ops.Nrank               = 3;      % matrix rank of spike template model (3)
+ops.nfullpasses         = 6;      % number of complete passes through data during optimization (6)
 ops.maxFR               = 20000;  % maximum number of spikes to extract per batch (20000)		
-ops.fshigh              = 300;   % frequency for high pass filtering		
+ops.fshigh              = 300;    % frequency for high pass filtering
 ops.fslow               = 6000;   % frequency for low pass filtering (optional)
-ops.ntbuff              = 64;    % samples of symmetrical buffer for whitening and spike detection		
-ops.scaleproc           = 200;   % int16 scaling of whitened data		
-ops.NT                  = {}; %32*1024+ ops.ntbuff;
+ops.ntbuff              = 64;     % samples of symmetrical buffer for whitening and spike detection
+ops.scaleproc           = 200;    % int16 scaling of whitened data
+ops.NT                  = {Nt}; %32*1024+ ops.ntbuff;
 % this is the batch size (try decreasing if out of memory)
 % for GPU should be multiple of 32 + ntbuff		
 		
@@ -53,13 +52,13 @@ ops.splitT           = .1;           % lower threshold for splitting (.1)
 		
 % options for initializing spikes from data		
 ops.initialize      = 'fromData'; %'fromData';    %'fromData' or 'no'
-ops.spkTh           = -{};      % spike threshold in standard deviations (4)
+ops.spkTh           = -{kilo_thresh};     % spike threshold in standard deviations (4)
 ops.loc_range       = [3  1];  % ranges to detect peaks; plus/minus in time and channel ([3 1])		
 ops.long_range      = [30  6]; % ranges to detect isolated peaks ([30 6])		
 ops.maskMaxChannels = 5;       % how many channels to mask up/down ([5])		
 ops.crit            = .65;     % upper criterion for discarding spike repeates (0.65)		
 ops.nFiltMax        = 10000;   % maximum "unique" spikes to consider (10000)
-ops.CAR             = {}       % if 1 common reference is used
+ops.CAR             = {use_car};       % if 1 common reference is used
 		
 % load predefined principal components (visualization only (Phy): used for features)		
 dd                  = load('PCspikes2.mat'); % you might want to recompute this from your own data		

@@ -1,6 +1,6 @@
 ops.NchanTOT            = {nchan};           % total number of channels (omit if already in chanMap file)
 ops.Nchan               = {nchan};           % number of active channels (omit if already in chanMap file)
-ops.fs                  = {sample_rate};           % sampling rate
+ops.fs                  = {sample_rate};     % sampling rate
 
 ops.datatype            = 'dat';  % binary ('dat', 'bin') or 'openEphys'
 ops.fbinary             = fullfile('{dat_file}'); % will be created for 'openEphys'
