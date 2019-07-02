@@ -37,7 +37,9 @@ class KilosortSorter(BaseSorter):
         'detect_threshold': 6,
         'car': True,
         'useGPU': True,
-        'electrode_dimensions': None
+        'electrode_dimensions': None,
+        'freq_min': 300,
+        'freq_max': 6000
     }
 
     installation_mesg = """\nTo use Kilosort run:\n
@@ -133,7 +135,9 @@ class KilosortSorter(BaseSorter):
             Nfilt=Nfilt,
             Nt=Nt,
             kilo_thresh=p['detect_threshold'],
-            use_car=use_car
+            use_car=use_car,
+            freq_min=p['freq_min'],
+            freq_max=p['freq_max']
         )
 
         kilosort_channelmap_txt = kilosort_channelmap_txt.format(
