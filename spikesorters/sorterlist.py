@@ -2,7 +2,7 @@
 from .klusta import KlustaSorter
 from .tridesclous import TridesclousSorter
 from .mountainsort4 import Mountainsort4Sorter
-from .ironclust import IronclustSorter
+from .ironclust import IronClustSorter
 from .kilosort import KilosortSorter
 from .kilosort2 import Kilosort2Sorter
 from .spyking_circus import SpykingcircusSorter
@@ -13,7 +13,7 @@ sorter_full_list = [
     KlustaSorter,
     TridesclousSorter,
     Mountainsort4Sorter,
-    IronclustSorter,
+    IronClustSorter,
     KilosortSorter,
     Kilosort2Sorter,
     SpykingcircusSorter,
