@@ -5,6 +5,9 @@ try
     % set file path
     fpath = '{output_folder}';
 
+    % add npy-matlab functions (copied in the output folder)
+    addpath(genpath(fpath));
+
     % create channel map file
     run(fullfile('{channel_path}'));
 
@@ -36,22 +39,8 @@ try
 
     fprintf('found %d good units \n', sum(rez.good>0))
 
-    % write the output
-    timestamps = rez.st3(:,1); %time
-    labels = rez.st3(:,2); %cluster
-
-    timestamps_file = fopen([fpath filesep 'timestamps.txt'],'w');
-    fprintf(timestamps_file, '%g\n', timestamps);
-    fclose(timestamps_file);
-
-    labels_file = fopen([fpath filesep 'labels.txt'],'w');
-    fprintf(labels_file, '%g\n', labels);
-    fclose(labels_file);
-
-    % we wouldn't need to do the following if we had the recording extractor in get_result_from_folder()
-    samplefreq_file = fopen([fpath filesep 'samplefreq.txt'],'w');
-    fprintf(samplefreq_file, '%g\n', {sample_rate});
-    fclose(samplefreq_file);
+    fprintf('Saving results to Phy  \n')
+    rezToPhy(rez, fullfile(fpath));
 catch
     fprintf('----------------------------------------');
     fprintf(lasterr());

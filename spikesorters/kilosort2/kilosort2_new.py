@@ -3,6 +3,7 @@ import os
 import sys
 import numpy as np
 from typing import Union
+import shutil
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
@@ -77,7 +78,7 @@ class Kilosort2SorterNew(BaseSorter):
         else:
             groups = [1] * recording.get_num_channels()
         if 'location' in recording.get_channel_property_names():
-            positions = np.array(recording.get_channel_positions())
+            positions = np.array(recording.get_channel_locations())
         else:
             print("'location' information is not found. Using linear configuration")
             positions = np.array(
@@ -136,6 +137,9 @@ class Kilosort2SorterNew(BaseSorter):
             with (output_folder / fname).open('w') as f:
                 f.write(txt)
 
+        shutil.copy(str(source_dir.parent / 'kilosort_npy_utils' / 'writeNPY.m'), str(output_folder))
+        shutil.copy(str(source_dir.parent / 'kilosort_npy_utils' / 'constructNPYheader.m'), str(output_folder))
+
     def _run(self, recording, output_folder):
         cmd = "matlab -nosplash -nodisplay -r 'run {}; quit;'".format(
             output_folder / 'kilosort2_master.m')
@@ -153,18 +157,5 @@ class Kilosort2SorterNew(BaseSorter):
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        with (output_folder / 'timestamps.txt').open('r') as f:
-            timestamps_strlist = f.readlines()
-        timestamps = [float(t) for t in timestamps_strlist]
-        with (output_folder / 'labels.txt').open('r') as f:
-            labels_strlist = f.readlines()
-        labels = [int(l) for l in labels_strlist]
-        # we wouldn't need to do the following if we had the recording extractor
-        with (output_folder / 'samplefreq.txt').open('r') as f:
-            samplefreq_strlist = f.readlines()
-        samplefreq = float(samplefreq_strlist[0])
-
-        sorting = se.NumpySortingExtractor()
-        sorting.set_sampling_frequency(samplefreq)
-        sorting.set_times_labels(timestamps, labels)
+        sorting = se.KiloSortSortingExtractor(output_folder)
         return sorting

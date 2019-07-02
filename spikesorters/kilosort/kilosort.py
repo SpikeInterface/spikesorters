@@ -190,6 +190,9 @@ class KilosortSorter(BaseSorter):
             with (output_folder / fname).open('w') as f:
                 f.writelines(value)
 
+        shutil.copy(str(source_dir.parent / 'kilosort_npy_utils' / 'writeNPY.m'), str(output_folder))
+        shutil.copy(str(source_dir.parent / 'kilosort_npy_utils' / 'constructNPYheader.m'), str(output_folder))
+
     def _run(self, recording, output_folder):
 
         cmd = "matlab -nosplash -nodisplay -r 'run {}; quit;'".format(output_folder / 'kilosort_master.m')
