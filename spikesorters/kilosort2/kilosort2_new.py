@@ -28,7 +28,7 @@ class Kilosort2SorterNew(BaseSorter):
     """
     """
 
-    sorter_name: str = 'kilosort2'
+    sorter_name: str = 'kilosort2_new'
     kilosort2_path: Union[str, None] = os.getenv('KILOSORT2_PATH', None)
 
     _default_params = {
@@ -72,13 +72,11 @@ class Kilosort2SorterNew(BaseSorter):
         if electrode_dimensions is None:
             electrode_dimensions = [0, 1]
         if 'group' in recording.get_channel_property_names():
-            groups = [recording.get_channel_property(
-                ch, 'group') for ch in recording.get_channel_ids()]
+            groups = recording.get_channel_groups()
         else:
             groups = [1] * recording.get_num_channels()
         if 'location' in recording.get_channel_property_names():
-            positions = np.array([recording.get_channel_property(
-                chan, 'location') for chan in recording.get_channel_ids()])
+            positions = np.array(recording.get_channel_positions())
         else:
             print("'location' information is not found. Using linear configuration")
             positions = np.array(
