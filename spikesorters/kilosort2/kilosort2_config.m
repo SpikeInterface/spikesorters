@@ -1,9 +1,9 @@
-ops.NchanTOT            = {};           % total number of channels (omit if already in chanMap file)
-ops.Nchan               = {};           % number of active channels (omit if already in chanMap file)
-ops.fs                  = {};           % sampling rate
+ops.NchanTOT            = {nchan};           % total number of channels (omit if already in chanMap file)
+ops.Nchan               = {nchan};           % number of active channels (omit if already in chanMap file)
+ops.fs                  = {sample_rate};     % sampling rate
 
 ops.datatype            = 'dat';  % binary ('dat', 'bin') or 'openEphys'
-ops.fbinary             = fullfile('{}'); % will be created for 'openEphys'
+ops.fbinary             = fullfile('{dat_file}'); % will be created for 'openEphys'
 ops.fproc               = fullfile(fpath, 'temp_wh.dat'); % residual from RAM of preprocessed data
 ops.root                = fpath; % 'openEphys' only: where raw files are
 % define the channel map as a filename (string) or simply an array
@@ -25,7 +25,7 @@ ops.lam = 10;
 ops.AUCsplit = 0.9; 
 
 % minimum spike rate (Hz), if a cluster falls below this for too long it gets removed
-ops.minFR = {};
+ops.minFR = {minFR};
 
 % number of samples to average over (annealed from first to second value) 
 ops.momentum = [20 400]; 
@@ -37,14 +37,14 @@ ops.sigmaMask = 30;
 ops.ThPre = 8; 
 %% danger, changing these settings can lead to fatal errors
 % options for determining PCs
-ops.spkTh           = -{};      % spike threshold in standard deviations (-6)
+ops.spkTh           = -{kilo_thresh};      % spike threshold in standard deviations (-6)
 ops.reorder         = 1;       % whether to reorder batches for drift correction. 
 ops.nskip           = 25;  % how many batches to skip for determining spike PCs
 
-ops.CAR             = {}; % perform CAR
+ops.CAR             = {use_car}; % perform CAR
 
 ops.GPU                 = 1; % has to be 1, no CPU version yet, sorry
-% ops.Nfilt               = 1024; % max number of clusters
+% ops.Nfilt             = 1024; % max number of clusters
 ops.nfilt_factor        = 4; % max number of clusters per good channel (even temporary ones)
 ops.ntbuff              = 64;    % samples of symmetrical buffer for whitening and spike detection
 ops.NT                  = 64*1024+ ops.ntbuff; % must be multiple of 32 + ntbuff. This is the batch size (try decreasing if out of memory). 
