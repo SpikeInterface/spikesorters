@@ -97,10 +97,12 @@ class IronClustSorter(BaseSorter):
         num_channels = recording.get_num_channels()
         num_timepoints = recording.get_num_frames()
         duration_minutes = num_timepoints / samplerate / 60
-        print('Num. channels = {}, Num. timepoints = {}, duration = {} minutes'.format(
+        if self.debug:
+            print('Num. channels = {}, Num. timepoints = {}, duration = {} minutes'.format(
             num_channels, num_timepoints, duration_minutes))
 
-        print('Creating argfile.txt...')
+        if self.debug:
+            print('Creating argfile.txt...')
         txt = ''
         for key0, val0 in self.params.items():
             txt += '{}={}\n'.format(key0, val0)
@@ -109,8 +111,9 @@ class IronClustSorter(BaseSorter):
             f.write(txt)
 
         tmpdir = output_folder / 'tmp'
-        os.mkdir(str(tmpdir))
-        print('Running ironclust in {tmpdir}...'.format(tmpdir=str(tmpdir)))
+        os.makedirs(str(tmpdir), exist_ok=True)
+        if self.debug:
+            print('Running ironclust in {tmpdir}...'.format(tmpdir=str(tmpdir)))
         cmd = '''
             addpath('{source_dir}');
             addpath('{ironclust_path}', '{ironclust_path}/matlab', '{ironclust_path}/matlab/mdaio');
@@ -151,7 +154,8 @@ class IronClustSorter(BaseSorter):
             f.write('{}'.format(samplerate))
 
     @staticmethod
-    def get_result_from_folder(output_folder: Path):
+    def get_result_from_folder(output_folder: Union[str, Path]):
+        output_folder = Path(output_folder)
         tmpdir = output_folder / 'tmp'
 
         result_fname = str(tmpdir / 'firings.mda')
