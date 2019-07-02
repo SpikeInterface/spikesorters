@@ -10,7 +10,7 @@ ops.root                = fpath; % 'openEphys' only: where raw files are
 ops.chanMap             = fullfile('chanMap.mat'); % make this file using createChannelMapFile.m
 
 % frequency for high pass filtering (150)
-ops.fshigh = 150;   
+ops.fshigh = {freq_min};
 
 % minimum firing rate on a "good" channel (0 to skip)
 ops.minfr_goodchannels = 0.1; 
@@ -31,7 +31,7 @@ ops.minFR = {minFR};
 ops.momentum = [20 400]; 
 
 % spatial constant in um for computing residual variance of spike
-ops.sigmaMask = 30; 
+ops.sigmaMask = {sigmaMask}; 
 
 % threshold crossings for pre-clustering (in PCA projection space)
 ops.ThPre = 8; 
@@ -51,7 +51,7 @@ ops.NT                  = 64*1024+ ops.ntbuff; % must be multiple of 32 + ntbuff
 ops.whiteningRange      = 32; % number of channels to use for whitening each channel
 ops.nSkipCov            = 25; % compute whitening matrix from every N-th batch
 ops.scaleproc           = 200;   % int16 scaling of whitened data
-ops.nPCs                = 3; % how many PCs to project the spikes into
+ops.nPCs                = {nPCs}; % how many PCs to project the spikes into
 ops.useRAM              = 0; % not yet available
 
 %%
