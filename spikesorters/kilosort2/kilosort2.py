@@ -35,17 +35,18 @@ class Kilosort2Sorter(BaseSorter):
 
     _default_params = {
         'detect_threshold': 5,
-        'electrode_dimensions': None,
         'car': True,
         'minFR': 0.1,
+        'kilosort2_path': None,
+        'electrode_dimensions': None
     }
 
-    installation_mesg = """\nTo use Kilosort run:\n
-        >>> git clone https://github.com/cortex-lab/KiloSort
+    installation_mesg = """\nTo use Kilosort2 run:\n
+        >>> git clone https://github.com/MouseLand/Kilosort2
     and provide the installation path by setting the KILOSORT2_PATH
     environment variables or using Kilosort2Sorter.set_kilosort2_path().\n\n
 
-    More information on KiloSort2 at:
+    More information on Kilosort2 at:
         https://github.com/MouseLand/Kilosort2
     """
 
@@ -55,14 +56,20 @@ class Kilosort2Sorter(BaseSorter):
     @staticmethod
     def set_kilosort2_path(kilosort2_path: str):
         Kilosort2Sorter.kilosort2_path = kilosort2_path
+        Kilosort2Sorter.installed = check_if_installed(Kilosort2Sorter.kilosort2_path)
+        try:
+            print("Setting KILOSORT2_PATH environment variable to:", kilosort2_path)
+            os.environ["KILOSORT2_PATH"] = kilosort2_path
+        except Exception as e:
+            print("Could not set KILOSORT2_PATH environment variable:", e)
 
     def set_params(self, **params):
         BaseSorter.set_params(self, **params)
+        if params.get('kilosort2_path', None) is not None:
+            Kilosort2Sorter.set_kilosort2_path(params['kilosort2_path'])
 
     def _setup_recording(self, recording, output_folder):
-
         source_dir = Path(Path(__file__).parent)
-
         p = self.params
 
         if not check_if_installed(Kilosort2Sorter.kilosort2_path):

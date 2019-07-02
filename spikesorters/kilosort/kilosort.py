@@ -29,16 +29,16 @@ class KilosortSorter(BaseSorter):
     """
     """
 
-    sorter_name = 'kilosort'
+    sorter_name: str = 'kilosort'
     kilosort_path: Union[str, None] = os.getenv('KILOSORT_PATH', None)
     installed = check_if_installed(kilosort_path)
 
     _default_params = {
-        'useGPU': True,
         'detect_threshold': 6,
         'car': True,
-        'electrode_dimensions': None,
-        'kilosort_path': None
+        'useGPU': True,
+        'kilosort_path': None,
+        'electrode_dimensions': None
     }
 
     installation_mesg = """\nTo use Kilosort run:\n
@@ -54,21 +54,22 @@ class KilosortSorter(BaseSorter):
         BaseSorter.__init__(self, **kargs)
 
     @staticmethod
-    def set_kilosort_path(kilosort_path):
-        os.environ["KILOSORT_PATH"] = kilosort_path
+    def set_kilosort_path(kilosort_path: str):
         KilosortSorter.kilosort_path = kilosort_path
         KilosortSorter.installed = check_if_installed(KilosortSorter.kilosort_path)
+        try:
+            print("Setting KILOSORT_PATH environment variable to:", kilosort_path)
+            os.environ["KILOSORT_PATH"] = kilosort_path
+        except Exception as e:
+            print("Could not set KILOSORT_PATH environment variable:", e)
 
     def set_params(self, **params):
         BaseSorter.set_params(self, **params)
-
         if params.get('kilosort_path', None) is not None:
             KilosortSorter.set_kilosort_path(params['kilosort_path'])
 
     def _setup_recording(self, recording, output_folder):
-
         source_dir = Path(__file__).parent
-
         p = self.params
 
         if not check_if_installed(KilosortSorter.kilosort_path):
