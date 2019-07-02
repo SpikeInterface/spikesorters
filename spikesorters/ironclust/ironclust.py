@@ -1,159 +1,168 @@
-from pathlib import Path
 import os
-import sys
+from pathlib import Path
+from typing import Union
 
 import spikeextractors as se
-from ..sorter_tools import  _call_command_split
+
+from .mdarecordingextractor2 import MdaRecordingExtractor2
+from .shellscript import ShellScript
 from ..basesorter import BaseSorter
 
 
-def check_if_installed(ironclust_path):
+def check_if_installed(ironclust_path: Union[str, None]):
     if ironclust_path is None:
         return False
-    if ironclust_path is not None and ironclust_path.startswith('"'):
-        ironclust_path = ironclust_path[1:-1]
-        ironclust_path = Path(ironclust_path).absolute()
+    assert isinstance(ironclust_path, str)
 
-    if (Path(ironclust_path) / 'matlab' / 'p_ironclust.m').is_file():
-        try:
-            from mountainlab_pytools import mdaio
-            return True
-        except ImportError:
-            return False
+    if ironclust_path.startswith('"'):
+        ironclust_path = ironclust_path[1:-1]
+    ironclust_path = str(Path(ironclust_path).absolute())
+
+    if (Path(ironclust_path) / 'matlab' / 'irc.m').is_file():
+        return True
     else:
         return False
 
 
-class IronclustSorter(BaseSorter):
+class IronClustSorter(BaseSorter):
     """
     """
 
-    sorter_name = 'ironclust'
-    installed = check_if_installed(os.getenv('IRONCLUST_PATH'))
-    ironclust_path = os.getenv('IRONCLUST_PATH')
+    sorter_name: str = 'ironclust'
+    ironclust_path: Union[str, None] = os.getenv('IRONCLUST_PATH', None)
+    installed = check_if_installed(ironclust_path)
 
-    _default_params = {
-        'prm_template_name': None,  # Name of the template file
-        'detect_sign': -1,  # Polarity of the spikes, -1, 0, or 1
-        'adjacency_radius': -1,  # Channel neighborhood adjacency radius corresponding to geom file
-        'detect_threshold': 5,  # Threshold for detection
-        'merge_thresh': .98,  # Cluster merging threhold 0..1
-        'freq_min': 300,  # Lower frequency limit for band-pass filter
-        'freq_max': 6000,  # Upper frequency limit for band-pass filter
-        'pc_per_chan': 3,  # Number of pc per channel
-        'parallel': True,
-        'ironclust_path': None,
-        'fGpu': True
-    }
+    _default_params = dict(
+        detect_sign=-1,  # Use -1, 0, or 1, depending on the sign of the spikes in the recording
+        adjacency_radius=50,  # Use -1 to include all channels in every neighborhood
+        adjacency_radius_out=75,  # Use -1 to include all channels in every neighborhood
+        detect_threshold=4.5,  # detection threshold
+        prm_template_name='',  # .prm template file name
+        freq_min=300,
+        freq_max=6000,
+        merge_thresh=0.985,  # Threshold for automated merging
+        pc_per_chan=2,  # Number of principal components per channel
+        whiten=True,  # Whether to do channel whitening as part of preprocessing
+        filter_type='bandpass',  # none, bandpass, wiener, fftdiff, ndiff
+        filter_detect_type='none',  # none, bandpass, wiener, fftdiff, ndiff
+        common_ref_type='none',  # none, mean, median
+        batch_sec_drift=300,  # batch duration in seconds. clustering time duration
+        step_sec_drift=20,  # compute anatomical similarity every n sec
+        knn=30,  # K nearest neighbors
+        min_count=30,  # Minimum cluster size
+        fGpu=True,  # Use GPU if available
+        fft_thresh=8,  # FFT-based noise peak threshold
+        fft_thresh_low=0,  # FFT-based noise peak lower threshold (set to 0 to disable dual thresholding scheme
+        nSites_whiten=32,  # Number of adjacent channels to whiten
+        feature_type='gpca',  # gpca, pca, vpp, vmin, vminmax, cov, energy, xcov
+        delta_cut=1,  # Cluster detection threshold (delta-cutoff)
+        post_merge_mode=1,  # post merge mode
+        sort_mode=1  # sort mode
+    )
 
-    installation_mesg = """\nTo use Ironclust run:\n
-        >>> pip install mountainlab_pytools kbucket\n
-
-    and clone the repo:\n
-        >>> git clone https://github.com/jamesjun/ironclust\n
-    and provide the installation path with the 'ironclust_path' argument or
-    by setting the IRONCLUST_PATH environment variable.\n\n
-
-    More information on KiloSort at:
-        https://github.com/jamesjun/ironclust
+    installation_mesg = """\nTo use IronClust run:\n
+        >>> git clone https://github.com/jamesjun/ironclust
+    and provide the installation path by setting the IRONCLUST_PATH
+    environment variables or using IronClustSorter.set_ironclust_path().\n\n
     """
 
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
 
     @staticmethod
-    def set_ironclust_path(ironclust_path):
-        os.environ["IRONCLUST_PATH"] = ironclust_path
-        IronclustSorter.ironclust_path = ironclust_path
-        IronclustSorter.installed = check_if_installed(ironclust_path)
+    def set_ironclust_path(ironclust_path: str):
+        IronClustSorter.ironclust_path = ironclust_path
+        IronClustSorter.installed = check_if_installed(IronClustSorter.ironclust_path)
+        try:
+            print("Setting IRONCLUST_PATH environment variable for subprocess calls to:", ironclust_path)
+            os.environ["IRONCLUST_PATH"] = ironclust_path
+        except Exception as e:
+            print("Could not set IRONCLUST_PATH environment variable:", e)
 
-    def set_params(self, **params):
-        BaseSorter.set_params(self, *params)
-        if params.get('ironclust_path', None) is not None:
-            IronclustSorter.set_ironclust_path(params['ironclust_path'])
-        else:
-            IronclustSorter.set_ironclust_path(os.getenv('IRONCLUST_PATH'))
+    def _setup_recording(self, recording: se.RecordingExtractor, output_folder: Path):
+        if not check_if_installed(IronClustSorter.ironclust_path):
+            raise Exception(IronClustSorter.installation_mesg)
+        assert isinstance(IronClustSorter.ironclust_path, str)
 
-    def _setup_recording(self, recording, output_folder):
-        from mountainlab_pytools import mdaio
-        p = self.params
-
-        if not check_if_installed(IronclustSorter.ironclust_path):
-            raise ImportError(IronclustSorter.installation_mesg)
-
-        dataset_dir = (output_folder / 'ironclust_dataset').absolute()
-        if not dataset_dir.is_dir():
-            dataset_dir.mkdir()
-
+        dataset_dir = output_folder / 'ironclust_dataset'
         # Generate three files in the dataset directory: raw.mda, geom.csv, params.json
-        se.MdaRecordingExtractor.write_recording(recording=recording, save_path=dataset_dir)
+        MdaRecordingExtractor2.write_recording(recording=recording, save_path=str(dataset_dir), _preserve_dtype=True)
+
+    def _run(self, recording: se.RecordingExtractor, output_folder: Path):
+        dataset_dir = output_folder / 'ironclust_dataset'
+        source_dir = Path(__file__).parent
+
         samplerate = recording.get_sampling_frequency()
 
-        if self.debug:
-            print('Reading timeseries header...')
-        HH = mdaio.readmda_header(str(dataset_dir / 'raw.mda'))
-        num_channels = HH.dims[0]
-        num_timepoints = HH.dims[1]
+        num_channels = recording.get_num_channels()
+        num_timepoints = recording.get_num_frames()
         duration_minutes = num_timepoints / samplerate / 60
         if self.debug:
-            print('Num. channels = {}, Num. timepoints = {}, duration = {} minutes'.format(num_channels, num_timepoints,
-                                                                                       duration_minutes))
+            print('Num. channels = {}, Num. timepoints = {}, duration = {} minutes'.format(
+            num_channels, num_timepoints, duration_minutes))
 
         if self.debug:
-            print('Creating .params file...')
+            print('Creating argfile.txt...')
         txt = ''
+        for key0, val0 in self.params.items():
+            txt += '{}={}\n'.format(key0, val0)
         txt += 'samplerate={}\n'.format(samplerate)
-        txt += 'detect_sign={}\n'.format(p['detect_sign'])
-        txt += 'adjacency_radius={}\n'.format(p['adjacency_radius'])
-        txt += 'detect_threshold={}\n'.format(p['detect_threshold'])
-        txt += 'merge_thresh={}\n'.format(p['merge_thresh'])
-        txt += 'freq_min={}\n'.format(p['freq_min'])
-        txt += 'freq_max={}\n'.format(p['freq_max'])
-        txt += 'pc_per_chan={}\n'.format(p['pc_per_chan'])
-        txt += 'prm_template_name={}\n'.format(p['prm_template_name'])
-        txt += 'fGpu={}\n'.format(p['fGpu'])
-        _write_text_file(dataset_dir / 'argfile.txt', txt)
+        with (dataset_dir / 'argfile.txt').open('w') as f:
+            f.write(txt)
 
-    def _run(self, recording, output_folder):
+        tmpdir = output_folder / 'tmp'
+        os.makedirs(str(tmpdir), exist_ok=True)
         if self.debug:
-            print('Running IronClust...')
+            print('Running ironclust in {tmpdir}...'.format(tmpdir=str(tmpdir)))
+        cmd = '''
+            addpath('{source_dir}');
+            addpath('{ironclust_path}', '{ironclust_path}/matlab', '{ironclust_path}/matlab/mdaio');
+            try
+                p_ironclust('{tmpdir}', '{dataset_dir}/raw.mda', '{dataset_dir}/geom.csv', '', '', '{tmpdir}/firings.mda', '{dataset_dir}/argfile.txt');
+            catch
+                fprintf('----------------------------------------');
+                fprintf(lasterr());
+                quit(1);
+            end
+            quit(0);
+        '''
+        cmd = cmd.format(ironclust_path=IronClustSorter.ironclust_path, tmpdir=str(tmpdir),
+                         dataset_dir=str(dataset_dir), source_dir=str(source_dir))
 
-        dataset_dir = (output_folder / 'ironclust_dataset').absolute()
+        matlab_cmd = ShellScript(cmd, script_path=str(tmpdir / 'run_ironclust.m'))
+        matlab_cmd.write()
 
-        cmd_path = "addpath('{}', '{}/matlab', '{}/mdaio');".format(IronclustSorter.ironclust_path, IronclustSorter.ironclust_path, IronclustSorter.ironclust_path)
-        # "p_ironclust('$(tempdir)','$timeseries$','$geom$','$prm$','$firings_true$','$firings_out$','$(argfile)');"
-        cmd_call = "p_ironclust('{}', '{}', '{}', '', '', '{}', '{}');" \
-            .format(output_folder, dataset_dir / 'raw.mda', dataset_dir / 'geom.csv', output_folder / 'firings.mda',
-                    dataset_dir / 'argfile.txt')
-        cmd = 'matlab -nosplash -nodisplay -r "{} {} quit;"'.format(cmd_path, cmd_call)
-        if self.debug:
-            print(cmd)
+        shell_cmd = '''
+            #!/bin/bash
+            cd {tmpdir}
+            matlab -nosplash -nodisplay -r run_ironclust
+        '''.format(tmpdir=str(tmpdir))
+        shell_script = ShellScript(shell_cmd, script_path=str(tmpdir / 'run_ironclust.sh'))
+        shell_script.start()
 
-        if "win" in sys.platform:
-            cmd_list = ['matlab', '-nosplash', '-nodisplay', '-wait',
-                        '-r', '{} {} quit;'.format(cmd_path, cmd_call)]
-        else:
-            cmd_list = ['matlab', '-nosplash', '-nodisplay',
-                        '-r', '{} {} quit;'.format(cmd_path, cmd_call)]
+        retcode = shell_script.wait()
 
-        _call_command_split(cmd_list)
+        if retcode != 0:
+            raise Exception('ironclust returned a non-zero exit code')
+
+        result_fname = str(tmpdir / 'firings.mda')
+        if not os.path.exists(result_fname):
+            raise Exception('Result file does not exist: ' + result_fname)
+
+        samplerate_fname = str(tmpdir / 'samplerate.txt')
+        with open(samplerate_fname, 'w') as f:
+            f.write('{}'.format(samplerate))
 
     @staticmethod
-    def get_result_from_folder(output_folder):
+    def get_result_from_folder(output_folder: Union[str, Path]):
+        output_folder = Path(output_folder)
+        tmpdir = output_folder / 'tmp'
 
-        # overwrite the SorterBase.get_result
-        from mountainlab_pytools import mdaio
+        result_fname = str(tmpdir / 'firings.mda')
+        samplerate_fname = str(tmpdir / 'samplerate.txt')
+        with open(samplerate_fname, 'r') as f:
+            samplerate = float(f.read())
 
-        result_fname = Path(output_folder) / 'firings.mda'
+        sorting = se.MdaSortingExtractor(firings_file=result_fname, sampling_frequency=samplerate)
 
-        assert result_fname.exists(), 'Result file does not exist: {}'.format(str(result_fname))
-
-        firings = mdaio.readmda(str(result_fname))
-        sorting = se.NumpySortingExtractor()
-        sorting.set_times_labels(firings[1, :], firings[2, :])
         return sorting
-
-
-def _write_text_file(fname, str):
-    with fname.open('w') as f:
-        f.write(str)
