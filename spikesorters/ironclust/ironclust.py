@@ -125,7 +125,7 @@ class IronClustSorter(BaseSorter):
         '''
         cmd = cmd.format(ironclust_path=IronClustSorter.ironclust_path, tmpdir=str(tmpdir), dataset_dir=str(dataset_dir), source_dir=str(source_dir))
 
-        matlab_cmd = ShellScript(cmd, script_path=str(tmpdir / 'run_ironclust.m'), keep_temp_files=True)
+        matlab_cmd = ShellScript(cmd, script_path=str(tmpdir / 'run_ironclust.m'))
         matlab_cmd.write()
 
         shell_cmd = '''
@@ -133,7 +133,7 @@ class IronClustSorter(BaseSorter):
             cd {tmpdir}
             matlab -nosplash -nodisplay -r run_ironclust
         '''.format(tmpdir=str(tmpdir))
-        shell_script = ShellScript(shell_cmd, script_path=str(tmpdir / 'run_ironclust.sh'), keep_temp_files=True)
+        shell_script = ShellScript(shell_cmd, script_path=str(tmpdir / 'run_ironclust.sh'))
         shell_script.start()
 
         retcode = shell_script.wait()
