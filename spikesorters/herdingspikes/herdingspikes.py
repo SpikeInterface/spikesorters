@@ -39,7 +39,7 @@ class HerdingspikesSorter(BaseSorter):
             'title': "Cutout size before peak (ms)"},
         {'name': 'right_cutout_time', 'type': 'float', 'value': 1.0, 'default': 1.0,
             'title': "Cutout size after peak (ms)"},
-        {'name': 'detection_threshold', 'type': 'int', 'value': 18, 'default': 18,
+        {'name': 'detection_threshold', 'type': 'float', 'value': 18.0, 'default': 18.0,
             'title': "Detection threshold"},
         {'name': 'probe_masked_channels', 'type': 'list', 'value': [], 'default': [],
             'title': "Masked channels"},

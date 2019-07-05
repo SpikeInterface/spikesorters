@@ -4,6 +4,7 @@ import sys
 import numpy as np
 from typing import Union
 import shutil
+import copy
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
@@ -42,6 +43,20 @@ class Kilosort2Sorter(BaseSorter):
         'sigmaMask': 30,
         'nPCs': 3
     }
+
+    _extra_gui_params = [
+        {'name': 'detect_threshold', 'type': 'float', 'value': 5.0, 'default': 5.0, 'title': "Relative detection threshold"},
+        {'name': 'car', 'type': 'bool', 'value': True, 'default': True, 'title': "car"},
+        {'name': 'minFR', 'type': 'float', 'value': 0.1, 'default': 0.1, 'title': "minFR"},
+        {'name': 'electrode_dimensions', 'type': 'list', 'value': None, 'default': None, 'title': "Electrode dimensions of probe"},
+        {'name': 'freq_min', 'type': 'float', 'value': 150.0, 'default': 150.0, 'title': "Low-pass frequency"},
+        {'name': 'sigmaMask', 'type': 'int', 'value': 30, 'default': 30, 'title': "Sigma mask"},
+        {'name': 'nPCs', 'type': 'int', 'value': 3, 'default': 3, 'title': "Number of principal components"},
+    ]
+
+    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    for param in _extra_gui_params:
+        _gui_params.append(param)
 
     installation_mesg = """\nTo use Kilosort2 run:\n
         >>> git clone https://github.com/MouseLand/Kilosort2

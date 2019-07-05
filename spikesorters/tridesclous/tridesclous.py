@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 import shutil
 import numpy as np
+import copy
 
 from ..basesorter import BaseSorter
 import spikeextractors as se
@@ -36,6 +37,24 @@ class TridesclousSorter(BaseSorter):
         'feature_method': 'auto',   #peak_max/global_pca/by_channel_pca
         'cluster_method': 'auto',  #sawchaincut/dbscan/kmeans
     }
+
+    extra_gui_params = [
+        {'name': 'lowpass_freq', 'type': 'float', 'value': 400.0, 'default': 400.0, 'title': "Low-pass frequency"},
+        {'name': 'highpass_freq', 'type': 'float', 'value': 5000.0, 'default': 5000.0, 'title': "High-pass frequency"},
+        {'name': 'peak_sign', 'type': 'str', 'value': '-', 'default': '-', 'title': "Negative or positive peak sign"},
+        {'name': 'relative_threshold', 'type': 'float', 'value': 5.0, 'default': 5.0, 'title': "Relative threshold for detection"},
+        {'name': 'peak_span_ms', 'type': 'float', 'value': 0.3, 'default': 0.3, 'title': "Time span of peaks for detected events (ms)"},
+        {'name': 'wf_left_ms', 'type': 'float', 'value': -2.0, 'default': -2.0, 'title': "Waveform length before peak (ms)"},
+        {'name': 'wf_right_ms', 'type': 'float', 'value': 3.0, 'default': 3.0, 'title': "Waveform length after peak (ms)"},
+        {'name': 'nb_max', 'type': 'int', 'value': 20000, 'default': 20000, 'title': "nb_max"},
+        {'name': 'alien_value_threshold', 'type': 'float', 'value': None, 'default': None, 'title': "Threshold for artifacts"},
+        {'name': 'feature_method', 'type': 'str', 'value': 'auto', 'default': 'auto', 'title': "Feature Extraction Method"},
+        {'name': 'cluster_method', 'type': 'str', 'value': 'auto', 'default': 'auto', 'title': "Clustering Method"},
+    ]
+
+    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    for param in _extra_gui_params:
+        _gui_params.append(param)
 
 
     installation_mesg = """

@@ -49,10 +49,10 @@ class KlustaSorter(BaseSorter):
     }
 
     _extra_gui_params = [
-        {'name': 'adjacency_radius', 'type': 'float', 'value': None, 'default': None, 'title': "Adjacency radius"},
-        {'name': 'threshold_strong_std_factor', 'type': 'int', 'value': 5, 'default': 5,
+        {'name': 'adjacency_radius', 'type': 'float', 'value': None, 'default': None, 'title': "Adjacency radius (microns)"},
+        {'name': 'threshold_strong_std_factor', 'type': 'float', 'value': 5.0, 'default': 5.0,
          'title': "Threshold strong std factor"},
-        {'name': 'threshold_weak_std_factor', 'type': 'int', 'value': 2, 'default': 2,
+        {'name': 'threshold_weak_std_factor', 'type': 'float', 'value': 2.0, 'default': 2.0,
          'title': "Threshold weak std factor"},
         {'name': 'detect_sign', 'type': 'int', 'value': -1, 'default': -1,
          'title': "Use -1, 0, or 1, depending on the sign of the spikes in the recording"},
