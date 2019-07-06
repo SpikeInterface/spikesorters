@@ -38,7 +38,7 @@ class TridesclousSorter(BaseSorter):
         'cluster_method': 'auto',  #sawchaincut/dbscan/kmeans
     }
 
-    extra_gui_params = [
+    _extra_gui_params = [
         {'name': 'lowpass_freq', 'type': 'float', 'value': 400.0, 'default': 400.0, 'title': "Low-pass frequency"},
         {'name': 'highpass_freq', 'type': 'float', 'value': 5000.0, 'default': 5000.0, 'title': "High-pass frequency"},
         {'name': 'peak_sign', 'type': 'str', 'value': '-', 'default': '-', 'title': "Negative or positive peak sign"},
