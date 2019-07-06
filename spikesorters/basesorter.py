@@ -34,7 +34,7 @@ class BaseSorter:
     _default_params = {}
     _gui_params = [
         {'name': 'output_folder', 'type': 'str', 'value':None, 'default':None,  'title': "Sorting output folder path"},
-        {'name': 'parallel', 'type': 'bool', 'value':False, 'default':False,  'title': "If True, then parallelize"},
+        {'name': 'grouping_property', 'type': 'str', 'value':None, 'default':None,  'title': "Will sort the recording by the given property"},
     ]
     installation_mesg = ""  # error message when not installed
 

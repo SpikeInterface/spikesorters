@@ -1,6 +1,8 @@
+import copy
 import os
 from pathlib import Path
 from typing import Union
+import copy
 
 import spikeextractors as se
 
@@ -52,13 +54,46 @@ class IronClustSorter(BaseSorter):
         min_count=30,  # Minimum cluster size
         fGpu=True,  # Use GPU if available
         fft_thresh=8,  # FFT-based noise peak threshold
-        fft_thresh_low=0,  # FFT-based noise peak lower threshold (set to 0 to disable dual thresholding scheme
+        fft_thresh_low=0,  # FFT-based noise peak lower threshold (set to 0 to disable dual thresholding scheme)
         nSites_whiten=32,  # Number of adjacent channels to whiten
         feature_type='gpca',  # gpca, pca, vpp, vmin, vminmax, cov, energy, xcov
         delta_cut=1,  # Cluster detection threshold (delta-cutoff)
         post_merge_mode=1,  # post merge mode
         sort_mode=1  # sort mode
     )
+
+    _extra_gui_params = [
+        {'name': 'detect_sign', 'type': 'int', 'value': -1, 'default': -1,
+         'title': "Use -1, 0, or 1, depending on the sign of the spikes in the recording"},
+        {'name': 'adjacency_radius', 'type': 'float', 'value': 50.0, 'default': 50.0, 'title': "Use -1 to include all channels in every neighborhood"},
+        {'name': 'adjacency_radius_out', 'type': 'float', 'value': 75.0, 'default': 75.0, 'title': "Use -1 to include all channels in every neighborhood"},
+        {'name': 'detect_threshold', 'type': 'float', 'value': 4.5, 'default': 4.5, 'title': "Threshold for detection"},
+        {'name': 'freq_min', 'type': 'float', 'value': 300.0, 'default': 300.0, 'title': "Low-pass frequency"},
+        {'name': 'freq_max', 'type': 'float', 'value': 6000.0, 'default': 6000.0, 'title': "High-pass frequency"},
+        {'name': 'prm_template_name', 'type': 'str', 'value': '', 'default': '', 'title': ".prm template file name"},
+        {'name': 'merge_thresh', 'type': 'float', 'value': 0.985, 'default': 0.985, 'title': "Threshold for merging"},
+        {'name': 'pc_per_chan', 'type': 'int', 'value': 2, 'default': 2, 'title': "Number of principal components per channel"},
+        {'name': 'whiten', 'type': 'bool', 'value': True, 'default': True, 'title': "Whitens the recording if True"},
+        {'name': 'filter_type', 'type': 'str', 'value': 'bandpass', 'default': 'bandpass', 'title': "none, bandpass, wiener, fftdiff, ndiff"},
+        {'name': 'filter_detect_type', 'type': 'str', 'value': 'none', 'default': 'none', 'title': "none, bandpass, wiener, fftdiff, ndiff"},
+        {'name': 'common_ref_type', 'type': 'str', 'value': 'none', 'default': 'none', 'title': "none, bandpass, wiener, fftdiff, ndiff"},
+        {'name': 'batch_sec_drift', 'type': 'int', 'value': 300, 'default': 300, 'title': "batch duration in seconds. clustering time duration"},
+        {'name': 'step_sec_drift', 'type': 'int', 'value': 20, 'default': 20, 'title': "compute anatomical similarity every n sec"},
+        {'name': 'knn', 'type': 'int', 'value': 30, 'default': 30, 'title': "K nearest neighbors"},
+        {'name': 'min_count', 'type': 'int', 'value': 30, 'default': 30, 'title': "Minimum cluster size"},
+        {'name': 'fGpu', 'type': 'bool', 'value': True, 'default': True, 'title': "Use GPU if available"},
+        {'name': 'fft_thresh', 'type': 'float', 'value': 8.0, 'default': 8.0, 'title': "FFT-based noise peak threshold"},
+        {'name': 'fft_thresh_low', 'type': 'float', 'value': 0.0, 'default': 0.0, 'title': "FFT-based noise peak lower threshold (set to 0 to disable dual thresholding scheme)"},
+        {'name': 'nSites_whiten', 'type': 'int', 'value': 32, 'default': 32, 'title': "Number of adjacent channels to whiten"},
+        {'name': 'feature_type', 'type': 'str', 'value': 'gpca', 'default': 'gpca', 'title': "gpca, pca, vpp, vmin, vminmax, cov, energy, xcov"},
+        {'name': 'delta_cut', 'type': 'int', 'value': 1, 'default': 1, 'title': "Cluster detection threshold (delta-cutoff)"},
+        {'name': 'post_merge_mode', 'type': 'int', 'value': 1, 'default': 1, 'title': "post merge mode"},
+        {'name': 'sort_mode', 'type': 'int', 'value': 1, 'default': 1, 'title': "sort mode"},
+    ]
+
+    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    for param in _extra_gui_params:
+        _gui_params.append(param)
 
     installation_mesg = """\nTo use IronClust run:\n
         >>> git clone https://github.com/jamesjun/ironclust
