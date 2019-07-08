@@ -36,6 +36,7 @@ class TridesclousSorter(BaseSorter):
         'alien_value_threshold': None, # in benchmark there are no artifact
         'feature_method': 'auto',   #peak_max/global_pca/by_channel_pca
         'cluster_method': 'auto',  #sawchaincut/dbscan/kmeans
+        'clean_catalogue_gui': False,
     }
 
     _extra_gui_params = [
@@ -50,6 +51,7 @@ class TridesclousSorter(BaseSorter):
         {'name': 'alien_value_threshold', 'type': 'float', 'value': None, 'default': None, 'title': "Threshold for artifacts"},
         {'name': 'feature_method', 'type': 'str', 'value': 'auto', 'default': 'auto', 'title': "Feature Extraction Method"},
         {'name': 'cluster_method', 'type': 'str', 'value': 'auto', 'default': 'auto', 'title': "Clustering Method"},
+        {'name': 'clean_catalogue_gui', 'type': 'bool', 'value': False, 'default': False, 'title': "Clean catalogue with use interactive window"},
     ]
 
     _gui_params = copy.deepcopy(BaseSorter._gui_params)
@@ -113,13 +115,14 @@ class TridesclousSorter(BaseSorter):
         tdc_dataio = tdc.DataIO(dirname=str(output_folder))
         
 
-        
+        params = dict(self.params)
+        clean_catalogue_gui = params.pop('clean_catalogue_gui')
         # make catalogue
         chan_grps = list(tdc_dataio.channel_groups.keys())
         for chan_grp in chan_grps:
             
             # parameters can change depending the group
-            catalogue_nested_params = make_nested_tdc_params(tdc_dataio, chan_grp, **self.params)
+            catalogue_nested_params = make_nested_tdc_params(tdc_dataio, chan_grp, **params)
             #~ print(catalogue_nested_params)
             
             peeler_params = tdc.get_auto_params_for_peelers(tdc_dataio, chan_grp)
@@ -133,6 +136,14 @@ class TridesclousSorter(BaseSorter):
             
             cc = tdc.CatalogueConstructor(dataio=tdc_dataio, chan_grp=chan_grp)
             tdc.apply_all_catalogue_steps(cc, catalogue_nested_params, verbose=self.debug, )
+            
+            if clean_catalogue_gui:
+                import pyqtgraph as pg
+                app = pg.mkQApp()
+                win = tdc.CatalogueWindow(cc)
+                win.show()
+                app.exec_()
+            
             if self.debug:
                 print(cc)
             cc.make_catalogue_for_peeler()
