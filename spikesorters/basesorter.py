@@ -35,6 +35,9 @@ class BaseSorter:
     _gui_params = [
         {'name': 'output_folder', 'type': 'str', 'value':None, 'default':None,  'title': "Sorting output folder path"},
         {'name': 'grouping_property', 'type': 'str', 'value':None, 'default':None,  'title': "Will sort the recording by the given property"},
+        {'name': 'parallel', 'type': 'bool', 'value':False, 'default':False,  'title': "If the recording is sorted by a property, then it will do this in parallel"},
+        {'name': 'delete_output_folder', 'type': 'bool', 'value':False, 'default':False, 'title': "If True, delete the results of the sorter, otherwise, it won't."}
+        {'name': 'export_to_phy', 'type': 'bool', 'title': "If True, will save out results to Phy, otherwise, it won't save."}
     ]
     installation_mesg = ""  # error message when not installed
 
