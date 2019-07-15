@@ -33,8 +33,10 @@ class BaseSorter:
     SortingExtractor_Class = None  # convinience to get the extractor
     _default_params = {}
     _gui_params = [
-        {'name': 'output_folder', 'type': 'str', 'value':None, 'default':None,  'title': "Sorting output folder path"},
-        {'name': 'parallel', 'type': 'bool', 'value':False, 'default':False,  'title': "If True, then parallelize"},
+        {'name': 'output_folder', 'type': 'str', 'value':None, 'default':None,  'title': "Sorting output folder path", 'base_param':True},
+        {'name': 'grouping_property', 'type': 'str', 'value':None, 'default':None,  'title': "Will sort the recording by the given property ('group', etc.)", 'base_param':True},
+        {'name': 'parallel', 'type': 'bool', 'value':False, 'default':False,  'title': "If the recording is sorted by a property, then it will do this in parallel", 'base_param':True},
+        {'name': 'delete_output_folder', 'type': 'bool', 'value':False, 'default':False, 'title': "If True, delete the results of the sorter, otherwise, it won't.", 'base_param':True},
     ]
     installation_mesg = ""  # error message when not installed
 
@@ -136,7 +138,7 @@ class BaseSorter:
 
     def get_result_list(self):
         sorting_list = []
-        for i, recording in enumerate(self.recording_list):
+        for i, _ in enumerate(self.recording_list):
             sorting = self.get_result_from_folder(self.output_folders[i])
             sorting_list.append(sorting)
         return sorting_list
