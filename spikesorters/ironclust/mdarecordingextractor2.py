@@ -1,3 +1,7 @@
+# Ultimately this file will be merged with mda extractors
+# of spikeextractors. But temporarily we have a local copy
+# here that works internally with ironclust
+
 import json
 import numpy as np
 import os

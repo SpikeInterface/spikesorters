@@ -6,8 +6,16 @@ import copy
 
 import spikeextractors as se
 
+# For now we import a special mda recording extractor
+# from the local directory, but in the future we will
+# merge this with the one on spikeextractors.
 from .mdarecordingextractor2 import MdaRecordingExtractor2
+
+# In the future we will put ShellScript in a common
+# location where multiple sorters can use it, and
+# we can use this for all system calls of bash scripts
 from .shellscript import ShellScript
+
 from ..basesorter import BaseSorter
 
 
