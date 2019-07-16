@@ -74,3 +74,6 @@ class SorterCommonTestSuite:
         sorter.set_params(**params)
         sorter.run()
         sorting = sorter.get_result()
+    
+    def test_get_version(self):
+        self.SorterClass.get_sorter_version()

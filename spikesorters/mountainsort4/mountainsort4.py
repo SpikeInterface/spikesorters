@@ -1,8 +1,11 @@
 import copy
+from pathlib import Path
 
 import spikeextractors as se
+from spiketoolkit.preprocessing import bandpass_filter, whiten
+
 from ..basesorter import BaseSorter
-from pathlib import Path
+
 
 try:
     import ml_ms4alg
@@ -68,11 +71,15 @@ class Mountainsort4Sorter(BaseSorter):
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
 
+    @staticmethod
+    def get_sorter_version():
+        return 'unknown'
+
     def _setup_recording(self, recording, output_folder):
         pass
 
     def _run(self, recording, output_folder):
-        from spiketoolkit.preprocessing import bandpass_filter, whiten
+        
         # Sort
         # alias to params
         p = self.params

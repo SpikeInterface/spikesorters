@@ -1,7 +1,10 @@
-import spikeextractors as se
-from ..basesorter import BaseSorter
 from pathlib import Path
 import copy
+
+import spikeextractors as se
+import spiketoolkit as st
+
+from ..basesorter import BaseSorter
 
 try:
     import herdingspikes as hs
@@ -68,9 +71,13 @@ class HerdingspikesSorter(BaseSorter):
 
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
+    
+    @staticmethod
+    def get_sorter_version():
+        return 'unknown'
 
     def _setup_recording(self, recording, output_folder):
-        import spiketoolkit as st
+        
         p = self.params
 
         # Bandpass filter

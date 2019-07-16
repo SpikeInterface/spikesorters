@@ -22,6 +22,7 @@ setup(
     install_requires=[
         'numpy',
         'spikeextractors',
+        'spiketoolkit',
     ],
     classifiers=(
         "Programming Language :: Python :: 3",

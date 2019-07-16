@@ -70,6 +70,10 @@ class TridesclousSorter(BaseSorter):
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
 
+    @staticmethod
+    def get_sorter_version():
+        return tdc.__version__ 
+
     def _setup_recording(self, recording, output_folder):
         # reset the output folder
         if output_folder.is_dir():
