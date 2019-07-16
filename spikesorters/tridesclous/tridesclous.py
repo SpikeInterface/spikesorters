@@ -72,7 +72,7 @@ class TridesclousSorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
-        return tridesclous.__version__ 
+        return tdc.__version__ 
 
     def _setup_recording(self, recording, output_folder):
         # reset the output folder
