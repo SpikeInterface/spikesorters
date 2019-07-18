@@ -142,7 +142,7 @@ class KlustaSorter(BaseSorter):
     def _run(self, recording, output_folder):
 
         cmd = 'klusta {} --overwrite'.format(output_folder / 'config.prm')
-        if self.debug:
+        if self.verbose:
             print('Running Klusta')
             print(cmd)
 

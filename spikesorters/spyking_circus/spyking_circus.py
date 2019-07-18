@@ -119,7 +119,7 @@ class SpykingcircusSorter(BaseSorter):
         num_workers = self.params['num_workers']
         cmd = 'spyking-circus {} -c {} '.format(output_folder / 'recording.npy', num_workers)
 
-        if self.debug:
+        if self.verbose:
             print(cmd)
         retcode = _run_command_and_print_output(cmd)
         if retcode != 0:

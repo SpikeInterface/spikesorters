@@ -144,11 +144,11 @@ class IronClustSorter(BaseSorter):
         num_channels = recording.get_num_channels()
         num_timepoints = recording.get_num_frames()
         duration_minutes = num_timepoints / samplerate / 60
-        if self.debug:
+        if self.verbose:
             print('Num. channels = {}, Num. timepoints = {}, duration = {} minutes'.format(
             num_channels, num_timepoints, duration_minutes))
 
-        if self.debug:
+        if self.verbose:
             print('Creating argfile.txt...')
         txt = ''
         for key0, val0 in self.params.items():
@@ -159,7 +159,7 @@ class IronClustSorter(BaseSorter):
 
         tmpdir = output_folder / 'tmp'
         os.makedirs(str(tmpdir), exist_ok=True)
-        if self.debug:
+        if self.verbose:
             print('Running ironclust in {tmpdir}...'.format(tmpdir=str(tmpdir)))
         cmd = '''
             addpath('{source_dir}');

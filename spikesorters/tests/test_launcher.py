@@ -17,7 +17,7 @@ def test_run_sorters_with_list():
     working_folder = 'test_run_sorters_list'
     if os.path.exists(working_folder):
         shutil.rmtree(working_folder)
-    run_sorters(sorter_list, recording_list, working_folder, debug=False)
+    run_sorters(sorter_list, recording_list, working_folder, verbose=False)
 
 
 def test_run_sorters_with_dict():

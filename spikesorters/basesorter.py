@@ -40,13 +40,13 @@ class BaseSorter:
     ]
     installation_mesg = ""  # error message when not installed
 
-    def __init__(self, recording=None, output_folder=None, debug=False,
+    def __init__(self, recording=None, output_folder=None, verbose=False,
                  grouping_property=None, parallel=False, delete_output_folder=False):
 
         assert self.installed, """This sorter {} is not installed.
         Please install it with:  \n{} """.format(self.sorter_name, self.installation_mesg)
 
-        self.debug = debug
+        self.verbose = verbose
         self.grouping_property = grouping_property
         self.parallel = parallel
         self.params = self.default_params()
@@ -112,7 +112,7 @@ class BaseSorter:
 
         t1 = time.perf_counter()
 
-        if self.debug:
+        if self.verbose:
             print('{} run time {:0.2f}s'.format(self.sorter_name, t1-t0))
 
         return t1 - t0
@@ -161,7 +161,7 @@ class BaseSorter:
 
         if self.delete_folders:
             for out in self.output_folders:
-                if self.debug:
+                if self.verbose:
                     print("Removing ", str(out))
                 shutil.rmtree(str(out), ignore_errors=True)
         sorting.set_sampling_frequency(self.recording_list[0].get_sampling_frequency())
