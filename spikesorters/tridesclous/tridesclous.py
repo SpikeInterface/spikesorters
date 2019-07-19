@@ -92,7 +92,7 @@ class TridesclousSorter(BaseSorter):
             nb_chan = len(recording._channels)
             offset = recording._timeseries.offset
         else:
-            if self.debug:
+            if self.verbose:
                 print('Local copy of recording')
             # save binary file (chunk by hcunk) into a new file
             raw_filename = output_folder / 'raw_signals.raw'
@@ -110,7 +110,7 @@ class TridesclousSorter(BaseSorter):
                                    dtype=dtype, sample_rate=recording.get_sampling_frequency(),
                                    total_channel=nb_chan, offset=offset)
         tdc_dataio.set_probe_file(str(probe_file))
-        if self.debug:
+        if self.verbose:
             print(tdc_dataio)
 
     def _run(self, recording, output_folder):
@@ -139,7 +139,7 @@ class TridesclousSorter(BaseSorter):
                 print('OpenCL is not available processing will be slow, try install it')
             
             cc = tdc.CatalogueConstructor(dataio=tdc_dataio, chan_grp=chan_grp)
-            tdc.apply_all_catalogue_steps(cc, catalogue_nested_params, verbose=self.debug, )
+            tdc.apply_all_catalogue_steps(cc, catalogue_nested_params, verbose=self.verbose)
             
             if clean_catalogue_gui:
                 import pyqtgraph as pg
@@ -148,7 +148,7 @@ class TridesclousSorter(BaseSorter):
                 win.show()
                 app.exec_()
             
-            if self.debug:
+            if self.verbose:
                 print(cc)
             cc.make_catalogue_for_peeler()
 
@@ -156,7 +156,7 @@ class TridesclousSorter(BaseSorter):
             initial_catalogue = tdc_dataio.load_catalogue(chan_grp=chan_grp)
             peeler = tdc.Peeler(tdc_dataio)
             peeler.change_params(catalogue=initial_catalogue, **peeler_params)
-            peeler.run(duration=None, progressbar=self.debug)
+            peeler.run(duration=None, progressbar=self.verbose)
 
     @staticmethod
     def get_result_from_folder(output_folder):

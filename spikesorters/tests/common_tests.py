@@ -19,7 +19,7 @@ class SorterCommonTestSuite:
         params = self.SorterClass.default_params()
 
         sorter = self.SorterClass(recording=recording, output_folder=None,
-                                  grouping_property=None, parallel=False, debug=False)
+                                  grouping_property=None, parallel=False, verbose=False)
         sorter.set_params(**params)
         sorter.run()
         sorting = sorter.get_result()
@@ -44,7 +44,7 @@ class SorterCommonTestSuite:
 
         for parallel in [False, True]:
             sorter = self.SorterClass(recording=recording, output_folder=None,
-                                      grouping_property='group', parallel=parallel, debug=False)
+                                      grouping_property='group', parallel=parallel, verbose=False)
             sorter.set_params(**params)
             sorter.run()
             sorting = sorter.get_result()

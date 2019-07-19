@@ -168,7 +168,7 @@ class Kilosort2Sorter(BaseSorter):
     def _run(self, recording, output_folder):
         cmd = "matlab -nosplash -nodisplay -r 'run {}; quit;'".format(
             output_folder / 'kilosort2_master.m')
-        if self.debug:
+        if self.verbose:
             print(cmd)
         if "win" in sys.platform:
             cmd_list = ['matlab', '-nosplash', '-nodisplay', '-wait',
