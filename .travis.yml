@@ -25,7 +25,7 @@ install:
 - pip install klustakwik2==0.2.6
 - pip install tridesclous==1.2.1
 - pip install herdingspikes==0.3.2
-- pip install spyking-circus==0.8.2 --no-binary=mpi4py
+- pip install spyking-circus==0.8.3 --no-binary=mpi4py
 - pip install ml_ms4alg==0.3.1
 script: python -m pytest
 deploy:
