@@ -2,7 +2,7 @@
 from .klusta import KlustaSorter
 from .tridesclous import TridesclousSorter
 from .mountainsort4 import Mountainsort4Sorter
-from .ironclust import IronclustSorter
+from .ironclust import IronClustSorter
 from .kilosort import KilosortSorter
 from .kilosort2 import Kilosort2Sorter
 from .spyking_circus import SpykingcircusSorter
@@ -13,7 +13,7 @@ sorter_full_list = [
     KlustaSorter,
     TridesclousSorter,
     Mountainsort4Sorter,
-    IronclustSorter,
+    IronClustSorter,
     KilosortSorter,
     Kilosort2Sorter,
     SpykingcircusSorter,
@@ -26,7 +26,7 @@ installed_sorter_list = [s for s in sorter_full_list if s.installed]
 
 # generic laucnher via function approach
 def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_output_folder=False,
-               grouping_property=None, parallel=False, debug=False, **params):
+               grouping_property=None, parallel=False, verbose=False, **params):
     """
     Generic function to run a sorter via function approach.
 
@@ -39,7 +39,6 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
        >>> sorting = run_sorter(TridesclousSorter, recording)
 
     """
-
     if isinstance(sorter_name_or_class, str):
         SorterClass = sorter_dict[sorter_name_or_class]
     elif sorter_name_or_class in sorter_full_list:
@@ -48,7 +47,7 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
         raise(ValueError('Unknown sorter'))
 
     sorter = SorterClass(recording=recording, output_folder=output_folder, grouping_property=grouping_property,
-                         parallel=parallel, debug=debug, delete_output_folder=delete_output_folder)
+                         parallel=parallel, verbose=verbose, delete_output_folder=delete_output_folder)
     sorter.set_params(**params)
     sorter.run()
     sortingextractor = sorter.get_result()

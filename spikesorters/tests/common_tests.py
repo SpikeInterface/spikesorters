@@ -19,7 +19,7 @@ class SorterCommonTestSuite:
         params = self.SorterClass.default_params()
 
         sorter = self.SorterClass(recording=recording, output_folder=None,
-                                  grouping_property=None, parallel=False, debug=False)
+                                  grouping_property=None, parallel=False, verbose=False)
         sorter.set_params(**params)
         sorter.run()
         sorting = sorter.get_result()
@@ -31,7 +31,7 @@ class SorterCommonTestSuite:
     def test_several_groups(self):
 
         # run sorter with several groups in paralel or not
-        recording, sorting_gt = se.example_datasets.toy_example(num_channels=8, duration=30, seed=0)
+        recording, sorting_gt = se.example_datasets.toy_example(num_channels=8, duration=30, seed=1)
 
         # make 2 artificial groups
         for ch_id in range(0, 4):
@@ -44,7 +44,7 @@ class SorterCommonTestSuite:
 
         for parallel in [False, True]:
             sorter = self.SorterClass(recording=recording, output_folder=None,
-                                      grouping_property='group', parallel=parallel, debug=False)
+                                      grouping_property='group', parallel=parallel, verbose=False)
             sorter.set_params(**params)
             sorter.run()
             sorting = sorter.get_result()
@@ -74,3 +74,6 @@ class SorterCommonTestSuite:
         sorter.set_params(**params)
         sorter.run()
         sorting = sorter.get_result()
+    
+    def test_get_version(self):
+        self.SorterClass.get_sorter_version()

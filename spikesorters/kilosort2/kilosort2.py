@@ -1,78 +1,69 @@
-"""
-Important note.
-For facilities
-kilosort2_path
-npy_matlab_path have been removed from args
-so only the
-  klp = os.getenv('KILOSORT_PATH')
-  npp = os.getenv('NPY_MATLAB_PATH')
-is left.
-
-We will be able to add this with a class method
-
-
-"""
 from pathlib import Path
 import os
 import sys
-import shutil
 import numpy as np
+from typing import Union
+import shutil
+import copy
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
 from ..sorter_tools import _call_command_split
 
 
-def check_if_installed(kilosort2_path, npy_matlab_path):
-    if kilosort2_path is None or npy_matlab_path is None:
+def check_if_installed(kilosort2_path: Union[str, None]):
+    if kilosort2_path is None:
         return False
+    assert isinstance(kilosort2_path, str)
 
-    if kilosort2_path is not None and kilosort2_path.startswith('"'):
+    if kilosort2_path.startswith('"'):
         kilosort2_path = kilosort2_path[1:-1]
-        kilosort2_path = Path(kilosort2_path).absolut()
+    kilosort2_path = str(Path(kilosort2_path).absolute())
 
-    if npy_matlab_path is not None and npy_matlab_path.startswith('"'):
-        npy_matlab_path = npy_matlab_path[1:-1]
-        npy_matlab_path = Path(npy_matlab_path).absolut()
-
-    if (Path(kilosort2_path) / 'master_kilosort.m').is_file() \
-            or not (Path(npy_matlab_path) / 'npy-matlab' / 'readNPY.m').is_file():
+    if (Path(kilosort2_path) / 'master_kilosort.m').is_file():
         return True
     else:
         return False
 
 
-
 class Kilosort2Sorter(BaseSorter):
     """
-
-
     """
 
-    sorter_name = 'kilosort2'
-    installed = check_if_installed(os.getenv('KILOSORT2_PATH'), os.getenv('NPY_MATLAB_PATH'))
-    kilosort2_path = os.getenv('KILOSORT2_PATH')
-    npy_matlab_path = os.getenv('NPY_MATLAB_PATH')
+    sorter_name: str = 'kilosort2'
+    kilosort2_path: Union[str, None] = os.getenv('KILOSORT2_PATH', None)
+    installed = check_if_installed(kilosort2_path)
 
     _default_params = {
-        'file_name': None,
-        'probe_file': None,
         'detect_threshold': 5,
-        'electrode_dimensions': None,
         'car': True,
-        'npy_matlab_path': None,
-        'kilosort2_path': None,
         'minFR': 0.1,
+        'electrode_dimensions': None,
+        'freq_min': 150,
+        'sigmaMask': 30,
+        'nPCs': 3
     }
 
-    installation_mesg = """\nTo use Kilosort run:\n
-        >>> git clone https://github.com/cortex-lab/KiloSort
-        >>> git clone https://github.com/kwikteam/npy-matlab\n
-    and provide the installation path with the 'kilosort2_path' and
-    npy_matlab_path' arguments or by setting the KILOSORT_PATH
-    and NPY_MATLAB_PATH environment variables.\n\n
+    _extra_gui_params = [
+        {'name': 'detect_threshold', 'type': 'float', 'value': 5.0, 'default': 5.0, 'title': "Relative detection threshold"},
+        {'name': 'car', 'type': 'bool', 'value': True, 'default': True, 'title': "car"},
+        {'name': 'minFR', 'type': 'float', 'value': 0.1, 'default': 0.1, 'title': "minFR"},
+        {'name': 'electrode_dimensions', 'type': 'list', 'value': None, 'default': None, 'title': "Electrode dimensions of probe"},
+        {'name': 'freq_min', 'type': 'float', 'value': 150.0, 'default': 150.0, 'title': "Low-pass frequency"},
+        {'name': 'sigmaMask', 'type': 'int', 'value': 30, 'default': 30, 'title': "Sigma mask"},
+        {'name': 'nPCs', 'type': 'int', 'value': 3, 'default': 3, 'title': "Number of principal components"},
+    ]
 
-    More information on KiloSort at:
+    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    for param in _extra_gui_params:
+        _gui_params.append(param)
+
+    installation_mesg = """\nTo use Kilosort2 run:\n
+        >>> git clone https://github.com/MouseLand/Kilosort2
+    and provide the installation path by setting the KILOSORT2_PATH
+    environment variables or using Kilosort2Sorter.set_kilosort2_path().\n\n
+
+    More information on Kilosort2 at:
         https://github.com/MouseLand/Kilosort2
     """
 
@@ -80,120 +71,108 @@ class Kilosort2Sorter(BaseSorter):
         BaseSorter.__init__(self, **kargs)
 
     @staticmethod
-    def set_kilosort2_path(kilosort2_path):
-        os.environ["KILOSORT2_PATH"] = kilosort2_path
-        Kilosort2Sorter.kilosort2_path = kilosort2_path
-        Kilosort2Sorter.installed = check_if_installed(Kilosort2Sorter.kilosort2_path, Kilosort2Sorter.npy_matlab_path)
+    def get_sorter_version():
+        return 'unknown'
 
     @staticmethod
-    def set_npy_matlab_path(npy_matlab_path):
-        os.environ["NPY_MATLAB_PATH"] = npy_matlab_path
-        Kilosort2Sorter.npy_matlab_path = npy_matlab_path
-        Kilosort2Sorter.installed = check_if_installed(Kilosort2Sorter.kilosort2_path, Kilosort2Sorter.npy_matlab_path)
-
-    def set_params(self, **params):
-        BaseSorter.set_params(self, **params)
-        if params.get('npy_matlab_path', None) is not None:
-            Kilosort2Sorter.set_npy_matlab_path(params['npy_matlab_path'])
-        else:
-            Kilosort2Sorter.set_npy_matlab_path(os.getenv('NPY_MATLAB_PATH'))
-
-        if params.get('kilosort2_path', None) is not None:
-            Kilosort2Sorter.set_kilosort2_path(params['kilosort2_path'])
-        else:
-            Kilosort2Sorter.set_kilosort2_path(os.getenv('KILOSORT2_PATH'))
+    def set_kilosort2_path(kilosort2_path: str):
+        Kilosort2Sorter.kilosort2_path = kilosort2_path
+        Kilosort2Sorter.installed = check_if_installed(Kilosort2Sorter.kilosort2_path)
+        try:
+            print("Setting KILOSORT2_PATH environment variable for subprocess calls to:", kilosort2_path)
+            os.environ["KILOSORT2_PATH"] = kilosort2_path
+        except Exception as e:
+            print("Could not set KILOSORT2_PATH environment variable:", e)
 
     def _setup_recording(self, recording, output_folder):
-
-        source_dir = Path(__file__).parent
-
+        source_dir = Path(Path(__file__).parent)
         p = self.params
 
-        if not check_if_installed(Kilosort2Sorter.kilosort2_path, Kilosort2Sorter.npy_matlab_path):
+        if not check_if_installed(Kilosort2Sorter.kilosort2_path):
             raise Exception(Kilosort2Sorter.installation_mesg)
+        assert isinstance(Kilosort2Sorter.kilosort2_path, str)
+
+        # prepare electrode positions
+        electrode_dimensions = p['electrode_dimensions']
+        if electrode_dimensions is None:
+            electrode_dimensions = [0, 1]
+        if 'group' in recording.get_channel_property_names():
+            groups = recording.get_channel_groups()
+        else:
+            groups = [1] * recording.get_num_channels()
+        if 'location' in recording.get_channel_property_names():
+            positions = np.array(recording.get_channel_locations())
+        else:
+            print("'location' information is not found. Using linear configuration")
+            positions = np.array(
+                [[0, i_ch] for i_ch in range(recording.get_num_channels())])
+            electrode_dimensions = [0, 1]
 
         # save binary file
-        if p['file_name'] is None:
-            self.file_name = Path('recording')
-        elif p['file_name'].suffix == '.dat':
-            self.file_name = p['file_name'].stem
-        p['file_name'] = self.file_name
-        se.write_binary_dat_format(recording, output_folder / self.file_name, dtype='int16')
-
-        # set up kilosort2 config files and run kilosort2 on data
-        with (source_dir / 'kilosort2_master.txt').open('r') as f:
-            kilosort2_master = f.readlines()
-        with (source_dir / 'kilosort2_config.txt').open('r') as f:
-            kilosort2_config = f.readlines()
-        with (source_dir / 'kilosort2_channelmap.txt').open('r') as f:
-            kilosort2_channelmap = f.readlines()
-
-        nchan = recording.get_num_channels()
-        dat_file = (output_folder / (self.file_name.name + '.dat')).absolute()
-        kilo_thresh = p['detect_threshold']
-
-        sample_rate = recording.get_sampling_frequency()
-
-        if not Kilosort2Sorter.installed:
-            raise ImportError('Kilosort2 is not installed', Kilosort2Sorter.installation_mesg)
-
-        abs_channel = (output_folder / 'kilosort2_channelmap.m').absolute()
-        abs_config = (output_folder / 'kilosort2_config.m').absolute()
-        kilosort2_path = Path(Kilosort2Sorter.kilosort2_path).absolute()
-        npy_matlab_path = Path(Kilosort2Sorter.npy_matlab_path).absolute() / 'npy-matlab'
+        input_file_path = output_folder / 'recording'
+        se.write_binary_dat_format(recording, input_file_path, dtype='int16')
 
         if p['car']:
             use_car = 1
         else:
             use_car = 0
 
-        kilosort2_master = ''.join(kilosort2_master).format(kilosort2_path, npy_matlab_path,
-                                                            output_folder, abs_channel, abs_config)
-        kilosort2_config = ''.join(kilosort2_config).format(nchan, nchan, sample_rate, dat_file, p['minFR'],
-                                                            kilo_thresh, use_car)
-        electrode_dimensions = p['electrode_dimensions']
+        # read the template txt files
+        with (source_dir / 'kilosort2_master.m').open('r') as f:
+            kilosort2_master_txt = f.read()
+        with (source_dir / 'kilosort2_config.m').open('r') as f:
+            kilosort2_config_txt = f.read()
+        with (source_dir / 'kilosort2_channelmap.m').open('r') as f:
+            kilosort2_channelmap_txt = f.read()
 
-        if 'group' in recording.get_channel_property_names():
-            groups = [recording.get_channel_property(ch, 'group') for ch in recording.get_channel_ids()]
-        else:
-            groups = 'ones(1, Nchannels)'
-        if 'location' not in recording.get_channel_property_names():
-            print("'location' information is not found. Using linear configuration")
-            for i_ch, ch in enumerate(recording.get_channel_ids()):
-                recording.set_channel_property(ch, 'location', [0, i_ch])
-        positions = np.array([recording.get_channel_property(chan, 'location') for chan in recording.get_channel_ids()])
-        if electrode_dimensions is None:
-            kilosort2_channelmap = ''.join(kilosort2_channelmap
-                                          ).format(nchan,
-                                                   list(positions[:, 0]),
-                                                   list(positions[:, 1]),
-                                                   groups,
-                                                   sample_rate)
-        elif len(electrode_dimensions) == 2:
-            kilosort2_channelmap = ''.join(kilosort2_channelmap
-                                          ).format(nchan,
-                                                   list(positions[:, electrode_dimensions[0]]),
-                                                   list(positions[:, electrode_dimensions[1]]),
-                                                   groups,
-                                                   recording.get_sampling_frequency())
-        else:
-            raise Exception("Electrode dimension should be a list of len 2")
+        # make substitutions in txt files
+        kilosort2_master_txt = kilosort2_master_txt.format(
+            kilosort2_path=str(
+                Path(Kilosort2Sorter.kilosort2_path).absolute()),
+            output_folder=str(output_folder),
+            channel_path=str(
+                (output_folder / 'kilosort2_channelmap.m').absolute()),
+            config_path=str((output_folder / 'kilosort2_config.m').absolute()),
+        )
 
-        for fname, value in zip(['kilosort2_master.m', 'kilosort2_config.m',
-                                 'kilosort2_channelmap.m'],
-                                [kilosort2_master, kilosort2_config,
-                                 kilosort2_channelmap]):
+        kilosort2_config_txt = kilosort2_config_txt.format(
+            nchan=recording.get_num_channels(),
+            sample_rate=recording.get_sampling_frequency(),
+            dat_file=str((output_folder / 'recording.dat').absolute()),
+            minFR=p['minFR'],
+            freq_min=p['freq_min'],
+            sigmaMask=p['sigmaMask'],
+            kilo_thresh=p['detect_threshold'],
+            use_car=use_car,
+            nPCs=p['nPCs']
+        )
+
+        kilosort2_channelmap_txt = kilosort2_channelmap_txt.format(
+            nchan=recording.get_num_channels(),
+            sample_rate=recording.get_sampling_frequency(),
+            xcoords=list(positions[:, electrode_dimensions[0]]),
+            ycoords=list(positions[:, electrode_dimensions[1]]),
+            kcoords=groups
+        )
+
+        for fname, txt in zip(['kilosort2_master.m', 'kilosort2_config.m',
+                               'kilosort2_channelmap.m'],
+                              [kilosort2_master_txt, kilosort2_config_txt,
+                               kilosort2_channelmap_txt]):
             with (output_folder / fname).open('w') as f:
-                f.writelines(value)
+                f.write(txt)
+
+        shutil.copy(str(source_dir.parent / 'kilosort_npy_utils' / 'writeNPY.m'), str(output_folder))
+        shutil.copy(str(source_dir.parent / 'kilosort_npy_utils' / 'constructNPYheader.m'), str(output_folder))
 
     def _run(self, recording, output_folder):
-
-        cmd = "matlab -nosplash -nodisplay -r 'run {}; quit;'".format(output_folder / 'kilosort2_master.m')
-        if self.debug:
+        cmd = "matlab -nosplash -nodisplay -r 'run {}; quit;'".format(
+            output_folder / 'kilosort2_master.m')
+        if self.verbose:
             print(cmd)
         if "win" in sys.platform:
             cmd_list = ['matlab', '-nosplash', '-nodisplay', '-wait',
-                        '-r','run {}; quit;'.format(output_folder / 'kilosort2_master.m')]
+                        '-r', 'run {}; quit;'.format(output_folder / 'kilosort2_master.m')]
         else:
             cmd_list = ['matlab', '-nosplash', '-nodisplay',
                         '-r', 'run {}; quit;'.format(output_folder / 'kilosort2_master.m')]

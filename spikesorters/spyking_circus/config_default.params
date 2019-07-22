@@ -69,7 +69,7 @@ max_chunk      = inf        # Fit only up to max_chunk
 collect_all    = False      # If True, one garbage template per electrode is created, to store unfitted spikes
 
 [merging]
-cc_overlap     = 0.85       # Only templates with CC higher than cc_overlap may be merged CHANGED was(0.7)
+cc_overlap     = 0.85        # Only templates with CC higher than cc_overlap may be merged CHANGED was(0.7)
 cc_bin         = 2          # Bin size for computing CC [in ms]
 correct_lag    = True       # If spikes are aligned when merging. May be better for phy usage
 default_lag    = 5          # Default length of the period to compute dip in the CC [ms]

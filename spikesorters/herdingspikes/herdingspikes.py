@@ -1,6 +1,10 @@
-import spikeextractors as se
-from ..basesorter import BaseSorter
+from pathlib import Path
 import copy
+
+import spikeextractors as se
+import spiketoolkit as st
+
+from ..basesorter import BaseSorter
 
 try:
     import herdingspikes as hs
@@ -38,7 +42,7 @@ class HerdingspikesSorter(BaseSorter):
             'title': "Cutout size before peak (ms)"},
         {'name': 'right_cutout_time', 'type': 'float', 'value': 1.0, 'default': 1.0,
             'title': "Cutout size after peak (ms)"},
-        {'name': 'detection_threshold', 'type': 'int', 'value': 18, 'default': 18,
+        {'name': 'detection_threshold', 'type': 'float', 'value': 18.0, 'default': 18.0,
             'title': "Detection threshold"},
         {'name': 'probe_masked_channels', 'type': 'list', 'value': [], 'default': [],
             'title': "Masked channels"},
@@ -67,9 +71,13 @@ class HerdingspikesSorter(BaseSorter):
 
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
+    
+    @staticmethod
+    def get_sorter_version():
+        return 'unknown'
 
     def _setup_recording(self, recording, output_folder):
-        import spiketoolkit as st
+        
         p = self.params
 
         # Bandpass filter
@@ -134,7 +142,7 @@ class HerdingspikesSorter(BaseSorter):
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        return se.HS2SortingExtractor(output_folder / 'HS2_sorted.hdf5')
+        return se.HS2SortingExtractor(Path(output_folder) / 'HS2_sorted.hdf5')
 
 
 HerdingspikesSorter._default_params = {

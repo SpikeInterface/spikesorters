@@ -1,1 +1,1 @@
-from .ironclust import IronclustSorter
+from .ironclust import IronClustSorter

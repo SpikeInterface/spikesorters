@@ -33,18 +33,20 @@ class BaseSorter:
     SortingExtractor_Class = None  # convinience to get the extractor
     _default_params = {}
     _gui_params = [
-        {'name': 'output_folder', 'type': 'str', 'value':None, 'default':None,  'title': "Sorting output folder path"},
-        {'name': 'parallel', 'type': 'bool', 'value':False, 'default':False,  'title': "If True, then parallelize"},
+        {'name': 'output_folder', 'type': 'str', 'value':None, 'default':None,  'title': "Sorting output folder path", 'base_param':True},
+        {'name': 'grouping_property', 'type': 'str', 'value':None, 'default':None,  'title': "Will sort the recording by the given property ('group', etc.)", 'base_param':True},
+        {'name': 'parallel', 'type': 'bool', 'value':False, 'default':False,  'title': "If the recording is sorted by a property, then it will do this in parallel", 'base_param':True},
+        {'name': 'delete_output_folder', 'type': 'bool', 'value':False, 'default':False, 'title': "If True, delete the results of the sorter, otherwise, it won't.", 'base_param':True},
     ]
     installation_mesg = ""  # error message when not installed
 
-    def __init__(self, recording=None, output_folder=None, debug=False,
+    def __init__(self, recording=None, output_folder=None, verbose=False,
                  grouping_property=None, parallel=False, delete_output_folder=False):
 
         assert self.installed, """This sorter {} is not installed.
         Please install it with:  \n{} """.format(self.sorter_name, self.installation_mesg)
 
-        self.debug = debug
+        self.verbose = verbose
         self.grouping_property = grouping_property
         self.parallel = parallel
         self.params = self.default_params()
@@ -70,7 +72,7 @@ class BaseSorter:
         for output_folder in self.output_folders:
             if not output_folder.is_dir():
                 os.makedirs(str(output_folder))
-        self.delete_folders = delete_output_folder
+        self.delete_folders = delete_output_folder    
 
     @classmethod
     def gui_params(self):
@@ -81,6 +83,12 @@ class BaseSorter:
         return copy.deepcopy(self._default_params)
 
     def set_params(self, **params):
+        bad_params = []
+        for p in params.keys():
+            if p not in self._default_params.keys():
+                bad_params.append(p)
+        if len(bad_params) > 0:
+            raise AttributeError('Bad parameters: ' + str(bad_params))
         self.params.update(params)
 
     def run(self):
@@ -104,11 +112,16 @@ class BaseSorter:
 
         t1 = time.perf_counter()
 
-        if self.debug:
+        if self.verbose:
             print('{} run time {:0.2f}s'.format(self.sorter_name, t1-t0))
 
         return t1 - t0
 
+    @staticmethod
+    def get_sorter_version():
+        # need be iplemented in subclass
+        raise(NotImplementedError)
+    
     def _setup_recording(self, recording, output_folder):
         # need be iplemented in subclass
         # this setup ONE recording (or SubExtractor)
@@ -125,7 +138,7 @@ class BaseSorter:
 
     def get_result_list(self):
         sorting_list = []
-        for i, recording in enumerate(self.recording_list):
+        for i, _ in enumerate(self.recording_list):
             sorting = self.get_result_from_folder(self.output_folders[i])
             sorting_list.append(sorting)
         return sorting_list
@@ -148,9 +161,10 @@ class BaseSorter:
 
         if self.delete_folders:
             for out in self.output_folders:
-                if self.debug:
+                if self.verbose:
                     print("Removing ", str(out))
                 shutil.rmtree(str(out), ignore_errors=True)
+        sorting.set_sampling_frequency(self.recording_list[0].get_sampling_frequency())
         return sorting
 
     # new idea

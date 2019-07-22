@@ -49,10 +49,10 @@ class KlustaSorter(BaseSorter):
     }
 
     _extra_gui_params = [
-        {'name': 'adjacency_radius', 'type': 'float', 'value': None, 'default': None, 'title': "Adjacency radius"},
-        {'name': 'threshold_strong_std_factor', 'type': 'int', 'value': 5, 'default': 5,
+        {'name': 'adjacency_radius', 'type': 'float', 'value': None, 'default': None, 'title': "Adjacency radius (microns)"},
+        {'name': 'threshold_strong_std_factor', 'type': 'float', 'value': 5.0, 'default': 5.0,
          'title': "Threshold strong std factor"},
-        {'name': 'threshold_weak_std_factor', 'type': 'int', 'value': 2, 'default': 2,
+        {'name': 'threshold_weak_std_factor', 'type': 'float', 'value': 2.0, 'default': 2.0,
          'title': "Threshold weak std factor"},
         {'name': 'detect_sign', 'type': 'int', 'value': -1, 'default': -1,
          'title': "Use -1, 0, or 1, depending on the sign of the spikes in the recording"},
@@ -81,6 +81,10 @@ class KlustaSorter(BaseSorter):
 
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
+
+    @staticmethod
+    def get_sorter_version():
+        return klusta.__version__
 
     def _setup_recording(self, recording, output_folder):
         source_dir = Path(__file__).parent
@@ -138,7 +142,7 @@ class KlustaSorter(BaseSorter):
     def _run(self, recording, output_folder):
 
         cmd = 'klusta {} --overwrite'.format(output_folder / 'config.prm')
-        if self.debug:
+        if self.verbose:
             print('Running Klusta')
             print(cmd)
 
@@ -148,5 +152,5 @@ class KlustaSorter(BaseSorter):
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        sorting = se.KlustaSortingExtractor(output_folder / 'recording.kwik')
+        sorting = se.KlustaSortingExtractor(Path(output_folder) / 'recording.kwik')
         return sorting

@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 import shutil
 import numpy as np
+import copy
 
 from ..basesorter import BaseSorter
 import spikeextractors as se
@@ -35,7 +36,27 @@ class TridesclousSorter(BaseSorter):
         'alien_value_threshold': None, # in benchmark there are no artifact
         'feature_method': 'auto',   #peak_max/global_pca/by_channel_pca
         'cluster_method': 'auto',  #sawchaincut/dbscan/kmeans
+        'clean_catalogue_gui': False,
     }
+
+    _extra_gui_params = [
+        {'name': 'lowpass_freq', 'type': 'float', 'value': 400.0, 'default': 400.0, 'title': "Low-pass frequency"},
+        {'name': 'highpass_freq', 'type': 'float', 'value': 5000.0, 'default': 5000.0, 'title': "High-pass frequency"},
+        {'name': 'peak_sign', 'type': 'str', 'value': '-', 'default': '-', 'title': "Negative or positive peak sign"},
+        {'name': 'relative_threshold', 'type': 'float', 'value': 5.0, 'default': 5.0, 'title': "Relative threshold for detection"},
+        {'name': 'peak_span_ms', 'type': 'float', 'value': 0.3, 'default': 0.3, 'title': "Time span of peaks for detected events (ms)"},
+        {'name': 'wf_left_ms', 'type': 'float', 'value': -2.0, 'default': -2.0, 'title': "Waveform length before peak (ms)"},
+        {'name': 'wf_right_ms', 'type': 'float', 'value': 3.0, 'default': 3.0, 'title': "Waveform length after peak (ms)"},
+        {'name': 'nb_max', 'type': 'int', 'value': 20000, 'default': 20000, 'title': "nb_max"},
+        {'name': 'alien_value_threshold', 'type': 'float', 'value': None, 'default': None, 'title': "Threshold for artifacts"},
+        {'name': 'feature_method', 'type': 'str', 'value': 'auto', 'default': 'auto', 'title': "Feature Extraction Method"},
+        {'name': 'cluster_method', 'type': 'str', 'value': 'auto', 'default': 'auto', 'title': "Clustering Method"},
+        {'name': 'clean_catalogue_gui', 'type': 'bool', 'value': False, 'default': False, 'title': "Clean catalogue with use interactive window"},
+    ]
+
+    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    for param in _extra_gui_params:
+        _gui_params.append(param)
 
 
     installation_mesg = """
@@ -48,6 +69,10 @@ class TridesclousSorter(BaseSorter):
 
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
+
+    @staticmethod
+    def get_sorter_version():
+        return tdc.__version__ 
 
     def _setup_recording(self, recording, output_folder):
         # reset the output folder
@@ -67,7 +92,7 @@ class TridesclousSorter(BaseSorter):
             nb_chan = len(recording._channels)
             offset = recording._timeseries.offset
         else:
-            if self.debug:
+            if self.verbose:
                 print('Local copy of recording')
             # save binary file (chunk by hcunk) into a new file
             raw_filename = output_folder / 'raw_signals.raw'
@@ -85,7 +110,7 @@ class TridesclousSorter(BaseSorter):
                                    dtype=dtype, sample_rate=recording.get_sampling_frequency(),
                                    total_channel=nb_chan, offset=offset)
         tdc_dataio.set_probe_file(str(probe_file))
-        if self.debug:
+        if self.verbose:
             print(tdc_dataio)
 
     def _run(self, recording, output_folder):
@@ -94,13 +119,14 @@ class TridesclousSorter(BaseSorter):
         tdc_dataio = tdc.DataIO(dirname=str(output_folder))
         
 
-        
+        params = dict(self.params)
+        clean_catalogue_gui = params.pop('clean_catalogue_gui')
         # make catalogue
         chan_grps = list(tdc_dataio.channel_groups.keys())
         for chan_grp in chan_grps:
             
             # parameters can change depending the group
-            catalogue_nested_params = make_nested_tdc_params(tdc_dataio, chan_grp, **self.params)
+            catalogue_nested_params = make_nested_tdc_params(tdc_dataio, chan_grp, **params)
             #~ print(catalogue_nested_params)
             
             peeler_params = tdc.get_auto_params_for_peelers(tdc_dataio, chan_grp)
@@ -113,8 +139,16 @@ class TridesclousSorter(BaseSorter):
                 print('OpenCL is not available processing will be slow, try install it')
             
             cc = tdc.CatalogueConstructor(dataio=tdc_dataio, chan_grp=chan_grp)
-            tdc.apply_all_catalogue_steps(cc, catalogue_nested_params, verbose=self.debug, )
-            if self.debug:
+            tdc.apply_all_catalogue_steps(cc, catalogue_nested_params, verbose=self.verbose)
+            
+            if clean_catalogue_gui:
+                import pyqtgraph as pg
+                app = pg.mkQApp()
+                win = tdc.CatalogueWindow(cc)
+                win.show()
+                app.exec_()
+            
+            if self.verbose:
                 print(cc)
             cc.make_catalogue_for_peeler()
 
@@ -122,7 +156,7 @@ class TridesclousSorter(BaseSorter):
             initial_catalogue = tdc_dataio.load_catalogue(chan_grp=chan_grp)
             peeler = tdc.Peeler(tdc_dataio)
             peeler.change_params(catalogue=initial_catalogue, **peeler_params)
-            peeler.run(duration=None, progressbar=self.debug)
+            peeler.run(duration=None, progressbar=self.verbose)
 
     @staticmethod
     def get_result_from_folder(output_folder):
