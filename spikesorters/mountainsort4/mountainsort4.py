@@ -92,7 +92,7 @@ class Mountainsort4Sorter(BaseSorter):
             recording = whiten(recording=recording)
 
         # Check location
-        if 'location' not in recording.get_channel_property_names():
+        if 'location' not in recording.get_shared_channel_property_names():
             for i, chan in enumerate(recording.get_channel_ids()):
                 recording.set_channel_property(chan, 'location', [0, i])
 

@@ -94,11 +94,11 @@ class KilosortSorter(BaseSorter):
         electrode_dimensions = p['electrode_dimensions']
         if electrode_dimensions is None:
             electrode_dimensions = [0, 1]
-        if 'group' in recording.get_channel_property_names():
+        if 'group' in recording.get_shared_channel_property_names():
             groups = recording.get_channel_groups()
         else:
             groups = [1] * recording.get_num_channels()
-        if 'location' in recording.get_channel_property_names():
+        if 'location' in recording.get_shared_channel_property_names():
             positions = np.array(recording.get_channel_locations())
         else:
             print("'location' information is not found. Using linear configuration")
