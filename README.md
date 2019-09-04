@@ -22,7 +22,6 @@ You can also install SpikeSorters locally by cloning the repo into your code bas
 
 ```shell
 git clone https://github.com/SpikeInterface/spikesorters.git
-
 cd spikesorters
 python setup.py install
 ```
