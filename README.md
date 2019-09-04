@@ -1,7 +1,5 @@
 [![Build Status](https://travis-ci.org/SpikeInterface/spikesorters.svg?branch=master)](https://travis-ci.org/SpikeInterface/spikesorters) [![PyPI version](https://badge.fury.io/py/spikesorters.svg)](https://badge.fury.io/py/spikesorters)
 
-Alpha Development
-
 # SpikeSorters
 
 SpikeSorters is a package of the SpikeInterface project that was designed run severale spike sorting software within the same framework.
