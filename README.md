@@ -2,7 +2,7 @@
 
 # SpikeSorters
 
-SpikeSorters is a package of the SpikeInterface project that was designed run severale spike sorting software within the same framework.
+SpikeSorters is a package of the SpikeInterface project that provides Python-based wrappers and a straightforward interface for running many popular spike sorting algorithms.
 
 ## Getting Started
 
