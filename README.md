@@ -26,6 +26,10 @@ cd spikesorters
 python setup.py install
 ```
 
+## Examples
+
+For more information about how to use SpikeToolkit, please checkout these [examples](https://github.com/SpikeInterface/spikeinterface/tree/master/examples/modules/sorters).
+
 ## Documentation
 
 The documentation page for the SpikeInterface project can be found here: https://spikeinterface.readthedocs.io/en/latest/
