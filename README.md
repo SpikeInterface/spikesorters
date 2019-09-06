@@ -28,7 +28,7 @@ python setup.py install
 
 ## Examples
 
-For more information about how to use SpikeToolkit, please checkout these [examples](https://github.com/SpikeInterface/spikeinterface/tree/master/examples/modules/sorters).
+For more information about how to use SpikeSorters, please checkout these [examples](https://github.com/SpikeInterface/spikeinterface/tree/master/examples/modules/sorters).
 
 ## Documentation
 
