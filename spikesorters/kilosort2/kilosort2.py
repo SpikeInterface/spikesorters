@@ -110,7 +110,7 @@ class Kilosort2Sorter(BaseSorter):
 
         # save binary file
         input_file_path = output_folder / 'recording'
-        se.write_binary_dat_format(recording, input_file_path, dtype='int16')
+        recording.write_to_binary_dat_format(input_file_path, dtype='int16')
 
         if p['car']:
             use_car = 1

@@ -61,7 +61,7 @@ class BaseSorter:
             self.output_folders = [output_folder]
         else:
             # several groups
-            self.recording_list = se.get_sub_extractors_by_property(recording, grouping_property)
+            self.recording_list = recording.get_sub_extractors_by_property(grouping_property)
             n_group = len(self.recording_list)
             if n_group > 1:
                 self.output_folders = [output_folder / str(i) for i in range(n_group)]
@@ -72,7 +72,7 @@ class BaseSorter:
         for output_folder in self.output_folders:
             if not output_folder.is_dir():
                 os.makedirs(str(output_folder))
-        self.delete_folders = delete_output_folder    
+        self.delete_folders = delete_output_folder
 
     @classmethod
     def gui_params(self):
@@ -121,7 +121,7 @@ class BaseSorter:
     def get_sorter_version():
         # need be iplemented in subclass
         raise(NotImplementedError)
-    
+
     def _setup_recording(self, recording, output_folder):
         # need be iplemented in subclass
         # this setup ONE recording (or SubExtractor)
