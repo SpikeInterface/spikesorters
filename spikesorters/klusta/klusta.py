@@ -97,7 +97,7 @@ class KlustaSorter(BaseSorter):
         # save prb file:
         if p['probe_file'] is None:
             p['probe_file'] = output_folder / 'probe.prb'
-            se.save_probe_file(recording, p['probe_file'], format='klusta', radius=p['adjacency_radius'])
+            recording.save_to_probe_file(p['probe_file'], format='klusta', radius=p['adjacency_radius'])
 
         # source file
         if isinstance(recording, se.BinDatRecordingExtractor) and recording._frame_first and \
@@ -111,7 +111,7 @@ class KlustaSorter(BaseSorter):
             n_chan = recording.get_num_channels()
             chunksize = 2 ** 24 // n_chan
             dtype = 'int16'
-            se.write_binary_dat_format(recording, raw_filename, time_axis=0, dtype=dtype, chunksize=chunksize)
+            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype=dtype, chunksize=chunksize)
 
         if p['detect_sign'] < 0:
             detect_sign = 'negative'

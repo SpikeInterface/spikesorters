@@ -65,15 +65,15 @@ class SorterCommonTestSuite:
         with open(raw_filename, mode='wb') as f:
             f.write(traces.T.tobytes())
 
-        se.save_probe_file(recording, prb_filename, format='spyking_circus')
+        recording.save_to_probe_file(prb_filename, format='spyking_circus')
         recording = se.BinDatRecordingExtractor(raw_filename, samplerate, 2, 'float32', frames_first=True, offset=0)
-        se.load_probe_file(recording, prb_filename)
+        recording.load_probe_file(prb_filename)
 
         params = self.SorterClass.default_params()
         sorter = self.SorterClass(recording=recording, output_folder=None)
         sorter.set_params(**params)
         sorter.run()
         sorting = sorter.get_result()
-    
+
     def test_get_version(self):
         self.SorterClass.get_sorter_version()
