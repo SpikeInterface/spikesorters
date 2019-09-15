@@ -6,6 +6,7 @@ import numpy as np
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
+from ..utils.shellscript import ShellScript
 from ..sorter_tools import _run_command_and_print_output
 
 try:
