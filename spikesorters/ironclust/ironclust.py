@@ -99,9 +99,9 @@ class IronClustSorter(BaseSorter):
         {'name': 'sort_mode', 'type': 'int', 'value': 1, 'default': 1, 'title': "sort mode"},
     ]
 
-    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
     for param in _extra_gui_params:
-        _gui_params.append(param)
+        sorter_gui_params.append(param)
 
     installation_mesg = """\nTo use IronClust run:\n
         >>> git clone https://github.com/jamesjun/ironclust
@@ -210,6 +210,6 @@ class IronClustSorter(BaseSorter):
         with open(samplerate_fname, 'r') as f:
             samplerate = float(f.read())
 
-        sorting = se.MdaSortingExtractor(firings_file=result_fname, sampling_frequency=samplerate)
+        sorting = se.MdaSortingExtractor(file_path=result_fname, sampling_frequency=samplerate)
 
         return sorting

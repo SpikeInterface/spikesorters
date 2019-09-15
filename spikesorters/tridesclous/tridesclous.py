@@ -54,9 +54,9 @@ class TridesclousSorter(BaseSorter):
         {'name': 'clean_catalogue_gui', 'type': 'bool', 'value': False, 'default': False, 'title': "Clean catalogue with use interactive window"},
     ]
 
-    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
     for param in _extra_gui_params:
-        _gui_params.append(param)
+        sorter_gui_params.append(param)
 
 
     installation_mesg = """
