@@ -25,7 +25,7 @@ def _run_one(arg_list):
         run_time = sorter.run()
         with open(output_folder / 'run_log.txt', mode='w') as f:
             f.write('run_time: {}\n'.format(run_time))
-            
+
     except Exception as err:
         run_time = None
         if not os.path.exists(output_folder):
@@ -55,24 +55,24 @@ def run_sorters(sorter_list, recording_dict_or_list,  working_folder, sorter_par
 
     Parameters
     ----------
-    
+
     sorter_list: list of str
         List of sorter name.
-    
+
     recording_dict_or_list: dict or list
         A dict of recording. The key will be the name of the recording.
         In a list is given then the name will be recording_0, recording_1, ...
-    
+
     working_folder: str
         The working directory.
         This must not exist before calling this function.
-    
+
     grouping_property: str
         The property of grouping given to sorters.
-    
+
     sorter_params: dict of dict with sorter_name as key
         This allow to overwrite default params for sorter.
-    
+
     mode: 'raise_if_exists' or 'overwrite' or 'keep'
         The mode when the subfolder of recording/sorter already exists.
             * 'raise' : raise error if subfolder exists
@@ -81,21 +81,21 @@ def run_sorters(sorter_list, recording_dict_or_list,  working_folder, sorter_par
 
     engine: str
         'loop' or 'multiprocessing'
-    
+
     engine_kargs: dict
         This contains kargs specific to the launcher engine:
             * 'loop' : no kargs
             * 'multiprocessing' : {'processes' : } number of processes
-    
+            
     verbose: bool
         default True
-        
+
     with_output: bool
         return the output.
-    
+
     Output
     ----------
-    
+
     results : dict
         The output is nested dict[(rec_name, sorter_name)] of SortingExtractor.
 
@@ -103,7 +103,7 @@ def run_sorters(sorter_list, recording_dict_or_list,  working_folder, sorter_par
     if mode == 'raise':
         assert not os.path.exists(working_folder), 'working_folder already exists, please remove it'
     working_folder = Path(working_folder)
-    
+
     for sorter_name in sorter_list:
         assert sorter_name in sorter_dict, '{} is not in sorter list'.format(sorter_name)
 
@@ -120,17 +120,17 @@ def run_sorters(sorter_list, recording_dict_or_list,  working_folder, sorter_par
     # the internal organisation of folder name.
     if grouping_property is not None:
         for rec_name, recording in recording_dict.items():
-            recording_list = se.get_sub_extractors_by_property(recording, grouping_property)
+            recording_list = recording.get_sub_extractors_by_property(grouping_property)
             n_group = len(recording_list)
             assert n_group == 1, 'run_sorters() work only if grouping_property=None or if it split into one subrecording'
             recording_dict[rec_name] = recording_list[0]
         grouping_property = None
-    
+
 
     task_list = []
     for rec_name, recording in recording_dict.items():
         for sorter_name in sorter_list:
-            
+
             output_folder = working_folder / rec_name / sorter_name
 
             if is_log_ok(output_folder):
@@ -146,7 +146,7 @@ def run_sorters(sorter_list, recording_dict_or_list,  working_folder, sorter_par
                     raise(ValueError('mode not in raise, overwrite, keep'))
             params = sorter_params.get(sorter_name, {})
             task_list.append((rec_name, recording, sorter_name, output_folder, grouping_property, verbose, params))
-    
+
     if engine is None or engine == 'loop':
         # simple loop in main process
         for arg_list in task_list:
@@ -158,7 +158,7 @@ def run_sorters(sorter_list, recording_dict_or_list,  working_folder, sorter_par
         processes = engine_kargs.get('processes', None)
         pool = multiprocessing.Pool(processes)
         pool.map(_run_one, task_list)
-    
+
     if with_output:
         results = collect_sorting_outputs(working_folder)
         return results
@@ -190,7 +190,7 @@ def iter_sorting_output(output_folders):
     """
     Iterator over output_folder to retrieve all triplets
     (rec_name, sorter_name, sorting)
-    
+
     """
     for rec_name, sorter_name, output_folder in iter_output_folders(output_folders):
         SorterClass = sorter_dict[sorter_name]
@@ -208,4 +208,3 @@ def collect_sorting_outputs(output_folders):
     for rec_name, sorter_name, sorting in iter_sorting_output(output_folders):
         results[(rec_name, sorter_name)] = sorting
     return results
-

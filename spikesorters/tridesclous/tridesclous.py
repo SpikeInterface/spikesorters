@@ -89,7 +89,7 @@ class TridesclousSorter(BaseSorter):
 
         # save prb file:
         probe_file = output_folder / 'probe.prb'
-        se.save_probe_file(recording, probe_file, format='spyking_circus')
+        recording.save_to_probe_file(probe_file, format='spyking_circus')
 
         # source file
         if isinstance(recording, se.BinDatRecordingExtractor) and recording._frame_first:
@@ -107,6 +107,9 @@ class TridesclousSorter(BaseSorter):
             chunksize = 2 ** 24 // n_chan
             se.write_binary_dat_format(recording, raw_filename, time_axis=0, dtype='float32', chunksize=chunksize)
             dtype = 'float32'
+            chunksize = 2 ** 24 // n_chan
+            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype='float32', chunksize=chunksize)
+            dtype = 'float32'
             offset = 0
 
         # initialize source and probe file
@@ -122,7 +125,6 @@ class TridesclousSorter(BaseSorter):
 
     def _run(self, recording, output_folder):
         nb_chan = recording.get_num_channels()
-
         tdc_dataio = tdc.DataIO(dirname=str(output_folder))
 
         params = dict(self.params)
@@ -133,10 +135,7 @@ class TridesclousSorter(BaseSorter):
 
             # parameters can change depending the group
             catalogue_nested_params = make_nested_tdc_params(tdc_dataio, chan_grp, **params)
-            # ~ print(catalogue_nested_params)
-
             peeler_params = tdc.get_auto_params_for_peelers(tdc_dataio, chan_grp)
-            # ~ print(peeler_params)
 
             # check params and OpenCL when many channels
             use_sparse_template = False

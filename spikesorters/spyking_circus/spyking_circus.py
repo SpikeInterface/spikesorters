@@ -66,7 +66,7 @@ class SpykingcircusSorter(BaseSorter):
         Need MPICH working, for ubuntu do:
             sudo apt install libmpich-dev
 
-        More information on Spyking-Circus at: 
+        More information on Spyking-Circus at:
             https://spyking-circus.readthedocs.io/en/latest/
     """
 
@@ -75,7 +75,7 @@ class SpykingcircusSorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
-        return circus.__version__ 
+        return circus.__version__
 
     def _setup_recording(self, recording, output_folder):
         p = self.params
@@ -84,8 +84,8 @@ class SpykingcircusSorter(BaseSorter):
         # save prb file:
         if p['probe_file'] is None:
             p['probe_file'] = output_folder / 'probe.prb'
-            se.save_probe_file(recording, p['probe_file'], format='spyking_circus',
-                               radius=p['adjacency_radius'], dimensions=p['electrode_dimensions'])
+            recording.save_to_probe_file(p['probe_file'], format='spyking_circus',
+                                         radius=p['adjacency_radius'], dimensions=p['electrode_dimensions'])
 
         # save binary file
         file_name = 'recording'
