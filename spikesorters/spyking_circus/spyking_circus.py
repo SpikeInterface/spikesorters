@@ -55,9 +55,9 @@ class SpykingcircusSorter(BaseSorter):
         {'name': 'clustering_max_elts', 'type': 'int', 'value': 10000, 'default': 10000, 'title': "Related to subsampling"},
     ]
 
-    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
     for param in _extra_gui_params:
-        _gui_params.append(param)
+        sorter_gui_params.append(param)
 
     installation_mesg = """
         >>> pip install spyking-circus

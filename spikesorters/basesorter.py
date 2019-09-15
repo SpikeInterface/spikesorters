@@ -32,7 +32,7 @@ class BaseSorter:
     installed = False  # check at class level if isntalled or not
     SortingExtractor_Class = None  # convinience to get the extractor
     _default_params = {}
-    _gui_params = [
+    sorter_gui_params = [
         {'name': 'output_folder', 'type': 'str', 'value':None, 'default':None,  'title': "Sorting output folder path", 'base_param':True},
         {'name': 'grouping_property', 'type': 'str', 'value':None, 'default':None,  'title': "Will sort the recording by the given property ('group', etc.)", 'base_param':True},
         {'name': 'parallel', 'type': 'bool', 'value':False, 'default':False,  'title': "If the recording is sorted by a property, then it will do this in parallel", 'base_param':True},
@@ -73,10 +73,6 @@ class BaseSorter:
             if not output_folder.is_dir():
                 os.makedirs(str(output_folder))
         self.delete_folders = delete_output_folder
-
-    @classmethod
-    def gui_params(self):
-        return copy.deepcopy(self._gui_params)
 
     @classmethod
     def default_params(self):

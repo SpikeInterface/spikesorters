@@ -52,9 +52,9 @@ class KilosortSorter(BaseSorter):
         {'name': 'freq_max', 'type': 'float', 'value': 6000.0, 'default': 6000.0, 'title': "High-pass frequency"},
     ]
 
-    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
     for param in _extra_gui_params:
-        _gui_params.append(param)
+        sorter_gui_params.append(param)
 
     installation_mesg = """\nTo use Kilosort run:\n
         >>> git clone https://github.com/cortex-lab/KiloSort
