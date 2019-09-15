@@ -17,19 +17,6 @@ except ImportError:
 
 class KlustaSorter(BaseSorter):
     """
-    Parameters
-    ----------
-
-
-    probe_file
-    threshold_strong_std_factor
-    threshold_weak_std_factor
-    detect_sign
-    extract_s_before
-    extract_s_after
-    n_features_per_channel
-    pca_n_waveforms_max
-    num_starting_clusters
     """
 
     sorter_name = 'klusta'

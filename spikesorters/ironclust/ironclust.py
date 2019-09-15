@@ -9,12 +9,12 @@ import spikeextractors as se
 # For now we import a special mda recording extractor
 # from the local directory, but in the future we will
 # merge this with the one on spikeextractors.
-from .mdarecordingextractor2 import MdaRecordingExtractor2
+from ..utils.ssmdarecordingextractor import SSMdaRecordingExtractor
 
 # In the future we will put ShellScript in a common
 # location where multiple sorters can use it, and
 # we can use this for all system calls of bash scripts
-from .shellscript import ShellScript
+from ..utils.shellscript import ShellScript
 
 from ..basesorter import BaseSorter
 
@@ -133,7 +133,7 @@ class IronClustSorter(BaseSorter):
 
         dataset_dir = output_folder / 'ironclust_dataset'
         # Generate three files in the dataset directory: raw.mda, geom.csv, params.json
-        MdaRecordingExtractor2.write_recording(recording=recording, save_path=str(dataset_dir), _preserve_dtype=True)
+        SSMdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir), _preserve_dtype=True)
 
     def _run(self, recording: se.RecordingExtractor, output_folder: Path):
         dataset_dir = output_folder / 'ironclust_dataset'
