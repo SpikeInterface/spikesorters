@@ -64,9 +64,9 @@ class Kilosort2Sorter(BaseSorter):
         {'name': 'nPCs', 'type': 'int', 'value': 3, 'default': 3, 'title': "Number of principal components"},
     ]
 
-    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
     for param in _extra_gui_params:
-        _gui_params.append(param)
+        sorter_gui_params.append(param)
 
     installation_mesg = """\nTo use Kilosort2 run:\n
         >>> git clone https://github.com/MouseLand/Kilosort2

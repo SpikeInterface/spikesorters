@@ -58,9 +58,9 @@ class HerdingspikesSorter(BaseSorter):
             'title': "Scale to apply in case of pre-scaling of traces"},
     ]
 
-    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
     for param in _extra_gui_params:
-        _gui_params.append(param)
+        sorter_gui_params.append(param)
 
     _default_params = None  # later
 
