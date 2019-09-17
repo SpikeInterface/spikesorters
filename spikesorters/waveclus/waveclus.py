@@ -57,7 +57,7 @@ class WaveClusSorter(BaseSorter):
          'title': "Max radius of cluster in std devs"},
     ]
 
-    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    _gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
     for param in _extra_gui_params:
         _gui_params.append(param)
 
