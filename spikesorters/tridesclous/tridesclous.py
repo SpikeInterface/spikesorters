@@ -3,6 +3,8 @@ import os
 import shutil
 import numpy as np
 import copy
+import time
+from pprint import pprint
 
 from ..basesorter import BaseSorter
 import spikeextractors as se
@@ -128,8 +130,15 @@ class TridesclousSorter(BaseSorter):
             # parameters can change depending the group
             catalogue_nested_params = make_nested_tdc_params(tdc_dataio, chan_grp, **params)
             #~ print(catalogue_nested_params)
-
+            if self.verbose:
+                print('catalogue_nested_params')
+                pprint(catalogue_nested_params)
+            
             peeler_params = tdc.get_auto_params_for_peelers(tdc_dataio, chan_grp)
+            if self.verbose:
+                print('peeler_params')
+                pprint(peeler_params)
+                
             #~ print(peeler_params)
 
             # check params and OpenCL when many channels
@@ -156,7 +165,12 @@ class TridesclousSorter(BaseSorter):
             initial_catalogue = tdc_dataio.load_catalogue(chan_grp=chan_grp)
             peeler = tdc.Peeler(tdc_dataio)
             peeler.change_params(catalogue=initial_catalogue, **peeler_params)
-            peeler.run(duration=None, progressbar=self.verbose)
+            t0 = time.perf_counter()
+            peeler.run(duration=None, progressbar=False)
+            if self.verbose:
+                t1 = time.perf_counter()
+                print('peeler.tun', t1-t0)
+
 
     @staticmethod
     def get_result_from_folder(output_folder):
