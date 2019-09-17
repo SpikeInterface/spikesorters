@@ -92,7 +92,7 @@ class TridesclousSorter(BaseSorter):
         recording.save_to_probe_file(probe_file, format='spyking_circus')
 
         # source file
-        if isinstance(recording, se.BinDatRecordingExtractor) and recording._frame_first:
+        if isinstance(recording, se.BinDatRecordingExtractor) and recording._time_axis == 0:
             # no need to copy
             raw_filename = recording._datfile
             dtype = recording._timeseries.dtype.str

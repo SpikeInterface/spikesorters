@@ -178,19 +178,26 @@ class Kilosort2Sorter(BaseSorter):
         shutil.copy(str(source_dir.parent / 'utils' / 'constructNPYheader.m'), str(output_folder))
 
     def _run(self, recording, output_folder):
-        cmd = "matlab -nosplash -nodisplay -r 'run {}; quit;'".format(
-            output_folder / 'kilosort2_master.m')
-        if self.verbose:
-            print(cmd)
         if "win" in sys.platform:
-            cmd_list = ['matlab', '-nosplash', '-nodisplay', '-wait',
-                        '-r', 'run {}; quit;'.format(output_folder / 'kilosort2_master.m')]
+            shell_cmd = '''
+                        #!/bin/bash
+                        cd {tmpdir}
+                        matlab -nosplash -nodisplay -wait -r kilosort2_master
+                    '''.format(tmpdir=output_folder)
         else:
-            cmd_list = ['matlab', '-nosplash', '-nodisplay',
-                        '-r', 'run {}; quit;'.format(output_folder / 'kilosort2_master.m')]
+            shell_cmd = '''
+                        #!/bin/bash
+                        cd {tmpdir}
+                        matlab -nosplash -nodisplay -r kilosort2_master
+                    '''.format(tmpdir=output_folder)
+        shell_cmd = ShellScript(shell_cmd, script_path=str(output_folder / 'run_kilosort2.sh'), keep_temp_files=True)
+        shell_cmd.write(str(output_folder / 'run_kilosort2.sh'))
+        shell_cmd.start()
 
-        # retcode = _run_command_and_print_output_split(cmd_list)
-        _call_command_split(cmd_list)
+        retcode = shell_cmd.wait()
+
+        if retcode != 0:
+            raise Exception('kilosort2 returned a non-zero exit code')
 
     @staticmethod
     def get_result_from_folder(output_folder):

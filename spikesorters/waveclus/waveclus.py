@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 from typing import Union
+import sys
 import copy
 
 import spikeextractors as se
@@ -36,7 +37,10 @@ class WaveClusSorter(BaseSorter):
         'detect_threshold': 5,
         'detect_sign': -1,  # -1 - 1 - 0
         'feature_type': 'wav',
-        'scales': 4
+        'scales': 4,
+        'min_clus': 20,
+        'maxtemp': 0.251,
+        'template_sdnum': 3,
     }
 
     _extra_gui_params = [
@@ -47,6 +51,10 @@ class WaveClusSorter(BaseSorter):
         {'name': 'feature_type', 'type': 'str', 'value': 'wav', 'default': 'wav',
          'title': "Feature type ('wav', 'pca')"},
         {'name': 'scales', 'type': 'int', 'value': 4, 'default': 4, 'title': "Number of wavelet scales"},
+        {'name': 'min_clus', 'type': 'int', 'value': 20, 'default': 20, 'title': "Minimum size of a cluster"},
+        {'name': 'maxtemp', 'type': 'float', 'value': 0.251, 'default': 0.251, 'title': "Maximum temperature for SPC"},
+        {'name': 'template_sdnum', 'type': 'int', 'value': 3, 'default': 3,
+         'title': "Max radius of cluster in std devs"},
     ]
 
     _gui_params = copy.deepcopy(BaseSorter._gui_params)
@@ -121,7 +129,8 @@ class WaveClusSorter(BaseSorter):
             addpath(genpath('{waveclus_path}'), '{source_path}', '{utils_path}/mdaio');
             try
                 p_waveclus('{tmpdir}', '{dataset_dir}/raw.mda', '{tmpdir}/firings.mda', {samplerate}, ...
-                '{detect_sign}', '{feature_type}', {scales}, {detect_threshold});
+                '{detect_sign}', '{feature_type}', {scales}, {detect_threshold}, {min_clus}, {maxtemp}, ...
+                 {template_sdnum});
             catch
                 fprintf('----------------------------------------');
                 fprintf(lasterr());
@@ -131,17 +140,24 @@ class WaveClusSorter(BaseSorter):
         '''
         cmd = cmd.format(waveclus_path=WaveClusSorter.waveclus_path, utils_path=utils_path, dataset_dir=dataset_dir,
                          source_path=source_dir, samplerate=samplerate, detect_sign=detect_sign, tmpdir=tmpdir,
-                         feature_type=p['feature_type'], scales=p['scales'],
-                         detect_threshold=p['detect_threshold'])
+                         feature_type=p['feature_type'], scales=p['scales'], detect_threshold=p['detect_threshold'],
+                         min_clus=p['min_clus'], maxtemp=p['maxtemp'], template_sdnum=p['template_sdnum'])
 
         matlab_cmd = ShellScript(cmd, script_path=str(tmpdir / 'run_waveclus.m'), keep_temp_files=True)
         matlab_cmd.write()
 
-        shell_cmd = '''
-            #!/bin/bash
-            cd {tmpdir}
-            matlab -nosplash -nodisplay -r run_waveclus
-        '''.format(tmpdir=tmpdir)
+        if "win" in sys.platform:
+            shell_cmd = '''
+                #!/bin/bash
+                cd {tmpdir}
+                matlab -nosplash -nodisplay -wait -r run_waveclus
+            '''.format(tmpdir=tmpdir)
+        else:
+            shell_cmd = '''
+                #!/bin/bash
+                cd {tmpdir}
+                matlab -nosplash -nodisplay -r run_waveclus
+            '''.format(tmpdir=tmpdir)
         shell_cmd = ShellScript(shell_cmd, script_path=str(tmpdir / 'run_waveclus.sh'), keep_temp_files=True)
         shell_cmd.write(str(tmpdir / 'run_waveclus.sh'))
         shell_cmd.start()
@@ -169,6 +185,6 @@ class WaveClusSorter(BaseSorter):
         with open(samplerate_fname, 'r') as f:
             samplerate = float(f.read())
 
-        sorting = se.MdaSortingExtractor(firings_file=result_fname, sampling_frequency=samplerate)
+        sorting = se.MdaSortingExtractor(file_path=result_fname, sampling_frequency=samplerate)
 
         return sorting

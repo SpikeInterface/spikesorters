@@ -66,7 +66,7 @@ class SorterCommonTestSuite:
             f.write(traces.T.tobytes())
 
         recording.save_to_probe_file(prb_filename, format='spyking_circus')
-        recording = se.BinDatRecordingExtractor(raw_filename, samplerate, 2, 'float32', frames_first=True, offset=0)
+        recording = se.BinDatRecordingExtractor(raw_filename, samplerate, 2, 'float32', time_axis=0, offset=0)
         recording.load_probe_file(prb_filename)
 
         params = self.SorterClass.default_params()

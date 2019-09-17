@@ -1,21 +1,13 @@
-import copy
 import os
 from pathlib import Path
 from typing import Union
 import copy
+import sys
 
 import spikeextractors as se
 
-# For now we import a special mda recording extractor
-# from the local directory, but in the future we will
-# merge this with the one on spikeextractors.
 from ..utils.ssmdarecordingextractor import SSMdaRecordingExtractor
-
-# In the future we will put ShellScript in a common
-# location where multiple sorters can use it, and
-# we can use this for all system calls of bash scripts
 from ..utils.shellscript import ShellScript
-
 from ..basesorter import BaseSorter
 
 
@@ -179,11 +171,19 @@ class IronClustSorter(BaseSorter):
         matlab_cmd = ShellScript(cmd, script_path=str(tmpdir / 'run_ironclust.m'))
         matlab_cmd.write()
 
-        shell_cmd = '''
-            #!/bin/bash
-            cd {tmpdir}
-            matlab -nosplash -nodisplay -r run_ironclust
-        '''.format(tmpdir=str(tmpdir))
+        if "win" in sys.platform:
+            shell_cmd = '''
+                #!/bin/bash
+                cd {tmpdir}
+                matlab -nosplash -nodisplay -wait -r run_ironclust
+            '''.format(tmpdir=tmpdir)
+        else:
+            shell_cmd = '''
+                #!/bin/bash
+                cd {tmpdir}
+                matlab -nosplash -nodisplay -r run_ironclust
+            '''.format(tmpdir=tmpdir)
+
         shell_script = ShellScript(shell_cmd, script_path=str(tmpdir / 'run_ironclust.sh'))
         shell_script.start()
 

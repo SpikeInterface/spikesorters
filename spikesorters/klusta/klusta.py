@@ -88,8 +88,8 @@ class KlustaSorter(BaseSorter):
             recording.save_to_probe_file(p['probe_file'], format='klusta', radius=p['adjacency_radius'])
 
         # source file
-        if isinstance(recording, se.BinDatRecordingExtractor) and recording._frame_first and \
-                recording._timeseries.offset == 0:
+        if isinstance(recording, se.BinDatRecordingExtractor) and recording._time_axis == 0 and \
+                      recording._timeseries.offset == 0:
             # no need to copy
             raw_filename = str(Path(recording._datfile).resolve())
             dtype = recording._timeseries.dtype.str
@@ -128,13 +128,20 @@ class KlustaSorter(BaseSorter):
             f.writelines(klusta_config)
 
     def _run(self, recording, output_folder):
+        shell_cmd = '''
+                    #!/bin/bash
+                    klusta {klusta_config} --overwrite
+                '''.format(klusta_config=output_folder / 'config.prm')
 
-        cmd = 'klusta {} --overwrite'.format(output_folder / 'config.prm')
-        if self.verbose:
-            print('Running Klusta')
-            print(cmd)
+        shell_cmd = ShellScript(shell_cmd, script_path=str(output_folder / 'run_klusta.sh'), keep_temp_files=True)
+        shell_cmd.write(str(output_folder / 'run_klusta.sh'))
+        shell_cmd.start()
 
-        _call_command(cmd)
+        retcode = shell_cmd.wait()
+
+        if retcode != 0:
+            raise Exception('klusta returned a non-zero exit code')
+
         if not (output_folder / 'recording.kwik').is_file():
             raise Exception('Klusta did not run successfully')
 

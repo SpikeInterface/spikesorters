@@ -118,13 +118,19 @@ class SpykingcircusSorter(BaseSorter):
 
     def _run(self,  recording, output_folder):
         num_workers = self.params['num_workers']
-        cmd = 'spyking-circus {} -c {} '.format(output_folder / 'recording.npy', num_workers)
+        shell_cmd = '''
+                    #!/bin/bash
+                    spyking-circus {recording} -c {num_workers}
+                '''.format(recording=output_folder / 'recording.npy', num_workers=num_workers)
 
-        if self.verbose:
-            print(cmd)
-        retcode = _run_command_and_print_output(cmd)
+        shell_cmd = ShellScript(shell_cmd, script_path=str(output_folder / 'run_spykingcircus.sh'), keep_temp_files=True)
+        shell_cmd.write(str(output_folder / 'run_spykingcircus.sh'))
+        shell_cmd.start()
+
+        retcode = shell_cmd.wait()
+
         if retcode != 0:
-            raise Exception('Spyking circus returned a non-zero exit code')
+            raise Exception('spykingcircus returned a non-zero exit code')
 
     @staticmethod
     def get_result_from_folder(output_folder):
