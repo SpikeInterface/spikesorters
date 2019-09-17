@@ -52,9 +52,9 @@ class KilosortSorter(BaseSorter):
         {'name': 'freq_max', 'type': 'float', 'value': 6000.0, 'default': 6000.0, 'title': "High-pass frequency"},
     ]
 
-    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
     for param in _extra_gui_params:
-        _gui_params.append(param)
+        sorter_gui_params.append(param)
 
     installation_mesg = """\nTo use Kilosort run:\n
         >>> git clone https://github.com/cortex-lab/KiloSort
@@ -108,7 +108,7 @@ class KilosortSorter(BaseSorter):
 
         # save binary file
         input_file_path = output_folder / 'recording'
-        se.write_binary_dat_format(recording, input_file_path, dtype='int16')
+        recording.write_to_binary_dat_format(input_file_path, dtype='int16')
 
         # set up kilosort config files and run kilosort on data
         with (source_dir / 'kilosort_master.m').open('r') as f:
@@ -142,9 +142,9 @@ class KilosortSorter(BaseSorter):
             channel_path=str(
                 (output_folder / 'kilosort_channelmap.m').absolute()),
             config_path=str((output_folder / 'kilosort_config.m').absolute()),
-            useGPU=useGPU, 
+            useGPU=useGPU,
         )
-        
+
         kilosort_config_txt = kilosort_config_txt.format(
             nchanTOT=recording.get_num_channels(),
             nchan=recording.get_num_channels(),
