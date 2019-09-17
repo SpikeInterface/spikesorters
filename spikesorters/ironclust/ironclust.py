@@ -210,6 +210,6 @@ class IronClustSorter(BaseSorter):
         with open(samplerate_fname, 'r') as f:
             samplerate = float(f.read())
 
-        sorting = se.MdaSortingExtractor(firings_file=result_fname, sampling_frequency=samplerate)
+        sorting = se.MdaSortingExtractor(file_path=result_fname, sampling_frequency=samplerate)
 
         return sorting

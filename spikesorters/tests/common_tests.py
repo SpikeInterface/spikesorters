@@ -39,7 +39,6 @@ class SorterCommonTestSuite:
         for ch_id in range(4, 8):
             recording.set_channel_property(ch_id, 'group', 1)
 
-
         params = self.SorterClass.default_params()
 
         for parallel in [False, True]:
@@ -48,6 +47,8 @@ class SorterCommonTestSuite:
             sorter.set_params(**params)
             sorter.run()
             sorting = sorter.get_result()
+            for unit_id in sorting.get_unit_ids():
+                print('unit #', unit_id, 'nb', len(sorting.get_unit_spike_train(unit_id)))
             del sorting
 
     def test_with_BinDatRecordingExtractor(self):
@@ -74,6 +75,10 @@ class SorterCommonTestSuite:
         sorter.set_params(**params)
         sorter.run()
         sorting = sorter.get_result()
+
+        for unit_id in sorting.get_unit_ids():
+            print('unit #', unit_id, 'nb', len(sorting.get_unit_spike_train(unit_id)))
+        del sorting
 
     def test_get_version(self):
         self.SorterClass.get_sorter_version()

@@ -162,7 +162,7 @@ class TridesclousSorter(BaseSorter):
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        sorting = se.TridesclousSortingExtractor(output_folder)
+        sorting = se.TridesclousSortingExtractor(folder_path=output_folder)
         return sorting
 
 

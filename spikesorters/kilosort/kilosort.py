@@ -202,5 +202,5 @@ class KilosortSorter(BaseSorter):
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        sorting = se.KiloSortSortingExtractor(output_folder)
+        sorting = se.KiloSortSortingExtractor(folder_path=output_folder)
         return sorting
