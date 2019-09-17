@@ -12,4 +12,5 @@ class Kilosort2CommonTestSuite(SorterCommonTestSuite, unittest.TestCase):
 
 if __name__ == '__main__':
     Kilosort2CommonTestSuite().test_on_toy()
-    #~ KilosortCommonTestSuite().test_several_groups()
+    Kilosort2CommonTestSuite().test_several_groups()
+    Kilosort2CommonTestSuite().test_with_BinDatRecordingExtractor()

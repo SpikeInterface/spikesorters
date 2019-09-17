@@ -16,7 +16,7 @@ ops.fshigh = {freq_min};
 ops.minfr_goodchannels = 0.1; 
 
 % threshold on projections (like in Kilosort1, can be different for last pass like [10 4])
-ops.Th = [10 4];  
+ops.Th = {projection_threshold};
 
 % how important is the amplitude penalty (like in Kilosort1, 0 means not used, 10 is average, 50 is a lot) 
 ops.lam = 10;  
@@ -34,7 +34,7 @@ ops.momentum = [20 400];
 ops.sigmaMask = {sigmaMask}; 
 
 % threshold crossings for pre-clustering (in PCA projection space)
-ops.ThPre = 8; 
+ops.ThPre = {preclust_threshold};
 %% danger, changing these settings can lead to fatal errors
 % options for determining PCs
 ops.spkTh           = -{kilo_thresh};      % spike threshold in standard deviations (-6)
