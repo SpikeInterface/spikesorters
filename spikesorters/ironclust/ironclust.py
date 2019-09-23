@@ -173,7 +173,6 @@ class IronClustSorter(BaseSorter):
 
         if "win" in sys.platform:
             shell_cmd = '''
-                #!/bin/bash
                 cd {tmpdir}
                 matlab -nosplash -nodisplay -wait -r run_ironclust
             '''.format(tmpdir=tmpdir)
@@ -184,7 +183,7 @@ class IronClustSorter(BaseSorter):
                 matlab -nosplash -nodisplay -r run_ironclust
             '''.format(tmpdir=tmpdir)
 
-        shell_script = ShellScript(shell_cmd, script_path=str(tmpdir / 'run_ironclust.sh'))
+        shell_script = ShellScript(shell_cmd)
         shell_script.start()
 
         retcode = shell_script.wait()

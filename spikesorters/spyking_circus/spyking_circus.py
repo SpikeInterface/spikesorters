@@ -3,6 +3,7 @@ from pathlib import Path
 import os
 import shutil
 import numpy as np
+import sys
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
@@ -118,13 +119,18 @@ class SpykingcircusSorter(BaseSorter):
 
     def _run(self,  recording, output_folder):
         num_workers = self.params['num_workers']
-        shell_cmd = '''
-                    #!/bin/bash
-                    spyking-circus {recording} -c {num_workers}
-                '''.format(recording=output_folder / 'recording.npy', num_workers=num_workers)
+        if 'win' in sys.platform:
+            shell_cmd = '''
+                        spyking-circus {recording} -c {num_workers}
+                    '''.format(recording=output_folder / 'recording.npy', num_workers=num_workers)
+        else:
+            shell_cmd = '''
+                        #!/bin/bash
+                        spyking-circus {recording} -c {num_workers}
+                    '''.format(recording=output_folder / 'recording.npy', num_workers=num_workers)
 
-        shell_cmd = ShellScript(shell_cmd, script_path=str(output_folder / 'run_spykingcircus.sh'), keep_temp_files=True)
-        shell_cmd.write(str(output_folder / 'run_spykingcircus.sh'))
+        shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)
+        shell_cmd.write()
         shell_cmd.start()
 
         retcode = shell_cmd.wait()
