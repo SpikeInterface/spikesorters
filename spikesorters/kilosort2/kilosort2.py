@@ -8,6 +8,8 @@ import copy
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
+from ..utils.shellscript import ShellScript
+
 from ..sorter_tools import _call_command_split
 
 
@@ -36,6 +38,8 @@ class Kilosort2Sorter(BaseSorter):
 
     _default_params = {
         'detect_threshold': 5,
+        'projection_threshold': [10, 4],
+        'preclust_threshold': 8,
         'car': True,
         'minFR': 0.1,
         'electrode_dimensions': None,
@@ -45,10 +49,16 @@ class Kilosort2Sorter(BaseSorter):
     }
 
     _extra_gui_params = [
-        {'name': 'detect_threshold', 'type': 'float', 'value': 5.0, 'default': 5.0, 'title': "Relative detection threshold"},
+        {'name': 'detect_threshold', 'type': 'float', 'value': 5.0, 'default': 5.0,
+         'title': "Relative detection threshold"},
+        {'name': 'projection_threshold', 'type': 'list of float', 'value': [10, 4], 'default': [10, 4],
+         'title': "Threshold on projections"},
+        {'name': 'preclust_threshold', 'type': 'float', 'value': 8, 'default': 8,
+         'title': "Threshold crossings for pre-clustering"},
         {'name': 'car', 'type': 'bool', 'value': True, 'default': True, 'title': "car"},
         {'name': 'minFR', 'type': 'float', 'value': 0.1, 'default': 0.1, 'title': "minFR"},
-        {'name': 'electrode_dimensions', 'type': 'list', 'value': None, 'default': None, 'title': "Electrode dimensions of probe"},
+        {'name': 'electrode_dimensions', 'type': 'list', 'value': None, 'default': None,
+         'title': "Electrode dimensions of probe"},
         {'name': 'freq_min', 'type': 'float', 'value': 150.0, 'default': 150.0, 'title': "Low-pass frequency"},
         {'name': 'sigmaMask', 'type': 'int', 'value': 30, 'default': 30, 'title': "Sigma mask"},
         {'name': 'nPCs', 'type': 'int', 'value': 3, 'default': 3, 'title': "Number of principal components"},
@@ -139,6 +149,8 @@ class Kilosort2Sorter(BaseSorter):
             nchan=recording.get_num_channels(),
             sample_rate=recording.get_sampling_frequency(),
             dat_file=str((output_folder / 'recording.dat').absolute()),
+            projection_threshold=p['projection_threshold'],
+            preclust_threshold=p['preclust_threshold'],
             minFR=p['minFR'],
             freq_min=p['freq_min'],
             sigmaMask=p['sigmaMask'],
@@ -162,25 +174,32 @@ class Kilosort2Sorter(BaseSorter):
             with (output_folder / fname).open('w') as f:
                 f.write(txt)
 
-        shutil.copy(str(source_dir.parent / 'kilosort_npy_utils' / 'writeNPY.m'), str(output_folder))
-        shutil.copy(str(source_dir.parent / 'kilosort_npy_utils' / 'constructNPYheader.m'), str(output_folder))
+        shutil.copy(str(source_dir.parent / 'utils' / 'writeNPY.m'), str(output_folder))
+        shutil.copy(str(source_dir.parent / 'utils' / 'constructNPYheader.m'), str(output_folder))
 
     def _run(self, recording, output_folder):
-        cmd = "matlab -nosplash -nodisplay -r 'run {}; quit;'".format(
-            output_folder / 'kilosort2_master.m')
-        if self.verbose:
-            print(cmd)
         if "win" in sys.platform:
-            cmd_list = ['matlab', '-nosplash', '-nodisplay', '-wait',
-                        '-r', 'run {}; quit;'.format(output_folder / 'kilosort2_master.m')]
+            shell_cmd = '''
+                        #!/bin/bash
+                        cd {tmpdir}
+                        matlab -nosplash -nodisplay -wait -r kilosort2_master
+                    '''.format(tmpdir=output_folder)
         else:
-            cmd_list = ['matlab', '-nosplash', '-nodisplay',
-                        '-r', 'run {}; quit;'.format(output_folder / 'kilosort2_master.m')]
+            shell_cmd = '''
+                        #!/bin/bash
+                        cd {tmpdir}
+                        matlab -nosplash -nodisplay -r kilosort2_master
+                    '''.format(tmpdir=output_folder)
+        shell_cmd = ShellScript(shell_cmd, script_path=str(output_folder / 'run_kilosort2.sh'), keep_temp_files=True)
+        shell_cmd.write(str(output_folder / 'run_kilosort2.sh'))
+        shell_cmd.start()
 
-        # retcode = _run_command_and_print_output_split(cmd_list)
-        _call_command_split(cmd_list)
+        retcode = shell_cmd.wait()
+
+        if retcode != 0:
+            raise Exception('kilosort2 returned a non-zero exit code')
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        sorting = se.KiloSortSortingExtractor(output_folder)
+        sorting = se.KiloSortSortingExtractor(folder_path=output_folder)
         return sorting

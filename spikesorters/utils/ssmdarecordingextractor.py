@@ -9,10 +9,10 @@ import os
 from spikeextractors import RecordingExtractor
 from spikeextractors import SortingExtractor
 
-from .mdaio import DiskReadMda, readmda, writemda32, writemda64, writemda
+from ..utils.mdaio import DiskReadMda, readmda, writemda32, writemda64, writemda
 
 
-class MdaRecordingExtractor2(RecordingExtractor):
+class SSMdaRecordingExtractor(RecordingExtractor):
     def __init__(self, dataset_directory, *, raw_fname='raw.mda', params_fname='params.json'):
         RecordingExtractor.__init__(self)
         self._dataset_directory = dataset_directory

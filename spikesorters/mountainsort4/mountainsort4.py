@@ -84,6 +84,8 @@ class Mountainsort4Sorter(BaseSorter):
         # alias to params
         p = self.params
 
+        samplerate = recording.get_sampling_frequency()
+
         # Bandpass filter
         if p['filter'] and p['freq_min'] is not None and p['freq_max'] is not None:
             recording = bandpass_filter(recording=recording, freq_min=p['freq_min'], freq_max=p['freq_max'])
@@ -119,7 +121,19 @@ class Mountainsort4Sorter(BaseSorter):
 
         se.MdaSortingExtractor.write_sorting(sorting, str(output_folder / 'firings.mda'))
 
+        samplerate_fname = str(output_folder / 'samplerate.txt')
+        with open(samplerate_fname, 'w') as f:
+            f.write('{}'.format(samplerate))
+
     @staticmethod
     def get_result_from_folder(output_folder):
-        sorting = se.MdaSortingExtractor(str(Path(output_folder) / 'firings.mda'))
+        output_folder = Path(output_folder)
+        tmpdir = output_folder
+
+        result_fname = str(tmpdir / 'firings.mda')
+        samplerate_fname = str(tmpdir / 'samplerate.txt')
+        with open(samplerate_fname, 'r') as f:
+            samplerate = float(f.read())
+
+        sorting = se.MdaSortingExtractor(file_path=result_fname, sampling_frequency=samplerate)
         return sorting
