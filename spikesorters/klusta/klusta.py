@@ -1,5 +1,6 @@
 import copy
 from pathlib import Path
+import sys
 
 import spikeextractors as se
 
@@ -128,9 +129,15 @@ class KlustaSorter(BaseSorter):
             f.writelines(klusta_config)
 
     def _run(self, recording, output_folder):
-        shell_cmd = '''
-                    klusta --overwrite {klusta_config}
-                '''.format(klusta_config=output_folder / 'config.prm')
+        if 'win' in sys.platform:
+            shell_cmd = '''
+                        klusta --overwrite {klusta_config}
+                    '''.format(klusta_config=output_folder / 'config.prm')
+        else:
+            shell_cmd = '''
+                        #!/bin/bash
+                        klusta {klusta_config} --overwrite
+                    '''.format(klusta_config=output_folder / 'config.prm')
 
         shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)
         shell_cmd.start()
