@@ -191,7 +191,6 @@ class KilosortSorter(BaseSorter):
                         matlab -nosplash -nodisplay -r kilosort_master
                     '''.format(tmpdir=output_folder)
         shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)
-        shell_cmd.write()
         shell_cmd.start()
 
         retcode = shell_cmd.wait()
