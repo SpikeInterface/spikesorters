@@ -31,6 +31,7 @@ class BaseSorter:
     sorter_name = ''  # convinience for reporting
     installed = False  # check at class level if isntalled or not
     SortingExtractor_Class = None  # convinience to get the extractor
+    requires_locations = False
     _default_params = {}
     sorter_gui_params = [
         {'name': 'output_folder', 'type': 'folder', 'value':None, 'default':None,  'title': "Sorting output folder path", 'base_param':True},
@@ -45,6 +46,9 @@ class BaseSorter:
 
         assert self.installed, """This sorter {} is not installed.
         Please install it with:  \n{} """.format(self.sorter_name, self.installation_mesg)
+        if self.requires_locations:
+            if 'location' not in recording.get_shared_channel_property_names():
+                raise RuntimeError("Channel locations are required for this spike sorter. Locations can be added to the RecordingExtractor by loading a probe file (.prb or .csv) or by setting them manually.")
 
         self.verbose = verbose
         self.grouping_property = grouping_property

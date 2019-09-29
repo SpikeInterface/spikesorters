@@ -22,6 +22,7 @@ class SpykingcircusSorter(BaseSorter):
 
     sorter_name = 'spykingcircus'
     installed = HAVE_SC
+    requires_locations = False
 
     _default_params = {
         'probe_file': None,

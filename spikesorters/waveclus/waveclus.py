@@ -32,6 +32,7 @@ class WaveClusSorter(BaseSorter):
     sorter_name: str = 'waveclus'
     waveclus_path: Union[str, None] = os.getenv('WAVECLUS_PATH', None)
     installed = check_if_installed(waveclus_path)
+    requires_locations = False
 
     _default_params = {
         'detect_threshold': 5,

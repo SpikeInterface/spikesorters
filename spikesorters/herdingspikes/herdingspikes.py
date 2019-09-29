@@ -24,6 +24,7 @@ class HerdingspikesSorter(BaseSorter):
 
     sorter_name = 'herdingspikes'
     installed = HAVE_HS
+    requires_locations = True
 
     _extra_gui_params = [
         {'name': 'clustering_bandwidth', 'type': 'float', 'value': 5.0, 'default': 5.0,
