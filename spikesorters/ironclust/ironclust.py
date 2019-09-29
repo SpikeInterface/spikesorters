@@ -33,6 +33,7 @@ class IronClustSorter(BaseSorter):
     sorter_name: str = 'ironclust'
     ironclust_path: Union[str, None] = os.getenv('IRONCLUST_PATH', None)
     installed = check_if_installed(ironclust_path)
+    requires_locations = True
 
     _default_params = dict(
         detect_sign=-1,  # Use -1, 0, or 1, depending on the sign of the spikes in the recording
