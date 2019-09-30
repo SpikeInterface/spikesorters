@@ -182,7 +182,6 @@ class KilosortSorter(BaseSorter):
     def _run(self, recording, output_folder):
         if "win" in sys.platform:
             shell_cmd = '''
-                        #!/bin/bash
                         cd {tmpdir}
                         matlab -nosplash -nodisplay -wait -r kilosort_master
                     '''.format(tmpdir=output_folder)
@@ -192,8 +191,7 @@ class KilosortSorter(BaseSorter):
                         cd {tmpdir}
                         matlab -nosplash -nodisplay -r kilosort_master
                     '''.format(tmpdir=output_folder)
-        shell_cmd = ShellScript(shell_cmd, script_path=str(output_folder / 'run_kilosort.sh'), keep_temp_files=True)
-        shell_cmd.write(str(output_folder / 'run_kilosort.sh'))
+        shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)
         shell_cmd.start()
 
         retcode = shell_cmd.wait()
