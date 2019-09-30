@@ -26,6 +26,7 @@ class TridesclousSorter(BaseSorter):
 
     sorter_name = 'tridesclous'
     installed = HAVE_TDC
+    requires_locations = False
 
     _default_params = {
         'highpass_freq': 400.,

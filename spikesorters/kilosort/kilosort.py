@@ -35,6 +35,7 @@ class KilosortSorter(BaseSorter):
     sorter_name: str = 'kilosort'
     kilosort_path: Union[str, None] = os.getenv('KILOSORT_PATH', None)
     installed = check_if_installed(kilosort_path)
+    requires_locations = False
 
     _default_params = {
         'detect_threshold': 6,
