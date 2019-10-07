@@ -20,7 +20,7 @@ install:
 - pip install https://github.com/SpikeInterface/spiketoolkit/archive/master.zip
 - pip install .
 - pip install pytest==4.3
-- pip install numpy==1.16.2 scipy==1.2 h5py six cython tqdm click
+- pip install numpy scipy
 - pip install -r requirements_sorters.txt
 script: python -m pytest
 deploy:
