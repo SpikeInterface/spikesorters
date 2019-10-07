@@ -1,9 +1,11 @@
 import copy
 from pathlib import Path
+import sys
 
 import spikeextractors as se
 
 from ..basesorter import BaseSorter
+from ..utils.shellscript import ShellScript
 from ..sorter_tools import _call_command
 
 try:
@@ -17,23 +19,11 @@ except ImportError:
 
 class KlustaSorter(BaseSorter):
     """
-    Parameters
-    ----------
-
-
-    probe_file
-    threshold_strong_std_factor
-    threshold_weak_std_factor
-    detect_sign
-    extract_s_before
-    extract_s_after
-    n_features_per_channel
-    pca_n_waveforms_max
-    num_starting_clusters
     """
 
     sorter_name = 'klusta'
     installed = HAVE_KLUSTA
+    requires_locations = False
 
     _default_params = {
         'probe_file': None,
@@ -66,9 +56,9 @@ class KlustaSorter(BaseSorter):
          'title': "Starting number of clusters"},
     ]
 
-    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
     for param in _extra_gui_params:
-        _gui_params.append(param)
+        sorter_gui_params.append(param)
 
     installation_mesg = """
        >>> pip install Cython h5py tqdm
@@ -97,11 +87,11 @@ class KlustaSorter(BaseSorter):
         # save prb file:
         if p['probe_file'] is None:
             p['probe_file'] = output_folder / 'probe.prb'
-            se.save_probe_file(recording, p['probe_file'], format='klusta', radius=p['adjacency_radius'])
+            recording.save_to_probe_file(p['probe_file'], format='klusta', radius=p['adjacency_radius'])
 
         # source file
-        if isinstance(recording, se.BinDatRecordingExtractor) and recording._frame_first and \
-                recording._timeseries.offset == 0:
+        if isinstance(recording, se.BinDatRecordingExtractor) and recording._time_axis == 0 and \
+                      recording._timeseries.offset == 0:
             # no need to copy
             raw_filename = str(Path(recording._datfile).resolve())
             dtype = recording._timeseries.dtype.str
@@ -109,9 +99,9 @@ class KlustaSorter(BaseSorter):
             # save binary file (chunk by hcunk) into a new file
             raw_filename = output_folder / 'recording.dat'
             n_chan = recording.get_num_channels()
-            chunksize = 2 ** 24 // n_chan
+            chunk_size = 2 ** 24 // n_chan
             dtype = 'int16'
-            se.write_binary_dat_format(recording, raw_filename, time_axis=0, dtype=dtype, chunksize=chunksize)
+            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype=dtype, chunk_size=chunk_size)
 
         if p['detect_sign'] < 0:
             detect_sign = 'negative'
@@ -140,17 +130,28 @@ class KlustaSorter(BaseSorter):
             f.writelines(klusta_config)
 
     def _run(self, recording, output_folder):
+        if 'win' in sys.platform:
+            shell_cmd = '''
+                        klusta --overwrite {klusta_config}
+                    '''.format(klusta_config=output_folder / 'config.prm')
+        else:
+            shell_cmd = '''
+                        #!/bin/bash
+                        klusta {klusta_config} --overwrite
+                    '''.format(klusta_config=output_folder / 'config.prm')
 
-        cmd = 'klusta {} --overwrite'.format(output_folder / 'config.prm')
-        if self.verbose:
-            print('Running Klusta')
-            print(cmd)
+        shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)
+        shell_cmd.start()
 
-        _call_command(cmd)
+        retcode = shell_cmd.wait()
+
+        if retcode != 0:
+            raise Exception('klusta returned a non-zero exit code')
+
         if not (output_folder / 'recording.kwik').is_file():
             raise Exception('Klusta did not run successfully')
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        sorting = se.KlustaSortingExtractor(Path(output_folder) / 'recording.kwik')
+        sorting = se.KlustaSortingExtractor(file_or_folder_path=Path(output_folder) / 'recording.kwik')
         return sorting

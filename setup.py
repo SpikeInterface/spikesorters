@@ -23,6 +23,7 @@ setup(
         'numpy',
         'spikeextractors',
         'spiketoolkit',
+        'requests'
     ],
     classifiers=(
         "Programming Language :: Python :: 3",

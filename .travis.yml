@@ -20,13 +20,8 @@ install:
 - pip install https://github.com/SpikeInterface/spiketoolkit/archive/master.zip
 - pip install .
 - pip install pytest==4.3
-- pip install numpy==1.16.2 scipy==1.2 h5py six cython tqdm click
-- pip install klusta
-- pip install klustakwik2==0.2.6
-- pip install tridesclous==1.2.1
-- pip install herdingspikes==0.3.2
-- pip install spyking-circus==0.8.3 --no-binary=mpi4py
-- pip install ml_ms4alg==0.3.1
+- pip install numpy scipy
+- pip install -r requirements_sorters.txt
 script: python -m pytest
 deploy:
   provider: pypi

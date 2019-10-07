@@ -22,6 +22,7 @@ class Mountainsort4Sorter(BaseSorter):
 
     sorter_name = 'mountainsort4'
     installed = HAVE_MS4
+    requires_locations = False
 
     _default_params = {
         'detect_sign': -1,  # Use -1, 0, or 1, depending on the sign of the spikes in the recording
@@ -58,9 +59,9 @@ class Mountainsort4Sorter(BaseSorter):
          'title': "Use None for no automated curation"},
     ]
 
-    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
     for param in _extra_gui_params:
-        _gui_params.append(param)
+        sorter_gui_params.append(param)
     installation_mesg = """
        >>> pip install ml_ms4alg
 
@@ -84,6 +85,8 @@ class Mountainsort4Sorter(BaseSorter):
         # alias to params
         p = self.params
 
+        samplerate = recording.get_sampling_frequency()
+
         # Bandpass filter
         if p['filter'] and p['freq_min'] is not None and p['freq_max'] is not None:
             recording = bandpass_filter(recording=recording, freq_min=p['freq_min'], freq_max=p['freq_max'])
@@ -92,7 +95,7 @@ class Mountainsort4Sorter(BaseSorter):
             recording = whiten(recording=recording)
 
         # Check location
-        if 'location' not in recording.get_channel_property_names():
+        if 'location' not in recording.get_shared_channel_property_names():
             for i, chan in enumerate(recording.get_channel_ids()):
                 recording.set_channel_property(chan, 'location', [0, i])
 
@@ -119,7 +122,19 @@ class Mountainsort4Sorter(BaseSorter):
 
         se.MdaSortingExtractor.write_sorting(sorting, str(output_folder / 'firings.mda'))
 
+        samplerate_fname = str(output_folder / 'samplerate.txt')
+        with open(samplerate_fname, 'w') as f:
+            f.write('{}'.format(samplerate))
+
     @staticmethod
     def get_result_from_folder(output_folder):
-        sorting = se.MdaSortingExtractor(str(Path(output_folder) / 'firings.mda'))
+        output_folder = Path(output_folder)
+        tmpdir = output_folder
+
+        result_fname = str(tmpdir / 'firings.mda')
+        samplerate_fname = str(tmpdir / 'samplerate.txt')
+        with open(samplerate_fname, 'r') as f:
+            samplerate = float(f.read())
+
+        sorting = se.MdaSortingExtractor(file_path=result_fname, sampling_frequency=samplerate)
         return sorting

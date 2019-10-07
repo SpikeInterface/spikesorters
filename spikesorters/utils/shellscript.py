@@ -4,6 +4,7 @@ import shutil
 import signal
 import os
 import time
+import sys
 from typing import Optional, List, Any
 
 
@@ -48,7 +49,10 @@ class ShellScript():
             script_path = self._script_path
         else:
             tempdir = tempfile.mkdtemp(prefix='tmp_shellscript')
-            script_path = os.path.join(tempdir, 'script.sh')
+            if 'win' in sys.platform:
+                script_path = os.path.join(tempdir, 'script.bat')
+            else:
+                script_path = os.path.join(tempdir, 'script.sh')
             self._dirs_to_remove.append(tempdir)
         self.write(script_path)
         cmd = script_path

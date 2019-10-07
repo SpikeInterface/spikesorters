@@ -8,6 +8,8 @@ import numpy as np
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
+from ..utils.shellscript import ShellScript
+
 from ..sorter_tools import _call_command_split
 
 
@@ -33,6 +35,7 @@ class KilosortSorter(BaseSorter):
     sorter_name: str = 'kilosort'
     kilosort_path: Union[str, None] = os.getenv('KILOSORT_PATH', None)
     installed = check_if_installed(kilosort_path)
+    requires_locations = False
 
     _default_params = {
         'detect_threshold': 6,
@@ -52,9 +55,9 @@ class KilosortSorter(BaseSorter):
         {'name': 'freq_max', 'type': 'float', 'value': 6000.0, 'default': 6000.0, 'title': "High-pass frequency"},
     ]
 
-    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
     for param in _extra_gui_params:
-        _gui_params.append(param)
+        sorter_gui_params.append(param)
 
     installation_mesg = """\nTo use Kilosort run:\n
         >>> git clone https://github.com/cortex-lab/KiloSort
@@ -94,11 +97,11 @@ class KilosortSorter(BaseSorter):
         electrode_dimensions = p['electrode_dimensions']
         if electrode_dimensions is None:
             electrode_dimensions = [0, 1]
-        if 'group' in recording.get_channel_property_names():
+        if 'group' in recording.get_shared_channel_property_names():
             groups = recording.get_channel_groups()
         else:
             groups = [1] * recording.get_num_channels()
-        if 'location' in recording.get_channel_property_names():
+        if 'location' in recording.get_shared_channel_property_names():
             positions = np.array(recording.get_channel_locations())
         else:
             print("'location' information is not found. Using linear configuration")
@@ -108,7 +111,7 @@ class KilosortSorter(BaseSorter):
 
         # save binary file
         input_file_path = output_folder / 'recording'
-        se.write_binary_dat_format(recording, input_file_path, dtype='int16')
+        recording.write_to_binary_dat_format(input_file_path, dtype='int16')
 
         # set up kilosort config files and run kilosort on data
         with (source_dir / 'kilosort_master.m').open('r') as f:
@@ -142,9 +145,9 @@ class KilosortSorter(BaseSorter):
             channel_path=str(
                 (output_folder / 'kilosort_channelmap.m').absolute()),
             config_path=str((output_folder / 'kilosort_config.m').absolute()),
-            useGPU=useGPU, 
+            useGPU=useGPU,
         )
-        
+
         kilosort_config_txt = kilosort_config_txt.format(
             nchanTOT=recording.get_num_channels(),
             nchan=recording.get_num_channels(),
@@ -173,24 +176,30 @@ class KilosortSorter(BaseSorter):
             with (output_folder / fname).open('w') as f:
                 f.writelines(value)
 
-        shutil.copy(str(source_dir.parent / 'kilosort_npy_utils' / 'writeNPY.m'), str(output_folder))
-        shutil.copy(str(source_dir.parent / 'kilosort_npy_utils' / 'constructNPYheader.m'), str(output_folder))
+        shutil.copy(str(source_dir.parent / 'utils' / 'writeNPY.m'), str(output_folder))
+        shutil.copy(str(source_dir.parent / 'utils' / 'constructNPYheader.m'), str(output_folder))
 
     def _run(self, recording, output_folder):
-        cmd = "matlab -nosplash -nodisplay -r 'run {}; quit;'".format(output_folder / 'kilosort_master.m')
-        if self.verbose:
-            print(cmd)
         if "win" in sys.platform:
-            cmd_list = ['matlab', '-nosplash', '-nodisplay', '-wait',
-                        '-r','run {}; quit;'.format(output_folder / 'kilosort_master.m')]
+            shell_cmd = '''
+                        cd {tmpdir}
+                        matlab -nosplash -nodisplay -wait -r kilosort_master
+                    '''.format(tmpdir=output_folder)
         else:
-            cmd_list = ['matlab', '-nosplash', '-nodisplay',
-                        '-r', 'run {}; quit;'.format(output_folder / 'kilosort_master.m')]
+            shell_cmd = '''
+                        #!/bin/bash
+                        cd {tmpdir}
+                        matlab -nosplash -nodisplay -r kilosort_master
+                    '''.format(tmpdir=output_folder)
+        shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)
+        shell_cmd.start()
 
-        # retcode = _run_command_and_print_output_split(cmd_list)
-        _call_command_split(cmd_list)
+        retcode = shell_cmd.wait()
+
+        if retcode != 0:
+            raise Exception('kilosort returned a non-zero exit code')
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        sorting = se.KiloSortSortingExtractor(output_folder)
+        sorting = se.KiloSortSortingExtractor(folder_path=output_folder)
         return sorting

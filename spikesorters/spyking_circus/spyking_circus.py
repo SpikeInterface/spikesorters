@@ -3,9 +3,11 @@ from pathlib import Path
 import os
 import shutil
 import numpy as np
+import sys
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
+from ..utils.shellscript import ShellScript
 from ..sorter_tools import _run_command_and_print_output
 
 try:
@@ -21,6 +23,7 @@ class SpykingcircusSorter(BaseSorter):
 
     sorter_name = 'spykingcircus'
     installed = HAVE_SC
+    requires_locations = False
 
     _default_params = {
         'probe_file': None,
@@ -55,9 +58,9 @@ class SpykingcircusSorter(BaseSorter):
         {'name': 'clustering_max_elts', 'type': 'int', 'value': 10000, 'default': 10000, 'title': "Related to subsampling"},
     ]
 
-    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
     for param in _extra_gui_params:
-        _gui_params.append(param)
+        sorter_gui_params.append(param)
 
     installation_mesg = """
         >>> pip install spyking-circus
@@ -65,7 +68,7 @@ class SpykingcircusSorter(BaseSorter):
         Need MPICH working, for ubuntu do:
             sudo apt install libmpich-dev
 
-        More information on Spyking-Circus at: 
+        More information on Spyking-Circus at:
             https://spyking-circus.readthedocs.io/en/latest/
     """
 
@@ -74,7 +77,7 @@ class SpykingcircusSorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
-        return circus.__version__ 
+        return circus.__version__
 
     def _setup_recording(self, recording, output_folder):
         p = self.params
@@ -83,8 +86,8 @@ class SpykingcircusSorter(BaseSorter):
         # save prb file:
         if p['probe_file'] is None:
             p['probe_file'] = output_folder / 'probe.prb'
-            se.save_probe_file(recording, p['probe_file'], format='spyking_circus',
-                               radius=p['adjacency_radius'], dimensions=p['electrode_dimensions'])
+            recording.save_to_probe_file(p['probe_file'], format='spyking_circus',
+                                         radius=p['adjacency_radius'], dimensions=p['electrode_dimensions'])
 
         # save binary file
         file_name = 'recording'
@@ -117,15 +120,25 @@ class SpykingcircusSorter(BaseSorter):
 
     def _run(self,  recording, output_folder):
         num_workers = self.params['num_workers']
-        cmd = 'spyking-circus {} -c {} '.format(output_folder / 'recording.npy', num_workers)
+        if 'win' in sys.platform:
+            shell_cmd = '''
+                        spyking-circus {recording} -c {num_workers}
+                    '''.format(recording=output_folder / 'recording.npy', num_workers=num_workers)
+        else:
+            shell_cmd = '''
+                        #!/bin/bash
+                        spyking-circus {recording} -c {num_workers}
+                    '''.format(recording=output_folder / 'recording.npy', num_workers=num_workers)
 
-        if self.verbose:
-            print(cmd)
-        retcode = _run_command_and_print_output(cmd)
+        shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)
+        shell_cmd.start()
+
+        retcode = shell_cmd.wait()
+
         if retcode != 0:
-            raise Exception('Spyking circus returned a non-zero exit code')
+            raise Exception('spykingcircus returned a non-zero exit code')
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        sorting = se.SpykingCircusSortingExtractor(Path(output_folder) / 'recording')
+        sorting = se.SpykingCircusSortingExtractor(folder_path=Path(output_folder) / 'recording')
         return sorting

@@ -1,10 +1,8 @@
-include spikesorters/kilosort/kilosort_channelmap.m
-include spikesorters/kilosort/kilosort_config.m
-include spikesorters/kilosort/kilosort_master.m
-include spikesorters/kilosort2/kilosort2_channelmap.m
-include spikesorters/kilosort2/kilosort2_config.m
-include spikesorters/kilosort2/kilosort2_master.m
-include spikesorters/kilosort_npy_utils/writeNPY.m
-include spikesorters/kilosort_npy_utils/constructNPYheader.m
+include spikesorters/kilosort/*.m
+include spikesorters/kilosort2/*.m
+include spikesorters/waveclus/*.m
+include spikesorters/utils/*.m
+include spikesorters/utils/*.py
+include spikesorters/utils/mdaio/*.m
 include spikesorters/klusta/config_default.prm
 include spikesorters/spyking_circus/config_default.params

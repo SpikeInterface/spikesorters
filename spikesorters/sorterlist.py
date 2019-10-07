@@ -1,4 +1,3 @@
-
 from .klusta import KlustaSorter
 from .tridesclous import TridesclousSorter
 from .mountainsort4 import Mountainsort4Sorter
@@ -7,7 +6,7 @@ from .kilosort import KilosortSorter
 from .kilosort2 import Kilosort2Sorter
 from .spyking_circus import SpykingcircusSorter
 from .herdingspikes import HerdingspikesSorter
-
+from .waveclus import WaveClusSorter
 
 sorter_full_list = [
     KlustaSorter,
@@ -17,12 +16,14 @@ sorter_full_list = [
     KilosortSorter,
     Kilosort2Sorter,
     SpykingcircusSorter,
-    HerdingspikesSorter
+    HerdingspikesSorter,
+    WaveClusSorter
 ]
 
 sorter_dict = {s.sorter_name: s for s in sorter_full_list}
 
 installed_sorter_list = [s for s in sorter_full_list if s.installed]
+
 
 # generic laucnher via function approach
 def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_output_folder=False,
@@ -44,7 +45,7 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
     elif sorter_name_or_class in sorter_full_list:
         SorterClass = sorter_name_or_class
     else:
-        raise(ValueError('Unknown sorter'))
+        raise (ValueError('Unknown sorter'))
 
     sorter = SorterClass(recording=recording, output_folder=output_folder, grouping_property=grouping_property,
                          parallel=parallel, verbose=verbose, delete_output_folder=delete_output_folder)
@@ -60,6 +61,14 @@ def available_sorters():
     Lists available sorters.
     '''
     return sorted(list(sorter_dict.keys()))
+
+
+def installed_sorters():
+    '''
+    Lists installed sorters.
+    '''
+    return sorted(list([s.sorter_name for s in installed_sorter_list]))
+
 
 def get_default_params(sorter_name_or_class):
     '''
@@ -81,7 +90,7 @@ def get_default_params(sorter_name_or_class):
     elif sorter_name_or_class in sorter_full_list:
         SorterClass = sorter_name_or_class
     else:
-        raise(ValueError('Unknown sorter'))
+        raise (ValueError('Unknown sorter'))
 
     return SorterClass.default_params()
 
@@ -92,23 +101,34 @@ def get_default_params(sorter_name_or_class):
 def run_klusta(*args, **kargs):
     return run_sorter('klusta', *args, **kargs)
 
+
 def run_tridesclous(*args, **kargs):
     return run_sorter('tridesclous', *args, **kargs)
+
 
 def run_mountainsort4(*args, **kargs):
     return run_sorter('mountainsort4', *args, **kargs)
 
+
 def run_ironclust(*args, **kargs):
     return run_sorter('ironclust', *args, **kargs)
+
 
 def run_kilosort(*args, **kargs):
     return run_sorter('kilosort', *args, **kargs)
 
+
 def run_kilosort2(*args, **kargs):
     return run_sorter('kilosort2', *args, **kargs)
+
 
 def run_spykingcircus(*args, **kargs):
     return run_sorter('spykingcircus', *args, **kargs)
 
+
 def run_herdingspikes(*args, **kargs):
     return run_sorter('herdingspikes', *args, **kargs)
+
+
+def run_waveclus(*args, **kargs):
+    return run_sorter('waveclus', *args, **kargs)

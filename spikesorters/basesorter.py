@@ -31,9 +31,10 @@ class BaseSorter:
     sorter_name = ''  # convinience for reporting
     installed = False  # check at class level if isntalled or not
     SortingExtractor_Class = None  # convinience to get the extractor
+    requires_locations = False
     _default_params = {}
-    _gui_params = [
-        {'name': 'output_folder', 'type': 'str', 'value':None, 'default':None,  'title': "Sorting output folder path", 'base_param':True},
+    sorter_gui_params = [
+        {'name': 'output_folder', 'type': 'folder', 'value':None, 'default':None,  'title': "Sorting output folder path", 'base_param':True},
         {'name': 'grouping_property', 'type': 'str', 'value':None, 'default':None,  'title': "Will sort the recording by the given property ('group', etc.)", 'base_param':True},
         {'name': 'parallel', 'type': 'bool', 'value':False, 'default':False,  'title': "If the recording is sorted by a property, then it will do this in parallel", 'base_param':True},
         {'name': 'delete_output_folder', 'type': 'bool', 'value':False, 'default':False, 'title': "If True, delete the results of the sorter, otherwise, it won't.", 'base_param':True},
@@ -45,6 +46,9 @@ class BaseSorter:
 
         assert self.installed, """This sorter {} is not installed.
         Please install it with:  \n{} """.format(self.sorter_name, self.installation_mesg)
+        if self.requires_locations:
+            if 'location' not in recording.get_shared_channel_property_names():
+                raise RuntimeError("Channel locations are required for this spike sorter. Locations can be added to the RecordingExtractor by loading a probe file (.prb or .csv) or by setting them manually.")
 
         self.verbose = verbose
         self.grouping_property = grouping_property
@@ -61,7 +65,7 @@ class BaseSorter:
             self.output_folders = [output_folder]
         else:
             # several groups
-            self.recording_list = se.get_sub_extractors_by_property(recording, grouping_property)
+            self.recording_list = recording.get_sub_extractors_by_property(grouping_property)
             n_group = len(self.recording_list)
             if n_group > 1:
                 self.output_folders = [output_folder / str(i) for i in range(n_group)]
@@ -72,11 +76,7 @@ class BaseSorter:
         for output_folder in self.output_folders:
             if not output_folder.is_dir():
                 os.makedirs(str(output_folder))
-        self.delete_folders = delete_output_folder    
-
-    @classmethod
-    def gui_params(self):
-        return copy.deepcopy(self._gui_params)
+        self.delete_folders = delete_output_folder
 
     @classmethod
     def default_params(self):
@@ -121,7 +121,7 @@ class BaseSorter:
     def get_sorter_version():
         # need be iplemented in subclass
         raise(NotImplementedError)
-    
+
     def _setup_recording(self, recording, output_folder):
         # need be iplemented in subclass
         # this setup ONE recording (or SubExtractor)

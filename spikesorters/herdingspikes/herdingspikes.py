@@ -24,6 +24,7 @@ class HerdingspikesSorter(BaseSorter):
 
     sorter_name = 'herdingspikes'
     installed = HAVE_HS
+    requires_locations = True
 
     _extra_gui_params = [
         {'name': 'clustering_bandwidth', 'type': 'float', 'value': 5.0, 'default': 5.0,
@@ -42,7 +43,7 @@ class HerdingspikesSorter(BaseSorter):
             'title': "Cutout size before peak (ms)"},
         {'name': 'right_cutout_time', 'type': 'float', 'value': 1.0, 'default': 1.0,
             'title': "Cutout size after peak (ms)"},
-        {'name': 'detection_threshold', 'type': 'float', 'value': 18.0, 'default': 18.0,
+        {'name': 'detection_threshold', 'type': 'float', 'value': 14.0, 'default': 14.0,
             'title': "Detection threshold"},
         {'name': 'probe_masked_channels', 'type': 'list', 'value': [], 'default': [],
             'title': "Masked channels"},
@@ -58,9 +59,9 @@ class HerdingspikesSorter(BaseSorter):
             'title': "Scale to apply in case of pre-scaling of traces"},
     ]
 
-    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
     for param in _extra_gui_params:
-        _gui_params.append(param)
+        sorter_gui_params.append(param)
 
     _default_params = None  # later
 
@@ -119,7 +120,7 @@ class HerdingspikesSorter(BaseSorter):
             spk_evaluation_time=p['spk_evaluation_time']
         )
 
-        self.H.DetectFromRaw(load=True, tInc=1000000)
+        self.H.DetectFromRaw(load=True, tInc=100000)
 
         sorted_file = str(output_folder / 'HS2_sorted.hdf5')
         if(not self.H.spikes.empty):
@@ -142,7 +143,7 @@ class HerdingspikesSorter(BaseSorter):
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        return se.HS2SortingExtractor(Path(output_folder) / 'HS2_sorted.hdf5')
+        return se.HS2SortingExtractor(file_path=Path(output_folder) / 'HS2_sorted.hdf5')
 
 
 HerdingspikesSorter._default_params = {
@@ -155,11 +156,11 @@ HerdingspikesSorter._default_params = {
     'clustering_subset': None,
     'left_cutout_time': 0.2,
     'right_cutout_time': 1.0,
-    'detection_threshold': 18,
+    'detection_threshold': 14,
 
     # extra probe params
     'probe_masked_channels': [],
-    'probe_inner_radius': 75,
+    'probe_inner_radius': 70,
     'probe_neighbor_radius': 90,
     'probe_event_length': 0.2,
     'probe_peak_jitter': 0.1,
@@ -167,7 +168,7 @@ HerdingspikesSorter._default_params = {
     # extra detection params
     'num_com_centers': 1,
     'maa': 2,
-    'ahpthr': 0,
+    'ahpthr': 10,
     'out_file_name': "HS2_detected",
     'decay_filtering': False,
     'save_all': False,

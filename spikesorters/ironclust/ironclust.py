@@ -1,21 +1,13 @@
-import copy
 import os
 from pathlib import Path
 from typing import Union
 import copy
+import sys
 
 import spikeextractors as se
 
-# For now we import a special mda recording extractor
-# from the local directory, but in the future we will
-# merge this with the one on spikeextractors.
-from .mdarecordingextractor2 import MdaRecordingExtractor2
-
-# In the future we will put ShellScript in a common
-# location where multiple sorters can use it, and
-# we can use this for all system calls of bash scripts
-from .shellscript import ShellScript
-
+from ..utils.ssmdarecordingextractor import SSMdaRecordingExtractor
+from ..utils.shellscript import ShellScript
 from ..basesorter import BaseSorter
 
 
@@ -41,6 +33,7 @@ class IronClustSorter(BaseSorter):
     sorter_name: str = 'ironclust'
     ironclust_path: Union[str, None] = os.getenv('IRONCLUST_PATH', None)
     installed = check_if_installed(ironclust_path)
+    requires_locations = True
 
     _default_params = dict(
         detect_sign=-1,  # Use -1, 0, or 1, depending on the sign of the spikes in the recording
@@ -99,9 +92,9 @@ class IronClustSorter(BaseSorter):
         {'name': 'sort_mode', 'type': 'int', 'value': 1, 'default': 1, 'title': "sort mode"},
     ]
 
-    _gui_params = copy.deepcopy(BaseSorter._gui_params)
+    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
     for param in _extra_gui_params:
-        _gui_params.append(param)
+        sorter_gui_params.append(param)
 
     installation_mesg = """\nTo use IronClust run:\n
         >>> git clone https://github.com/jamesjun/ironclust
@@ -133,7 +126,7 @@ class IronClustSorter(BaseSorter):
 
         dataset_dir = output_folder / 'ironclust_dataset'
         # Generate three files in the dataset directory: raw.mda, geom.csv, params.json
-        MdaRecordingExtractor2.write_recording(recording=recording, save_path=str(dataset_dir), _preserve_dtype=True)
+        SSMdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir), _preserve_dtype=True)
 
     def _run(self, recording: se.RecordingExtractor, output_folder: Path):
         dataset_dir = output_folder / 'ironclust_dataset'
@@ -179,12 +172,19 @@ class IronClustSorter(BaseSorter):
         matlab_cmd = ShellScript(cmd, script_path=str(tmpdir / 'run_ironclust.m'))
         matlab_cmd.write()
 
-        shell_cmd = '''
-            #!/bin/bash
-            cd {tmpdir}
-            matlab -nosplash -nodisplay -r run_ironclust
-        '''.format(tmpdir=str(tmpdir))
-        shell_script = ShellScript(shell_cmd, script_path=str(tmpdir / 'run_ironclust.sh'))
+        if "win" in sys.platform:
+            shell_cmd = '''
+                cd {tmpdir}
+                matlab -nosplash -nodisplay -wait -r run_ironclust
+            '''.format(tmpdir=tmpdir)
+        else:
+            shell_cmd = '''
+                #!/bin/bash
+                cd {tmpdir}
+                matlab -nosplash -nodisplay -r run_ironclust
+            '''.format(tmpdir=tmpdir)
+
+        shell_script = ShellScript(shell_cmd)
         shell_script.start()
 
         retcode = shell_script.wait()
@@ -210,6 +210,6 @@ class IronClustSorter(BaseSorter):
         with open(samplerate_fname, 'r') as f:
             samplerate = float(f.read())
 
-        sorting = se.MdaSortingExtractor(firings_file=result_fname, sampling_frequency=samplerate)
+        sorting = se.MdaSortingExtractor(file_path=result_fname, sampling_frequency=samplerate)
 
         return sorting
