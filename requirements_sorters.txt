@@ -1,0 +1,21 @@
+# this list is use in travis for sorters.
+
+# klusta
+Cython
+h5py
+tqdm
+click
+klusta
+klustakwik2==0.2.7
+
+# tridesclous
+tridesclous==1.2.2
+
+# ms4
+ml_ms4alg==0.3.2
+
+# herdingspikes
+herdingspikes==0.3.3
+
+# spyking-circus
+spyking-circus==0.8.3 --no-binary=mpi4py
