@@ -14,4 +14,4 @@ class Mountainsort4CommonTestSuite(SorterCommonTestSuite, unittest.TestCase):
 if __name__ == '__main__':
     Mountainsort4CommonTestSuite().test_on_toy()
     Mountainsort4CommonTestSuite().test_several_groups()
-    Mountainsort4CommonTestSuite().test_with_BinDatRecordingExtractor()
+    # Mountainsort4CommonTestSuite().test_with_BinDatRecordingExtractor()
