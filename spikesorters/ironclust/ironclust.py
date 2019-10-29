@@ -39,13 +39,13 @@ class IronClustSorter(BaseSorter):
         detect_sign=-1,  # Use -1, 0, or 1, depending on the sign of the spikes in the recording
         adjacency_radius=50,  # Use -1 to include all channels in every neighborhood
         adjacency_radius_out=75,  # Use -1 to include all channels in every neighborhood
-        detect_threshold=4.5,  # detection threshold
+        detect_threshold=4,  # detection threshold
         prm_template_name='',  # .prm template file name
         freq_min=300,
         freq_max=6000,
-        merge_thresh=0.985,  # Threshold for automated merging
-        pc_per_chan=2,  # Number of principal components per channel
-        whiten=True,  # Whether to do channel whitening as part of preprocessing
+        merge_thresh=0.99,  # Threshold for automated merging
+        pc_per_chan=3,  # Number of principal components per channel
+        whiten=False,  # Whether to do channel whitening as part of preprocessing
         filter_type='bandpass',  # none, bandpass, wiener, fftdiff, ndiff
         filter_detect_type='none',  # none, bandpass, wiener, fftdiff, ndiff
         common_ref_type='none',  # none, mean, median
@@ -60,7 +60,8 @@ class IronClustSorter(BaseSorter):
         feature_type='gpca',  # gpca, pca, vpp, vmin, vminmax, cov, energy, xcov
         delta_cut=1,  # Cluster detection threshold (delta-cutoff)
         post_merge_mode=1,  # post merge mode
-        sort_mode=1  # sort mode
+        sort_mode=1,  # sort mode
+        fParfor=False #parfor loop
     )
 
     _extra_gui_params = [
@@ -97,7 +98,7 @@ class IronClustSorter(BaseSorter):
         sorter_gui_params.append(param)
 
     installation_mesg = """\nTo use IronClust run:\n
-        >>> git clone https://github.com/jamesjun/ironclust
+        >>> git clone https://github.com/flatironinstitute/ironclust
     and provide the installation path by setting the IRONCLUST_PATH
     environment variables or using IronClustSorter.set_ironclust_path().\n\n
     """
@@ -107,7 +108,7 @@ class IronClustSorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
-        return 'unknown'
+        return '5.0.8'
 
     @staticmethod
     def set_ironclust_path(ironclust_path: str):
