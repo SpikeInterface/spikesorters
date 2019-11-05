@@ -35,6 +35,7 @@ class BaseSorter:
     _default_params = {}
     sorter_gui_params = [
         {'name': 'output_folder', 'type': 'folder', 'value':None, 'default':None,  'title': "Sorting output folder path", 'base_param':True},
+        {'name': 'verbose', 'type': 'bool', 'value':True, 'default':True,  'title': "The verbosity of the underlying spike sorter.", 'base_param':True},
         {'name': 'grouping_property', 'type': 'str', 'value':None, 'default':None,  'title': "Will sort the recording by the given property ('group', etc.)", 'base_param':True},
         {'name': 'parallel', 'type': 'bool', 'value':False, 'default':False,  'title': "If the recording is sorted by a property, then it will do this in parallel", 'base_param':True},
         {'name': 'delete_output_folder', 'type': 'bool', 'value':False, 'default':False, 'title': "If True, delete the results of the sorter, otherwise, it won't.", 'base_param':True},
