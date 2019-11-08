@@ -159,7 +159,6 @@ class WaveClusSorter(BaseSorter):
                 matlab -nosplash -nodisplay -r run_waveclus
             '''.format(tmpdir=tmpdir)
         shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)
-        shell_cmd.write()
         shell_cmd.start()
 
         retcode = shell_cmd.wait()
