@@ -66,7 +66,7 @@ class SpykingcircusSorter(BaseSorter):
         >>> pip install spyking-circus
 
         Need MPICH working, for ubuntu do:
-            sudo apt install libmpich-dev
+            sudo apt install libmpich-dev mpich
 
         More information on Spyking-Circus at:
             https://spyking-circus.readthedocs.io/en/latest/
