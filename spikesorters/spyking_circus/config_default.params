@@ -64,7 +64,6 @@ collect_all    = False      # If True, one garbage template per electrode is cre
 cc_overlap     = 0.85       # Only templates with CC higher than cc_overlap may be merged
 cc_bin         = 2          # Bin size for computing CC [in ms]
 default_lag    = 5          # Default length of the period to compute dip in the CC [ms]
-correct_lag    = True       # If spikes are aligned when merging. May be better for phy usage
 auto_mode      = {}         # Between 0 (aggressive) and 1 (no merging). If empty, GUI is launched
 remove_noise   = True       # If True, meta merging will remove obvious noise templates (weak amplitudes)
 noise_limit    = 1.05       # Amplitude at which templates are classified as noise

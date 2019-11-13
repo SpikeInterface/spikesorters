@@ -18,4 +18,4 @@ ml_ms4alg==0.3.2
 herdingspikes==0.3.3
 
 # spyking-circus
-spyking-circus==0.8.5 --no-binary=mpi4py
+spyking-circus==0.8.6 --no-binary=mpi4py
