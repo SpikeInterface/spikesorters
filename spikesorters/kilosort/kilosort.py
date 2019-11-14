@@ -158,8 +158,8 @@ class KilosortSorter(BaseSorter):
         kilosort_channelmap_txt = kilosort_channelmap_txt.format(
             nchan=recording.get_num_channels(),
             sample_rate=recording.get_sampling_frequency(),
-            xcoords=list(positions),
-            ycoords=list(positions),
+            xcoords=[p[0] for p in positions],
+            ycoords=[p[1] for p in positions],
             kcoords=groups
         )
 
