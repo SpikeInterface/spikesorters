@@ -1,14 +1,12 @@
 import copy
 from pathlib import Path
 import os
-import shutil
 import numpy as np
 import sys
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
 from ..utils.shellscript import ShellScript
-from ..sorter_tools import _run_command_and_print_output
 
 try:
     import circus
@@ -35,7 +33,6 @@ class SpykingcircusSorter(BaseSorter):
         'merge_spikes': True,
         'auto_merge': 0.5,
         'num_workers': None,
-        'electrode_dimensions': None,
         'whitening_max_elts': 1000,  # I believe it relates to subsampling and affects compute time
         'clustering_max_elts': 10000,  # I believe it relates to subsampling and affects compute time
         }
@@ -53,7 +50,6 @@ class SpykingcircusSorter(BaseSorter):
          'title': "If True, spikes will be merged at the end."},
         {'name': 'auto_merge', 'type': 'float', 'value': 0.5, 'default': 0.5, 'title': "Auto-merge value"},
         {'name': 'num_workers', 'type': 'int', 'value': None, 'default': None, 'title': "Number of parallel workers"},
-        {'name': 'electrode_dimensions', 'type': 'list', 'value': None, 'default': None, 'title': "The dimensions of the electrode"},
         {'name': 'whitening_max_elts', 'type': 'int', 'value': 1000, 'default': 1000, 'title': "Related to subsampling"},
         {'name': 'clustering_max_elts', 'type': 'int', 'value': 10000, 'default': 10000, 'title': "Related to subsampling"},
     ]
@@ -86,8 +82,8 @@ class SpykingcircusSorter(BaseSorter):
         # save prb file:
         if p['probe_file'] is None:
             p['probe_file'] = output_folder / 'probe.prb'
-            recording.save_to_probe_file(p['probe_file'], format='spyking_circus',
-                                         radius=p['adjacency_radius'], dimensions=p['electrode_dimensions'])
+            recording.save_to_probe_file(p['probe_file'], grouping_property=self.grouping_property,
+                                         radius=p['adjacency_radius'])
 
         # save binary file
         file_name = 'recording'

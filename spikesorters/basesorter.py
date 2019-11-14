@@ -49,7 +49,9 @@ class BaseSorter:
         Please install it with:  \n{} """.format(self.sorter_name, self.installation_mesg)
         if self.requires_locations:
             if 'location' not in recording.get_shared_channel_property_names():
-                raise RuntimeError("Channel locations are required for this spike sorter. Locations can be added to the RecordingExtractor by loading a probe file (.prb or .csv) or by setting them manually.")
+                raise RuntimeError("Channel locations are required for this spike sorter. "
+                                   "Locations can be added to the RecordingExtractor by loading a probe file "
+                                   "(.prb or .csv) or by setting them manually.")
 
         self.verbose = verbose
         self.grouping_property = grouping_property

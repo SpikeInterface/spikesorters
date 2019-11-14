@@ -10,8 +10,6 @@ import spikeextractors as se
 from ..basesorter import BaseSorter
 from ..utils.shellscript import ShellScript
 
-from ..sorter_tools import _call_command_split
-
 
 def check_if_installed(kilosort2_path: Union[str, None]):
     if kilosort2_path is None:
@@ -43,7 +41,6 @@ class Kilosort2Sorter(BaseSorter):
         'preclust_threshold': 8,
         'car': True,
         'minFR': 0.1,
-        'electrode_dimensions': None,
         'freq_min': 150,
         'sigmaMask': 30,
         'nPCs': 3
@@ -58,8 +55,6 @@ class Kilosort2Sorter(BaseSorter):
          'title': "Threshold crossings for pre-clustering"},
         {'name': 'car', 'type': 'bool', 'value': True, 'default': True, 'title': "car"},
         {'name': 'minFR', 'type': 'float', 'value': 0.1, 'default': 0.1, 'title': "minFR"},
-        {'name': 'electrode_dimensions', 'type': 'list', 'value': None, 'default': None,
-         'title': "Electrode dimensions of probe"},
         {'name': 'freq_min', 'type': 'float', 'value': 150.0, 'default': 150.0, 'title': "Low-pass frequency"},
         {'name': 'sigmaMask', 'type': 'int', 'value': 30, 'default': 30, 'title': "Sigma mask"},
         {'name': 'nPCs', 'type': 'int', 'value': 3, 'default': 3, 'title': "Number of principal components"},
@@ -104,20 +99,18 @@ class Kilosort2Sorter(BaseSorter):
         assert isinstance(Kilosort2Sorter.kilosort2_path, str)
 
         # prepare electrode positions
-        electrode_dimensions = p['electrode_dimensions']
-        if electrode_dimensions is None:
-            electrode_dimensions = [0, 1]
-        if 'group' in recording.get_shared_channel_property_names():
+        if self.grouping_property == 'group' and 'group' in recording.get_shared_channel_property_names():
             groups = recording.get_channel_groups()
         else:
             groups = [1] * recording.get_num_channels()
         if 'location' in recording.get_shared_channel_property_names():
             positions = np.array(recording.get_channel_locations())
+            if positions.shape[1] != 2:
+                raise RuntimeError("3D 'location' are not supported. Set 2D locations instead")
         else:
             print("'location' information is not found. Using linear configuration")
             positions = np.array(
                 [[0, i_ch] for i_ch in range(recording.get_num_channels())])
-            electrode_dimensions = [0, 1]
 
         # save binary file
         input_file_path = output_folder / 'recording'
@@ -163,8 +156,8 @@ class Kilosort2Sorter(BaseSorter):
         kilosort2_channelmap_txt = kilosort2_channelmap_txt.format(
             nchan=recording.get_num_channels(),
             sample_rate=recording.get_sampling_frequency(),
-            xcoords=list(positions[:, electrode_dimensions[0]]),
-            ycoords=list(positions[:, electrode_dimensions[1]]),
+            xcoords=list(positions),
+            ycoords=list(positions),
             kcoords=groups
         )
 
