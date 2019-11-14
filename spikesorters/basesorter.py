@@ -65,7 +65,7 @@ class BaseSorter:
         if grouping_property is None:
             # only one groups
             self.recording_list = [recording]
-            self.output_folders = [output_folder / str(0)]
+            self.output_folders = [output_folder]
             if 'group' in recording.get_shared_channel_property_names():
                 print("WARNING! The recording contains group. In order to spike sort by 'group' use "
                       "grouping_property='group' as argument.")
