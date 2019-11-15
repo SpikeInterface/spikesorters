@@ -90,7 +90,7 @@ class TridesclousSorter(BaseSorter):
 
         # save prb file:
         probe_file = output_folder / 'probe.prb'
-        recording.save_to_probe_file(probe_file, format='spyking_circus')
+        recording.save_to_probe_file(probe_file, grouping_property=self.grouping_property)
 
         # source file
         if isinstance(recording, se.BinDatRecordingExtractor) and recording._time_axis == 0:

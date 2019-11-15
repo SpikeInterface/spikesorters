@@ -49,7 +49,9 @@ class BaseSorter:
         Please install it with:  \n{} """.format(self.sorter_name, self.installation_mesg)
         if self.requires_locations:
             if 'location' not in recording.get_shared_channel_property_names():
-                raise RuntimeError("Channel locations are required for this spike sorter. Locations can be added to the RecordingExtractor by loading a probe file (.prb or .csv) or by setting them manually.")
+                raise RuntimeError("Channel locations are required for this spike sorter. "
+                                   "Locations can be added to the RecordingExtractor by loading a probe file "
+                                   "(.prb or .csv) or by setting them manually.")
 
         self.verbose = verbose
         self.grouping_property = grouping_property
@@ -64,8 +66,13 @@ class BaseSorter:
             # only one groups
             self.recording_list = [recording]
             self.output_folders = [output_folder]
+            if 'group' in recording.get_shared_channel_property_names():
+                print("WARNING! The recording contains group. In order to spike sort by 'group' use "
+                      "grouping_property='group' as argument.")
         else:
             # several groups
+            if grouping_property not in recording.get_shared_channel_property_names():
+                raise RuntimeError(f"'{grouping_property}' is not one of the channel properties.")
             self.recording_list = recording.get_sub_extractors_by_property(grouping_property)
             n_group = len(self.recording_list)
             if n_group > 1:

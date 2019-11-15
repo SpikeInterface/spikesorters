@@ -87,7 +87,8 @@ class KlustaSorter(BaseSorter):
         # save prb file:
         if p['probe_file'] is None:
             p['probe_file'] = output_folder / 'probe.prb'
-            recording.save_to_probe_file(p['probe_file'], format='klusta', radius=p['adjacency_radius'])
+            recording.save_to_probe_file(p['probe_file'], grouping_property=self.grouping_property,
+                                         radius=p['adjacency_radius'])
 
         # source file
         if isinstance(recording, se.BinDatRecordingExtractor) and recording._time_axis == 0 and \
