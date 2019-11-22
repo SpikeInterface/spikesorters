@@ -8,6 +8,8 @@ from .spyking_circus import SpykingcircusSorter
 from .herdingspikes import HerdingspikesSorter
 from .waveclus import WaveClusSorter
 
+from .sorter_tools import detect_spikes
+
 sorter_full_list = [
     KlustaSorter,
     TridesclousSorter,
