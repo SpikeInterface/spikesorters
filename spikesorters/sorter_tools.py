@@ -7,24 +7,36 @@ import numpy as np
 
 
 def detect_spikes(recording, channel_ids=None, detect_threshold=5, n_pad_ms=2, upsample=1, detect_sign=-1,
-                  n_jobs=-1, min_diff_samples=5, parallel=False):
+                  min_diff_samples=5, parallel=False, n_jobs=-1):
     '''
+    Detects spikes per channel.
 
     Parameters
     ----------
-    recording
-    channel_ids
-    detect_threshold
-    n_pad_ms
-    upsample
-    detect_sign
-    n_jobs
-    min_diff_samples
-    parallel
+    recording: RecordingExtractor
+        The recording extractor object
+    channel_ids: list or None
+        List of channels to perform detection. If None all channels are used
+    detect_threshold: float
+        Threshold in MAD to detect peaks
+    n_pad_ms: float
+        Time in ms to find absolute peak around detected peak
+    upsample: int
+        The detected waveforms are upsampled 'upsample' times (default=1=
+    detect_sign: int
+        Sign of the detection: -1 (negative), 1 (positive), 0 (both)
+    min_diff_samples: int
+        Minimum interval to skip consecutive spikes (default=5)
+    parallel: bool
+        If True, each channel is run in parallel
+    n_jobs: int
+        Number of jobs when parallel
 
     Returns
     -------
-
+    sorting_detected: SortingExtractor
+        The sorting extractor object with the detected spikes. Unit ids are the same as channel ids and units have the
+        'channel' property to specify which channel they correspond to
     '''
     spike_times = []
     labels = []
@@ -66,7 +78,13 @@ def _detect_and_align_peaks_single_channel(recording, channel, n_std, detect_sig
     trace = np.squeeze(recording.get_traces(channel_ids=channel))
     if detect_sign == -1:
         thresh = -n_std * np.median(np.abs(trace) / 0.6745)
-    idx_spikes = np.where(trace < thresh)[0]
+        idx_spikes = np.where(trace < thresh)[0]
+    elif detect_sign == 1:
+        thresh = n_std * np.median(np.abs(trace) / 0.6745)
+        idx_spikes = np.where(trace > thresh)[0]
+    else:
+        thresh = n_std * np.median(np.abs(trace) / 0.6745)
+        idx_spikes = np.where((trace > thresh) | (trace < -thresh))[0]
     intervals = np.diff(idx_spikes)
     sp_times = []
 
@@ -95,8 +113,14 @@ def _detect_and_align_peaks_single_channel(recording, channel, n_std, detect_sig
                 spike_up = spike
                 t_spike_up = t_spike
 
-            min_idx_up = np.argmin(spike_up)
-            min_time_up = t_spike_up[min_idx_up]
+            if detect_sign == -1:
+                peak_idx = np.argmin(spike_up)
+            elif detect_sign == 1:
+                peak_idx = np.argmax(spike_up)
+            else:
+                peak_idx = np.argmax(np.abs(spike_up))
+
+            min_time_up = t_spike_up[peak_idx]
             sp_times.append(int(min_time_up))
 
     labels = [channel] * len(sp_times)
