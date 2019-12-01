@@ -155,7 +155,7 @@ class WaveClusSorter(BaseSorter):
         else:
             shell_cmd = '''
                 #!/bin/bash
-                cd {tmpdir}
+                cd "{tmpdir}"
                 matlab -nosplash -nodisplay -r run_waveclus
             '''.format(tmpdir=tmpdir)
         shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)

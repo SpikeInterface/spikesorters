@@ -182,7 +182,7 @@ class KilosortSorter(BaseSorter):
         else:
             shell_cmd = '''
                         #!/bin/bash
-                        cd {tmpdir}
+                        cd "{tmpdir}"
                         matlab -nosplash -nodisplay -r kilosort_master
                     '''.format(tmpdir=output_folder)
         shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)
