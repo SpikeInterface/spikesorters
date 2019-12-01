@@ -180,7 +180,7 @@ class IronClustSorter(BaseSorter):
         else:
             shell_cmd = '''
                 #!/bin/bash
-                cd {tmpdir}
+                cd "{tmpdir}"
                 matlab -nosplash -nodisplay -r run_ironclust
             '''.format(tmpdir=tmpdir)
 
