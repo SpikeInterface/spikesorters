@@ -161,7 +161,12 @@ class TridesclousSorter(BaseSorter):
 
             if self.verbose:
                 print(cc)
+            
+            t0 = time.perf_counter()
             cc.make_catalogue_for_peeler()
+            if self.verbose:
+                t1 = time.perf_counter()
+                print('make_catalogue_for_peeler', t1-t0)
 
             # apply Peeler (template matching)
             initial_catalogue = tdc_dataio.load_catalogue(chan_grp=chan_grp)
