@@ -91,11 +91,12 @@ class SpykingcircusSorter(BaseSorter):
 
         # save binary file
         file_name = 'recording'
-        #np.save(str(output_folder / file_name), recording.get_traces().astype('float32'))
-        raw_filename = output_folder / (file_name + '.raw')
-        n_chan = recording.get_num_channels()
-        chunk_size = 2 ** 24 // n_chan
-        recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype='float32', chunk_size=chunk_size)
+        # We should make this copy more efficient with chunks
+        np.save(str(output_folder / file_name), recording.get_traces().astype('float32'))
+        # raw_filename = output_folder / (file_name + '.raw')
+        # n_chan = recording.get_num_channels()
+        # chunk_size = 2 ** 24 // n_chan
+        # recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype='float32', chunk_size=chunk_size)
 
         if p['detect_sign'] < 0:
             detect_sign = 'negative'
@@ -127,12 +128,12 @@ class SpykingcircusSorter(BaseSorter):
         if 'win' in sys.platform:
             shell_cmd = '''
                         spyking-circus {recording} -c {num_workers}
-                    '''.format(recording=output_folder / 'recording.raw', num_workers=num_workers)
+                    '''.format(recording=output_folder / 'recording.npy', num_workers=num_workers)
         else:
             shell_cmd = '''
                         #!/bin/bash
                         spyking-circus {recording} -c {num_workers}
-                    '''.format(recording=output_folder / 'recording.raw', num_workers=num_workers)
+                    '''.format(recording=output_folder / 'recording.npy', num_workers=num_workers)
 
         shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)
         shell_cmd.start()
