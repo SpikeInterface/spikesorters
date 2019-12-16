@@ -103,7 +103,7 @@ class SpykingcircusSorter(BaseSorter):
         nb_chunks = n_frames // chunk_size
         for i in range(nb_chunks + 1):
             data = recording.get_traces(start_frame=i*chunk_size, end_frame=(i+1)*chunk_size).astype('float32')
-            data_file[i*chunk_size:(i+1)*chunk_size] = data
+            data_file[:, i*chunk_size:min((i+1)*chunk_size, n_frames)] = data
 
         if p['detect_sign'] < 0:
             detect_sign = 'negative'
