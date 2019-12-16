@@ -92,11 +92,18 @@ class SpykingcircusSorter(BaseSorter):
         # save binary file
         file_name = 'recording'
         # We should make this copy more efficient with chunks
-        np.save(str(output_folder / file_name), recording.get_traces().astype('float32'))
-        # raw_filename = output_folder / (file_name + '.raw')
-        # n_chan = recording.get_num_channels()
-        # chunk_size = 2 ** 24 // n_chan
-        # recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype='float32', chunk_size=chunk_size)
+
+        from numpy.lib.format import open_memmap
+
+        n_chan = recording.get_num_channels()
+        n_frames = recording.get_num_frames()
+        chunk_size = 2 ** 24 // n_chan
+        npy_file = str(output_folder / file_name) + '.npy'
+        data_file = open_memmap(npy_file, shape=(n_chan, n_frames), dtype=np.float32, mode='w+')
+        nb_chunks = n_frames // chunk_size
+        for i in range(nb_chunks + 1):
+            data = recording.get_traces(start_frame=i*chunk_size, end_frame=(i+1)*chunk_size).astype('float32')
+            data_file[i*chunk_size:(i+1)*chunk_size] = data
 
         if p['detect_sign'] < 0:
             detect_sign = 'negative'
