@@ -87,7 +87,19 @@ class SpykingcircusSorter(BaseSorter):
 
         # save binary file
         file_name = 'recording'
-        np.save(str(output_folder / file_name), recording.get_traces().astype('float32'))
+        # We should make this copy more efficient with chunks
+
+        from numpy.lib.format import open_memmap
+
+        n_chan = recording.get_num_channels()
+        n_frames = recording.get_num_frames()
+        chunk_size = 2 ** 24 // n_chan
+        npy_file = str(output_folder / file_name) + '.npy'
+        data_file = open_memmap(npy_file, shape=(n_chan, n_frames), dtype=np.float32, mode='w+')
+        nb_chunks = n_frames // chunk_size
+        for i in range(nb_chunks + 1):
+            data = recording.get_traces(start_frame=i*chunk_size, end_frame=(i+1)*chunk_size).astype('float32')
+            data_file[:, i*chunk_size:min((i+1)*chunk_size, n_frames)] = data
 
         if p['detect_sign'] < 0:
             detect_sign = 'negative'
@@ -112,7 +124,7 @@ class SpykingcircusSorter(BaseSorter):
             f.writelines(circus_config)
 
         if p['num_workers'] is None:
-            p['num_workers'] = np.maximum(1, int(os.cpu_count()))
+            p['num_workers'] = np.maximum(1, int(os.cpu_count()/2))
 
     def _run(self,  recording, output_folder):
         num_workers = self.params['num_workers']
