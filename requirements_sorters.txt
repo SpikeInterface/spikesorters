@@ -9,6 +9,7 @@ klusta
 klustakwik2==0.2.7
 
 # tridesclous
+pyqt5==5.13
 tridesclous==1.2.2
 
 # ms4
@@ -18,4 +19,5 @@ ml_ms4alg==0.3.2
 herdingspikes==0.3.3
 
 # spyking-circus
+pyqt5==5.13
 spyking-circus==0.9.0 --no-binary=mpi4py
