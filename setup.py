@@ -10,7 +10,7 @@ pkg_name = "spikesorters"
 setup(
     name=pkg_name,
     version=version,
-    author="Cole Hurwitz, Jeremy Magland, Alessio Paolo Buccino, Matthias Hennig",
+    author="Samuel Garcia, Cole Hurwitz, Jeremy Magland, Alessio Paolo Buccino, Matthias Hennig",
     author_email="alessiop.buccino@gmail.com",
     description="Python wrappers for popular spike sorters",
     long_description=long_description,
