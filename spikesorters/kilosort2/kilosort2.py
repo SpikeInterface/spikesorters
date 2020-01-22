@@ -43,7 +43,8 @@ class Kilosort2Sorter(BaseSorter):
         'minFR': 0.1,
         'freq_min': 150,
         'sigmaMask': 30,
-        'nPCs': 3
+        'nPCs': 3,
+        'keep_good_only': True
     }
 
     _extra_gui_params = [
@@ -58,6 +59,8 @@ class Kilosort2Sorter(BaseSorter):
         {'name': 'freq_min', 'type': 'float', 'value': 150.0, 'default': 150.0, 'title': "Low-pass frequency"},
         {'name': 'sigmaMask', 'type': 'int', 'value': 30, 'default': 30, 'title': "Sigma mask"},
         {'name': 'nPCs', 'type': 'int', 'value': 3, 'default': 3, 'title': "Number of principal components"},
+        {'name': 'keep_good_only', 'type': 'bool', 'value': True, 'default': True, 'title': "Keep only 'good' units "
+                                                                                            "labelled by kilosort2"},
     ]
 
     sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
@@ -192,6 +195,13 @@ class Kilosort2Sorter(BaseSorter):
             raise Exception('kilosort2 returned a non-zero exit code')
 
     @staticmethod
-    def get_result_from_folder(output_folder):
-        sorting = se.KiloSortSortingExtractor(folder_path=output_folder)
+    def get_result_from_folder(output_folder, params=None):
+        if params is not None:
+            if 'keep_good_only' in params.keys():
+                sorting = se.KiloSortSortingExtractor(folder_path=output_folder,
+                                                      keep_good_only=params['keep_good_only'])
+            else:
+                sorting = se.KiloSortSortingExtractor(folder_path=output_folder)
+        else:
+            sorting = se.KiloSortSortingExtractor(folder_path=output_folder)
         return sorting

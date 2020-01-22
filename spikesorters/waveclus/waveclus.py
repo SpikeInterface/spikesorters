@@ -175,7 +175,7 @@ class WaveClusSorter(BaseSorter):
             f.write('{}'.format(samplerate))
 
     @staticmethod
-    def get_result_from_folder(output_folder):
+    def get_result_from_folder(output_folder, params=None):
         output_folder = Path(output_folder)
         tmpdir = output_folder / 'tmp'
 

@@ -194,6 +194,6 @@ class KilosortSorter(BaseSorter):
             raise Exception('kilosort returned a non-zero exit code')
 
     @staticmethod
-    def get_result_from_folder(output_folder):
+    def get_result_from_folder(output_folder, params=None):
         sorting = se.KiloSortSortingExtractor(folder_path=output_folder)
         return sorting

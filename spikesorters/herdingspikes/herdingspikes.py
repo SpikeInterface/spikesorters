@@ -142,7 +142,7 @@ class HerdingspikesSorter(BaseSorter):
         self.C.SaveHDF5(sorted_file, sampling=self.Probe.fps)
 
     @staticmethod
-    def get_result_from_folder(output_folder):
+    def get_result_from_folder(output_folder, params=None):
         return se.HS2SortingExtractor(file_path=Path(output_folder) / 'HS2_sorted.hdf5')
 
 
