@@ -153,6 +153,6 @@ class KlustaSorter(BaseSorter):
             raise Exception('Klusta did not run successfully')
 
     @staticmethod
-    def get_result_from_folder(output_folder, params=None):
+    def get_result_from_folder(output_folder):
         sorting = se.KlustaSortingExtractor(file_or_folder_path=Path(output_folder) / 'recording.kwik')
         return sorting

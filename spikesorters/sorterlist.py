@@ -126,8 +126,6 @@ def run_klusta(*args, **kwargs):
     Parameters
     ----------
     *args: arguments of 'run_sorter'
-        sorter_name_or_class: str or SorterClass
-            The sorter to retrieve default parameters from
         recording: RecordingExtractor
             The recording extractor to be spike sorted
         output_folder: str or Path
@@ -158,8 +156,6 @@ def run_tridesclous(*args, **kwargs):
     Parameters
     ----------
     *args: arguments of 'run_sorter'
-        sorter_name_or_class: str or SorterClass
-            The sorter to retrieve default parameters from
         recording: RecordingExtractor
             The recording extractor to be spike sorted
         output_folder: str or Path
@@ -190,8 +186,6 @@ def run_mountainsort4(*args, **kwargs):
     Parameters
     ----------
     *args: arguments of 'run_sorter'
-        sorter_name_or_class: str or SorterClass
-            The sorter to retrieve default parameters from
         recording: RecordingExtractor
             The recording extractor to be spike sorted
         output_folder: str or Path
@@ -222,8 +216,6 @@ def run_ironclust(*args, **kwargs):
     Parameters
     ----------
     *args: arguments of 'run_sorter'
-        sorter_name_or_class: str or SorterClass
-            The sorter to retrieve default parameters from
         recording: RecordingExtractor
             The recording extractor to be spike sorted
         output_folder: str or Path
@@ -254,8 +246,6 @@ def run_kilosort(*args, **kwargs):
     Parameters
     ----------
     *args: arguments of 'run_sorter'
-        sorter_name_or_class: str or SorterClass
-            The sorter to retrieve default parameters from
         recording: RecordingExtractor
             The recording extractor to be spike sorted
         output_folder: str or Path
@@ -286,8 +276,6 @@ def run_kilosort2(*args, **kwargs):
     Parameters
     ----------
     *args: arguments of 'run_sorter'
-        sorter_name_or_class: str or SorterClass
-            The sorter to retrieve default parameters from
         recording: RecordingExtractor
             The recording extractor to be spike sorted
         output_folder: str or Path
@@ -318,8 +306,6 @@ def run_spykingcircus(*args, **kwargs):
     Parameters
     ----------
     *args: arguments of 'run_sorter'
-        sorter_name_or_class: str or SorterClass
-            The sorter to retrieve default parameters from
         recording: RecordingExtractor
             The recording extractor to be spike sorted
         output_folder: str or Path
@@ -350,8 +336,6 @@ def run_herdingspikes(*args, **kwargs):
     Parameters
     ----------
     *args: arguments of 'run_sorter'
-        sorter_name_or_class: str or SorterClass
-            The sorter to retrieve default parameters from
         recording: RecordingExtractor
             The recording extractor to be spike sorted
         output_folder: str or Path
@@ -382,8 +366,6 @@ def run_waveclus(*args, **kwargs):
     Parameters
     ----------
     *args: arguments of 'run_sorter'
-        sorter_name_or_class: str or SorterClass
-            The sorter to retrieve default parameters from
         recording: RecordingExtractor
             The recording extractor to be spike sorted
         output_folder: str or Path

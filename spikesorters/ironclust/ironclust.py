@@ -202,7 +202,7 @@ class IronClustSorter(BaseSorter):
             f.write('{}'.format(samplerate))
 
     @staticmethod
-    def get_result_from_folder(output_folder: Union[str, Path], params=None):
+    def get_result_from_folder(output_folder: Union[str, Path]):
         output_folder = Path(output_folder)
         tmpdir = output_folder / 'tmp'
 

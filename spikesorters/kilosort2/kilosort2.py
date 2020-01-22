@@ -195,13 +195,6 @@ class Kilosort2Sorter(BaseSorter):
             raise Exception('kilosort2 returned a non-zero exit code')
 
     @staticmethod
-    def get_result_from_folder(output_folder, params=None):
-        if params is not None:
-            if 'keep_good_only' in params.keys():
-                sorting = se.KiloSortSortingExtractor(folder_path=output_folder,
-                                                      keep_good_only=params['keep_good_only'])
-            else:
-                sorting = se.KiloSortSortingExtractor(folder_path=output_folder)
-        else:
-            sorting = se.KiloSortSortingExtractor(folder_path=output_folder)
+    def get_result_from_folder(output_folder):
+        sorting = se.KiloSortSortingExtractor(folder_path=output_folder)
         return sorting

@@ -145,13 +145,13 @@ class BaseSorter:
         raise NotImplementedError
 
     @staticmethod
-    def get_result_from_folder(output_folder, params=None):
+    def get_result_from_folder(output_folder):
         raise NotImplementedError
 
     def get_result_list(self):
         sorting_list = []
         for i, _ in enumerate(self.recording_list):
-            sorting = self.get_result_from_folder(self.output_folders[i], self.params)
+            sorting = self.get_result_from_folder(self.output_folders[i])
             sorting_list.append(sorting)
         return sorting_list
 
