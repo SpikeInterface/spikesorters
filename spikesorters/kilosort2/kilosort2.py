@@ -43,8 +43,7 @@ class Kilosort2Sorter(BaseSorter):
         'minFR': 0.1,
         'freq_min': 150,
         'sigmaMask': 30,
-        'nPCs': 3,
-        'keep_good_only': True
+        'nPCs': 3
     }
 
     _extra_gui_params = [
@@ -59,8 +58,6 @@ class Kilosort2Sorter(BaseSorter):
         {'name': 'freq_min', 'type': 'float', 'value': 150.0, 'default': 150.0, 'title': "Low-pass frequency"},
         {'name': 'sigmaMask', 'type': 'int', 'value': 30, 'default': 30, 'title': "Sigma mask"},
         {'name': 'nPCs', 'type': 'int', 'value': 3, 'default': 3, 'title': "Number of principal components"},
-        {'name': 'keep_good_only', 'type': 'bool', 'value': True, 'default': True, 'title': "Keep only 'good' units "
-                                                                                            "labelled by kilosort2"},
     ]
 
     sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
