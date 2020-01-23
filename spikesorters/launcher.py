@@ -15,7 +15,7 @@ from .sorterlist import sorter_dict, run_sorter
 
 def _run_one(arg_list):
     # the multiprocessing python module force to have one unique tuple argument
-    rec_name, recording, sorter_name, output_folder,grouping_property, verbose, params = arg_list
+    rec_name, recording, sorter_name, output_folder, grouping_property, verbose, params = arg_list
     try:
         SorterClass = sorter_dict[sorter_name]
         sorter = SorterClass(recording=recording, output_folder=output_folder, grouping_property=grouping_property,
@@ -140,7 +140,6 @@ def run_sorters(sorter_list, recording_dict_or_list,  working_folder, sorter_par
                 elif mode == 'overwrite':
                     shutil.rmtree(str(output_folder))
                 elif mode == 'keep':
-                    #~ print(rec_name, sorter_name, 'already done: skip.')
                     continue
                 else:
                     raise(ValueError('mode not in raise, overwrite, keep'))
@@ -173,6 +172,7 @@ def is_log_ok(output_folder):
                 return True
     return False
 
+
 def iter_output_folders(output_folders):
     output_folders = Path(output_folders)
     for rec_name in os.listdir(output_folders):
@@ -186,11 +186,11 @@ def iter_output_folders(output_folders):
                 continue
             yield rec_name, sorter_name, output_folder
 
+
 def iter_sorting_output(output_folders):
     """
     Iterator over output_folder to retrieve all triplets
     (rec_name, sorter_name, sorting)
-
     """
     for rec_name, sorter_name, output_folder in iter_output_folders(output_folders):
         SorterClass = sorter_dict[sorter_name]
@@ -202,7 +202,7 @@ def collect_sorting_outputs(output_folders):
     """
     Collect results in a output_folders.
 
-    The output is a  dict with double key acess results[(rec_name, sorter_name)] of SortingExtrator.
+    The output is a  dict with double key access results[(rec_name, sorter_name)] of SortingExtractor.
     """
     results = {}
     for rec_name, sorter_name, sorting in iter_sorting_output(output_folders):

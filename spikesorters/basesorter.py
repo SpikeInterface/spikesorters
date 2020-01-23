@@ -27,18 +27,22 @@ import spikeextractors as se
 
 
 class BaseSorter:
-
     sorter_name = ''  # convinience for reporting
     installed = False  # check at class level if isntalled or not
     SortingExtractor_Class = None  # convinience to get the extractor
     requires_locations = False
     _default_params = {}
     sorter_gui_params = [
-        {'name': 'output_folder', 'type': 'folder', 'value':None, 'default':None,  'title': "Sorting output folder path", 'base_param':True},
-        {'name': 'verbose', 'type': 'bool', 'value':True, 'default':True,  'title': "The verbosity of the underlying spike sorter.", 'base_param':True},
-        {'name': 'grouping_property', 'type': 'str', 'value':None, 'default':None,  'title': "Will sort the recording by the given property ('group', etc.)", 'base_param':True},
-        {'name': 'parallel', 'type': 'bool', 'value':False, 'default':False,  'title': "If the recording is sorted by a property, then it will do this in parallel", 'base_param':True},
-        {'name': 'delete_output_folder', 'type': 'bool', 'value':False, 'default':False, 'title': "If True, delete the results of the sorter, otherwise, it won't.", 'base_param':True},
+        {'name': 'output_folder', 'type': 'folder', 'value': None, 'default': None,
+         'title': "Sorting output folder path", 'base_param': True},
+        {'name': 'verbose', 'type': 'bool', 'value': True, 'default': True,
+         'title': "The verbosity of the underlying spike sorter.", 'base_param': True},
+        {'name': 'grouping_property', 'type': 'str', 'value': None, 'default': None,
+         'title': "Will sort the recording by the given property ('group', etc.)", 'base_param': True},
+        {'name': 'parallel', 'type': 'bool', 'value': False, 'default': False,
+         'title': "If the recording is sorted by a property, then it will do this in parallel", 'base_param': True},
+        {'name': 'delete_output_folder', 'type': 'bool', 'value': False, 'default': False,
+         'title': "If True, delete the results of the sorter, otherwise, it won't.", 'base_param': True},
     ]
     installation_mesg = ""  # error message when not installed
 
@@ -121,28 +125,28 @@ class BaseSorter:
         t1 = time.perf_counter()
 
         if self.verbose:
-            print('{} run time {:0.2f}s'.format(self.sorter_name, t1-t0))
+            print('{} run time {:0.2f}s'.format(self.sorter_name, t1 - t0))
 
         return t1 - t0
 
     @staticmethod
     def get_sorter_version():
         # need be iplemented in subclass
-        raise(NotImplementedError)
+        raise NotImplementedError
 
     def _setup_recording(self, recording, output_folder):
         # need be iplemented in subclass
         # this setup ONE recording (or SubExtractor)
-        raise(NotImplementedError)
+        raise NotImplementedError
 
     def _run(self, recording, output_folder):
         # need be iplemented in subclass
         # this run the sorter on ONE recording (or SubExtractor)
-        raise(NotImplementedError)
+        raise NotImplementedError
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        raise(NotImplementedError)
+        raise NotImplementedError
 
     def get_result_list(self):
         sorting_list = []
@@ -157,7 +161,8 @@ class BaseSorter:
             sorting = sorting_list[0]
         else:
             for i, sorting in enumerate(sorting_list):
-                group = self.recording_list[i].get_channel_property(self.recording_list[i].get_channel_ids()[0], 'group')
+                group = self.recording_list[i].get_channel_property(self.recording_list[i].get_channel_ids()[0],
+                                                                    'group')
                 if sorting is not None:
                     for unit in sorting.get_unit_ids():
                         sorting.set_unit_property(unit, 'group', group)
@@ -177,7 +182,7 @@ class BaseSorter:
 
     # new idea
     def get_params_for_particular_recording(self, rec_name):
-       """
-       this is speculative an nee to be discussed
-       """
-       return {}
+        """
+        this is speculative an nee to be discussed
+        """
+        return {}

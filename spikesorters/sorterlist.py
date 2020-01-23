@@ -31,13 +31,37 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
     """
     Generic function to run a sorter via function approach.
 
-    2 Usage with name or class:
+    Two usages with name or class:
 
     by name:
        >>> sorting = run_sorter('tridesclous', recording)
 
     by class:
        >>> sorting = run_sorter(TridesclousSorter, recording)
+
+    Parameters
+    ----------
+    sorter_name_or_class: str or SorterClass
+        The sorter to retrieve default parameters from
+    recording: RecordingExtractor
+        The recording extractor to be spike sorted
+    output_folder: str or Path
+        Path to output folder
+    delete_output_folder: bool
+        If True, output folder is deleted (default False)
+    grouping_property: str
+        Splits spike sorting by 'grouping_property' (e.g. 'groups')
+    parallel: bool
+        If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
+    verbose: bool
+        If True, output is verbose
+    **params: keyword args
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params(sorter_name_or_class)'
+
+    Returns
+    -------
+    sortingextractor: SortingExtractor
+        The spike sorted data
 
     """
     if isinstance(sorter_name_or_class, str):
@@ -95,40 +119,271 @@ def get_default_params(sorter_name_or_class):
     return SorterClass.default_params()
 
 
-# make aliases
-# this make compatible with the old by input/output functional approach
+def run_klusta(*args, **kwargs):
+    """
+    Runs klusta sorter
 
-def run_klusta(*args, **kargs):
-    return run_sorter('klusta', *args, **kargs)
+    Parameters
+    ----------
+    *args: arguments of 'run_sorter'
+        recording: RecordingExtractor
+            The recording extractor to be spike sorted
+        output_folder: str or Path
+            Path to output folder
+        delete_output_folder: bool
+            If True, output folder is deleted (default False)
+        grouping_property: str
+            Splits spike sorting by 'grouping_property' (e.g. 'groups')
+        parallel: bool
+            If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
+        verbose: bool
+            If True, output is verbose
+    **kwargs: keyword args
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params('klusta')
 
-
-def run_tridesclous(*args, **kargs):
-    return run_sorter('tridesclous', *args, **kargs)
-
-
-def run_mountainsort4(*args, **kargs):
-    return run_sorter('mountainsort4', *args, **kargs)
-
-
-def run_ironclust(*args, **kargs):
-    return run_sorter('ironclust', *args, **kargs)
-
-
-def run_kilosort(*args, **kargs):
-    return run_sorter('kilosort', *args, **kargs)
-
-
-def run_kilosort2(*args, **kargs):
-    return run_sorter('kilosort2', *args, **kargs)
-
-
-def run_spykingcircus(*args, **kargs):
-    return run_sorter('spykingcircus', *args, **kargs)
-
-
-def run_herdingspikes(*args, **kargs):
-    return run_sorter('herdingspikes', *args, **kargs)
+    Returns
+    -------
+    sortingextractor: SortingExtractor
+        The spike sorted data
+    """
+    return run_sorter('klusta', *args, **kwargs)
 
 
-def run_waveclus(*args, **kargs):
-    return run_sorter('waveclus', *args, **kargs)
+def run_tridesclous(*args, **kwargs):
+    """
+    Runs tridesclous sorter
+
+    Parameters
+    ----------
+    *args: arguments of 'run_sorter'
+        recording: RecordingExtractor
+            The recording extractor to be spike sorted
+        output_folder: str or Path
+            Path to output folder
+        delete_output_folder: bool
+            If True, output folder is deleted (default False)
+        grouping_property: str
+            Splits spike sorting by 'grouping_property' (e.g. 'groups')
+        parallel: bool
+            If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
+        verbose: bool
+            If True, output is verbose
+    **kwargs: keyword args
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params('tridesclous')
+
+    Returns
+    -------
+    sortingextractor: SortingExtractor
+        The spike sorted data
+    """
+    return run_sorter('tridesclous', *args, **kwargs)
+
+
+def run_mountainsort4(*args, **kwargs):
+    """
+    Runs mountainsort4 sorter
+
+    Parameters
+    ----------
+    *args: arguments of 'run_sorter'
+        recording: RecordingExtractor
+            The recording extractor to be spike sorted
+        output_folder: str or Path
+            Path to output folder
+        delete_output_folder: bool
+            If True, output folder is deleted (default False)
+        grouping_property: str
+            Splits spike sorting by 'grouping_property' (e.g. 'groups')
+        parallel: bool
+            If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
+        verbose: bool
+            If True, output is verbose
+    **kwargs: keyword args
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params('mountainsort4')
+
+    Returns
+    -------
+    sortingextractor: SortingExtractor
+        The spike sorted data
+    """
+    return run_sorter('mountainsort4', *args, **kwargs)
+
+
+def run_ironclust(*args, **kwargs):
+    """
+    Runs ironclust sorter
+
+    Parameters
+    ----------
+    *args: arguments of 'run_sorter'
+        recording: RecordingExtractor
+            The recording extractor to be spike sorted
+        output_folder: str or Path
+            Path to output folder
+        delete_output_folder: bool
+            If True, output folder is deleted (default False)
+        grouping_property: str
+            Splits spike sorting by 'grouping_property' (e.g. 'groups')
+        parallel: bool
+            If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
+        verbose: bool
+            If True, output is verbose
+    **kwargs: keyword args
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params('ironclust')
+
+    Returns
+    -------
+    sortingextractor: SortingExtractor
+        The spike sorted data
+    """
+    return run_sorter('ironclust', *args, **kwargs)
+
+
+def run_kilosort(*args, **kwargs):
+    """
+    Runs kilosort sorter
+
+    Parameters
+    ----------
+    *args: arguments of 'run_sorter'
+        recording: RecordingExtractor
+            The recording extractor to be spike sorted
+        output_folder: str or Path
+            Path to output folder
+        delete_output_folder: bool
+            If True, output folder is deleted (default False)
+        grouping_property: str
+            Splits spike sorting by 'grouping_property' (e.g. 'groups')
+        parallel: bool
+            If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
+        verbose: bool
+            If True, output is verbose
+    **kwargs: keyword args
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params('kilosort')
+
+    Returns
+    -------
+    sortingextractor: SortingExtractor
+        The spike sorted data
+    """
+    return run_sorter('kilosort', *args, **kwargs)
+
+
+def run_kilosort2(*args, **kwargs):
+    """
+    Runs kilosort2 sorter
+
+    Parameters
+    ----------
+    *args: arguments of 'run_sorter'
+        recording: RecordingExtractor
+            The recording extractor to be spike sorted
+        output_folder: str or Path
+            Path to output folder
+        delete_output_folder: bool
+            If True, output folder is deleted (default False)
+        grouping_property: str
+            Splits spike sorting by 'grouping_property' (e.g. 'groups')
+        parallel: bool
+            If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
+        verbose: bool
+            If True, output is verbose
+    **kwargs: keyword args
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params('kilosort2')
+
+    Returns
+    -------
+    sortingextractor: SortingExtractor
+        The spike sorted data
+    """
+    return run_sorter('kilosort2', *args, **kwargs)
+
+
+def run_spykingcircus(*args, **kwargs):
+    """
+    Runs spykingcircus sorter
+
+    Parameters
+    ----------
+    *args: arguments of 'run_sorter'
+        recording: RecordingExtractor
+            The recording extractor to be spike sorted
+        output_folder: str or Path
+            Path to output folder
+        delete_output_folder: bool
+            If True, output folder is deleted (default False)
+        grouping_property: str
+            Splits spike sorting by 'grouping_property' (e.g. 'groups')
+        parallel: bool
+            If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
+        verbose: bool
+            If True, output is verbose
+    **kwargs: keyword args
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params('spykingcircus')
+
+    Returns
+    -------
+    sortingextractor: SortingExtractor
+        The spike sorted data
+    """
+    return run_sorter('spykingcircus', *args, **kwargs)
+
+
+def run_herdingspikes(*args, **kwargs):
+    """
+    Runs herdingspikes sorter
+
+    Parameters
+    ----------
+    *args: arguments of 'run_sorter'
+        recording: RecordingExtractor
+            The recording extractor to be spike sorted
+        output_folder: str or Path
+            Path to output folder
+        delete_output_folder: bool
+            If True, output folder is deleted (default False)
+        grouping_property: str
+            Splits spike sorting by 'grouping_property' (e.g. 'groups')
+        parallel: bool
+            If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
+        verbose: bool
+            If True, output is verbose
+    **kwargs: keyword args
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params('herdingspikes')
+
+    Returns
+    -------
+    sortingextractor: SortingExtractor
+        The spike sorted data
+    """
+    return run_sorter('herdingspikes', *args, **kwargs)
+
+
+def run_waveclus(*args, **kwargs):
+    """
+    Runs waveclus sorter
+
+    Parameters
+    ----------
+    *args: arguments of 'run_sorter'
+        recording: RecordingExtractor
+            The recording extractor to be spike sorted
+        output_folder: str or Path
+            Path to output folder
+        delete_output_folder: bool
+            If True, output folder is deleted (default False)
+        grouping_property: str
+            Splits spike sorting by 'grouping_property' (e.g. 'groups')
+        parallel: bool
+            If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
+        verbose: bool
+            If True, output is verbose
+    **kwargs: keyword args
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params('waveclus')
+
+    Returns
+    -------
+    sortingextractor: SortingExtractor
+        The spike sorted data
+    """
+    return run_sorter('waveclus', *args, **kwargs)
