@@ -23,6 +23,11 @@ from pathlib import Path
 import threading
 import shutil
 import os
+import datetime
+import json
+
+import numpy as np
+
 import spikeextractors as se
 
 
@@ -79,10 +84,7 @@ class BaseSorter:
                 raise RuntimeError(f"'{grouping_property}' is not one of the channel properties.")
             self.recording_list = recording.get_sub_extractors_by_property(grouping_property)
             n_group = len(self.recording_list)
-            if n_group > 1:
-                self.output_folders = [output_folder / str(i) for i in range(n_group)]
-            else:
-                self.output_folders = [output_folder / str(0)]
+            self.output_folders = [output_folder / str(i) for i in range(n_group)]
 
         # make folders
         for output_folder in self.output_folders:
@@ -102,11 +104,17 @@ class BaseSorter:
         if len(bad_params) > 0:
             raise AttributeError('Bad parameters: ' + str(bad_params))
         self.params.update(params)
-
+    
     def run(self):
         for i, recording in enumerate(self.recording_list):
             self._setup_recording(recording, self.output_folders[i])
 
+        # dump parameters inside the folder with json
+        for output_folder in self.output_folders:
+            with open(str(output_folder / 'spikeinterface_params.json'), 'w', encoding='utf8') as f:
+                json.dump(_check_json(self.params), f, indent=4)
+
+        now = datetime.datetime.now()
         t0 = time.perf_counter()
 
         if not self.parallel:
@@ -123,6 +131,18 @@ class BaseSorter:
                 thread.join()
 
         t1 = time.perf_counter()
+        
+        # dimp log inside folders
+        log = {
+            'sorter_name' : str(self.sorter_name),
+            'sorter_version': str(self.get_sorter_version()),
+            'datetime': now,
+            'run_time': float(t1-t0),
+        }
+        for output_folder in self.output_folders:
+            with open(str(output_folder / 'spikeinterface_log.json'), 'w', encoding='utf8') as f:
+                json.dump(_check_json(log), f, indent=4)
+
 
         if self.verbose:
             print('{} run time {:0.2f}s'.format(self.sorter_name, t1 - t0))
@@ -180,9 +200,21 @@ class BaseSorter:
         sorting.set_sampling_frequency(self.recording_list[0].get_sampling_frequency())
         return sorting
 
-    # new idea
-    def get_params_for_particular_recording(self, rec_name):
-        """
-        this is speculative an nee to be discussed
-        """
-        return {}
+
+
+def _check_json(d):
+    # quick hack to ensure json writable
+    
+    for k, v in d.items():
+        if isinstance(v, Path):
+            d[k] = str(v)
+        elif isinstance(v, (np.int, np.int32, np.int64)):
+            d[k] = int(v)
+        elif isinstance(v,  (np.float, np.float32, np.float64)):
+            d[k] = float(v)
+        elif isinstance(v, datetime.datetime):
+            d[k] = v.isoformat()
+
+    return d
+    
+    

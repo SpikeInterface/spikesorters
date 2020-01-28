@@ -1,12 +1,14 @@
 import os
-kilosort2_path = '/home/samuel/Documents/Spikeinterface/Kilosort2'
-os.environ["KILOSORT2_PATH"] = kilosort2_path
+import os, getpass
+if getpass.getuser() == 'samuel':
+    kilosort2_path = '/home/samuel/Documents/Spikeinterface/Kilosort2'
+    os.environ["KILOSORT2_PATH"] = kilosort2_path
 
-kilosort_path = '/home/samuel/Documents/Spikeinterface/KiloSort/'
-os.environ["KILOSORT_PATH"] = kilosort_path
+    kilosort_path = '/home/samuel/Documents/Spikeinterface/KiloSort/'
+    os.environ["KILOSORT_PATH"] = kilosort_path
 
-ironclust_path = '/home/samuel/Documents/Spikeinterface/ironclust'
-os.environ["IRONCLUST_PATH"] = ironclust_path
+    ironclust_path = '/home/samuel/Documents/Spikeinterface/ironclust'
+    os.environ["IRONCLUST_PATH"] = ironclust_path
 
 
 import pytest
