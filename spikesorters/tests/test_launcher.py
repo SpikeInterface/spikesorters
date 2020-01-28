@@ -48,7 +48,7 @@ def test_run_sorters_with_dict():
     print(results)
 
     shutil.rmtree(working_folder + '/toy_tetrode/tridesclous')
-    results = run_sorters(sorter_list, recording_dict, working_folder, engine=None, mode='keep')
+    results = run_sorters(sorter_list, recording_dict, working_folder, engine=None, sorter_params=sorter_params, mode='keep')
 
 
 def test_run_sorters_multiprocessing():
@@ -79,10 +79,10 @@ def test_collect_sorting_outputs():
 
 
 if __name__ == '__main__':
-    test_run_sorters_with_list()
+    #~ test_run_sorters_with_list()
 
     test_run_sorters_with_dict()
 
-    test_run_sorters_multiprocessing()
+    #~ test_run_sorters_multiprocessing()
 
-    test_collect_sorting_outputs()
+    #~ test_collect_sorting_outputs()
