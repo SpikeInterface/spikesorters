@@ -104,50 +104,83 @@ class BaseSorter:
         if len(bad_params) > 0:
             raise AttributeError('Bad parameters: ' + str(bad_params))
         self.params.update(params)
-    
-    def run(self):
-        for i, recording in enumerate(self.recording_list):
-            self._setup_recording(recording, self.output_folders[i])
-
+        
         # dump parameters inside the folder with json
+        self._dump_params()
+    
+    def _dump_params(self):
         for output_folder in self.output_folders:
             with open(str(output_folder / 'spikeinterface_params.json'), 'w', encoding='utf8') as f:
                 json.dump(_check_json(self.params), f, indent=4)
-
-        now = datetime.datetime.now()
-        t0 = time.perf_counter()
-
-        if not self.parallel:
-            for i, recording in enumerate(self.recording_list):
-                self._run(recording, self.output_folders[i])
-        else:
-            # run in threads
-            threads = []
-            for i, recording in enumerate(self.recording_list):
-                thread = threading.Thread(target=self._run, args=(recording, self.output_folders[i]))
-                threads.append(thread)
-                thread.start()
-            for thread in threads:
-                thread.join()
-
-        t1 = time.perf_counter()
+    
+    def run(self, raise_error=True):
+        for i, recording in enumerate(self.recording_list):
+            self._setup_recording(recording, self.output_folders[i])
         
-        # dimp log inside folders
+        # dump again params because some sorter do a folder reset (tdc)
+        self._dump_params()
+        
+        now = datetime.datetime.now()
+        
         log = {
             'sorter_name' : str(self.sorter_name),
             'sorter_version': str(self.get_sorter_version()),
             'datetime': now,
-            'run_time': float(t1-t0),
         }
+
+        t0 = time.perf_counter()
+        
+        if raise_error:
+            if not self.parallel:
+                for i, recording in enumerate(self.recording_list):
+                    self._run(recording, self.output_folders[i])
+            else:
+                # run in threads
+                threads = []
+                for i, recording in enumerate(self.recording_list):
+                    thread = threading.Thread(target=self._run, args=(recording, self.output_folders[i]))
+                    threads.append(thread)
+                    thread.start()
+                for thread in threads:
+                    thread.join()
+            t1 = time.perf_counter()
+            run_time = float(t1-t0)
+            
+            log['error'] = False
+            
+        else:
+            try:
+                if not self.parallel:
+                    for i, recording in enumerate(self.recording_list):
+                        self._run(recording, self.output_folders[i])
+                else:
+                    # run in threads
+                    threads = []
+                    for i, recording in enumerate(self.recording_list):
+                        thread = threading.Thread(target=self._run, args=(recording, self.output_folders[i]))
+                        threads.append(thread)
+                        thread.start()
+                    for thread in threads:
+                        thread.join()
+                t1 = time.perf_counter()
+                run_time = float(t1-t0)
+
+            except Exception as err:
+                run_time = None
+                log['error'] = True
+                log['error_trace'] = traceback.format_exc()
+        
+        log['run_time'] = run_time
+        
+        # dump log inside folders
         for output_folder in self.output_folders:
             with open(str(output_folder / 'spikeinterface_log.json'), 'w', encoding='utf8') as f:
                 json.dump(_check_json(log), f, indent=4)
 
-
         if self.verbose:
             print('{} run time {:0.2f}s'.format(self.sorter_name, t1 - t0))
 
-        return t1 - t0
+        return run_time
 
     @staticmethod
     def get_sorter_version():

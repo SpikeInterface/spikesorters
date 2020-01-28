@@ -15,25 +15,14 @@ from .sorterlist import sorter_dict, run_sorter
 
 def _run_one(arg_list):
     # the multiprocessing python module force to have one unique tuple argument
-    rec_name, recording, sorter_name, output_folder, grouping_property, verbose, params = arg_list
-    try:
-        SorterClass = sorter_dict[sorter_name]
-        sorter = SorterClass(recording=recording, output_folder=output_folder, grouping_property=grouping_property,
-                             parallel=True, verbose=verbose, delete_output_folder=False)
-        sorter.set_params(**params)
+    recording, sorter_name, output_folder, grouping_property, verbose, params = arg_list
 
-        run_time = sorter.run()
-        with open(output_folder / 'run_log.txt', mode='w') as f:
-            f.write('run_time: {}\n'.format(run_time))
-
-    except Exception as err:
-        run_time = None
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
-        with open(output_folder / 'run_log.txt', mode='w') as f:
-            f.write('*** ERROR IN SORTER ***\n\n')
-            traceback.print_tb(err.__traceback__, file=f)
-
+    SorterClass = sorter_dict[sorter_name]
+    sorter = SorterClass(recording=recording, output_folder=output_folder, 
+                    grouping_property=grouping_property, parallel=False,
+                    verbose=verbose, delete_output_folder=False)
+    sorter.set_params(**params)
+    sorter.run(raise_error=False)
 
 def run_sorters(sorter_list, recording_dict_or_list,  working_folder, sorter_params={}, grouping_property=None,
                 mode='raise', engine=None, engine_kargs={}, verbose=False, with_output=True):
@@ -144,7 +133,7 @@ def run_sorters(sorter_list, recording_dict_or_list,  working_folder, sorter_par
                 else:
                     raise(ValueError('mode not in raise, overwrite, keep'))
             params = sorter_params.get(sorter_name, {})
-            task_list.append((rec_name, recording, sorter_name, output_folder, grouping_property, verbose, params))
+            task_list.append((recording, sorter_name, output_folder, grouping_property, verbose, params))
 
     if engine is None or engine == 'loop':
         # simple loop in main process
