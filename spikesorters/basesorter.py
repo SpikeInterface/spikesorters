@@ -25,6 +25,7 @@ import shutil
 import os
 import datetime
 import json
+import traceback
 
 import numpy as np
 
