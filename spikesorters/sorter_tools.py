@@ -50,3 +50,14 @@ def _call_command_split(command_list):
         call(command_list)
     except CalledProcessError as e:
         raise Exception(e.output)
+
+def get_git_commit(git_folder, shorten=True):
+    try:
+        commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=_hsPath).decode('utf8').strip()
+        if shorten:
+            commit = commit[:12]
+    except:
+        commit = None
+    return commit
+
+    
