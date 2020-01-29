@@ -7,6 +7,7 @@ import multiprocessing
 import shutil
 import json
 import traceback
+import json
 
 import spikeextractors as se
 
@@ -154,11 +155,12 @@ def run_sorters(sorter_list, recording_dict_or_list,  working_folder, sorter_par
 
 def is_log_ok(output_folder):
     # log is OK when run_time is not None
-    if os.path.exists(output_folder / 'run_log.txt'):
-        with open(output_folder / 'run_log.txt', mode='r') as logfile:
-            line = logfile.readline()
-            if 'run_time:' in line and 'ERROR' not in line:
-                return True
+    if os.path.exists(output_folder / 'spikeinterface_log.json'):
+        with open(output_folder / 'spikeinterface_log.json', mode='r', encoding='utf8') as logfile:
+            log = json.load(logfile)
+            run_time = log.get('run_time', None)
+            ok = run_time is not None
+            return ok
     return False
 
 
