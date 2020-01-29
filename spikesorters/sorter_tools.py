@@ -1,7 +1,7 @@
 """
 Some utils function to run command.
 """
-from subprocess import Popen, PIPE, CalledProcessError, call
+from subprocess import Popen, PIPE, CalledProcessError, call, check_output
 import shlex
 import sys
 
@@ -52,8 +52,10 @@ def _call_command_split(command_list):
         raise Exception(e.output)
 
 def get_git_commit(git_folder, shorten=True):
+    if git_folder is None:
+        return None
     try:
-        commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=_hsPath).decode('utf8').strip()
+        commit = check_output(['git', 'rev-parse', 'HEAD'], cwd=git_folder).decode('utf8').strip()
         if shorten:
             commit = commit[:12]
     except:

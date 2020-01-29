@@ -70,11 +70,11 @@ class KilosortSorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
-        commit = get_git_commit(self.kilosort_path)
+        commit = get_git_commit(os.getenv('KILOSORT_PATH', None))
         if commit is None:
             return 'unknown'
         else:
-            return 'git'+commit
+            return 'git-'+commit
 
     @staticmethod
     def set_kilosort_path(kilosort_path: str):
