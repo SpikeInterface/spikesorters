@@ -10,6 +10,11 @@ if getpass.getuser() == 'samuel':
     ironclust_path = '/home/samuel/Documents/Spikeinterface/ironclust'
     os.environ["IRONCLUST_PATH"] = ironclust_path
 
+    waveclust_path = '/home/samuel/Documents/Spikeinterface/wave_clus/'
+    os.environ["WAVECLUS_PATH"] = waveclust_path
+    
+    
+
 
 import pytest
 

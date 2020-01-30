@@ -77,11 +77,13 @@ class WaveClusSorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
-        commit = get_git_commit(os.getenv('WAVECLUS_PATH', None))
-        if commit is None:
+        p = os.getenv('WAVECLUS_PATH', None)
+        if p is None:
             return 'unknown'
         else:
-            return 'git-'+commit
+            with open(os.path.join(p, 'version.txt'), mode='r', encoding='utf8') as f:
+                version = f.readline()
+        return version
 
     @staticmethod
     def set_waveclus_path(waveclus_path: str):
