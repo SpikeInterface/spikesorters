@@ -179,7 +179,10 @@ class BaseSorter:
                 json.dump(_check_json(log), f, indent=4)
 
         if self.verbose:
-            print('{} run time {:0.2f}s'.format(self.sorter_name, t1 - t0))
+            if run_time is None:
+                print('Error running', self.sorter_name)
+            else:
+                print('{} run time {:0.2f}s'.format(self.sorter_name, t1 - t0))
 
         return run_time
 
