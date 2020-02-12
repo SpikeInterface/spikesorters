@@ -13,7 +13,7 @@ ops.chanMap             = fullfile('chanMap.mat'); % make this file using create
 ops.fshigh = {freq_min};
 
 % minimum firing rate on a "good" channel (0 to skip)
-ops.minfr_goodchannels = 0.1; 
+ops.minfr_goodchannels = {minfr_goodchannels};
 
 % threshold on projections (like in Kilosort1, can be different for last pass like [10 4])
 ops.Th = {projection_threshold};
