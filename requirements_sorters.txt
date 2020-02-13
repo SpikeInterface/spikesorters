@@ -10,6 +10,7 @@ klustakwik2==0.2.7
 
 # tridesclous
 pyqt5==5.13
+hdbscan
 tridesclous==1.4.2
 
 # ms4 : fail on travis
