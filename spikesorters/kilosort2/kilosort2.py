@@ -41,6 +41,7 @@ class Kilosort2Sorter(BaseSorter):
         'preclust_threshold': 8,
         'car': True,
         'minFR': 0.1,
+        'minfr_goodchannels': 0.1,
         'freq_min': 150,
         'sigmaMask': 30,
         'nPCs': 3
@@ -54,7 +55,9 @@ class Kilosort2Sorter(BaseSorter):
         {'name': 'preclust_threshold', 'type': 'float', 'value': 8, 'default': 8,
          'title': "Threshold crossings for pre-clustering"},
         {'name': 'car', 'type': 'bool', 'value': True, 'default': True, 'title': "car"},
-        {'name': 'minFR', 'type': 'float', 'value': 0.1, 'default': 0.1, 'title': "minFR"},
+        {'name': 'minFR', 'type': 'float', 'value': 0.1, 'default': 0.1, 'title': "Minimum FR to keep templates"},
+        {'name': 'minfr_goodchannels', 'type': 'float', 'value': 0.1, 'default': 0.1, 'title': "Minimum FR to consider "
+                                                                                               "a channel 'good'"},
         {'name': 'freq_min', 'type': 'float', 'value': 150.0, 'default': 150.0, 'title': "Low-pass frequency"},
         {'name': 'sigmaMask', 'type': 'int', 'value': 30, 'default': 30, 'title': "Sigma mask"},
         {'name': 'nPCs', 'type': 'int', 'value': 3, 'default': 3, 'title': "Number of principal components"},
@@ -145,6 +148,7 @@ class Kilosort2Sorter(BaseSorter):
             dat_file=str((output_folder / 'recording.dat').absolute()),
             projection_threshold=p['projection_threshold'],
             preclust_threshold=p['preclust_threshold'],
+            minfr_goodchannels = p['minfr_goodchannels'],
             minFR=p['minFR'],
             freq_min=p['freq_min'],
             sigmaMask=p['sigmaMask'],
