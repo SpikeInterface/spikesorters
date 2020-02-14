@@ -75,7 +75,7 @@ class HerdingspikesSorter(BaseSorter):
     
     @staticmethod
     def get_sorter_version():
-        return 'unknown'
+        return hs.__version__
 
     def _setup_recording(self, recording, output_folder):
         

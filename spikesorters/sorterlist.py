@@ -93,6 +93,14 @@ def installed_sorters():
     '''
     return sorted(list([s.sorter_name for s in installed_sorter_list]))
 
+def print_sorter_versions():
+    txt = ''
+    for name in installed_sorters():
+        version = sorter_dict[name].get_sorter_version()
+        txt += '{}: {}\n'.format(name, version)
+    txt = txt[:-1]
+    print(txt)
+    
 
 def get_default_params(sorter_name_or_class):
     '''

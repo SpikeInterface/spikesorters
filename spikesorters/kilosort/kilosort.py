@@ -9,6 +9,7 @@ import numpy as np
 import spikeextractors as se
 from ..basesorter import BaseSorter
 from ..utils.shellscript import ShellScript
+from ..sorter_tools import get_git_commit
 
 
 def check_if_installed(kilosort_path: Union[str, None]):
@@ -69,7 +70,11 @@ class KilosortSorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
-        return 'unknown'
+        commit = get_git_commit(os.getenv('KILOSORT_PATH', None))
+        if commit is None:
+            return 'unknown'
+        else:
+            return 'git-'+commit
 
     @staticmethod
     def set_kilosort_path(kilosort_path: str):

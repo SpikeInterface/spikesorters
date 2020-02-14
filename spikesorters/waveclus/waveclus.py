@@ -8,6 +8,7 @@ import spikeextractors as se
 from ..basesorter import BaseSorter
 from ..utils.ssmdarecordingextractor import SSMdaRecordingExtractor
 from ..utils.shellscript import ShellScript
+from ..sorter_tools import get_git_commit
 
 
 def check_if_installed(waveclus_path: Union[str, None]):
@@ -76,7 +77,13 @@ class WaveClusSorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
-        return 'unknown'
+        p = os.getenv('WAVECLUS_PATH', None)
+        if p is None:
+            return 'unknown'
+        else:
+            with open(os.path.join(p, 'version.txt'), mode='r', encoding='utf8') as f:
+                version = f.readline()
+        return version
 
     @staticmethod
     def set_waveclus_path(waveclus_path: str):
