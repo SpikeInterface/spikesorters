@@ -93,7 +93,7 @@ def installed_sorters():
     '''
     return sorted(list([s.sorter_name for s in installed_sorter_list]))
 
-def print_sorter_version():
+def print_sorter_versions():
     txt = ''
     for name in installed_sorters():
         version = sorter_dict[name].get_sorter_version()

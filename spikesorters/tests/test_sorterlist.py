@@ -18,14 +18,14 @@ if getpass.getuser() == 'samuel':
 
 import pytest
 
-from spikesorters import print_sorter_version
+from spikesorters import print_sorter_versions
 
 
-def test_print_sorter_version():
-    print_sorter_version()
+def test_print_sorter_versions():
+    print_sorter_versions()
 
 
 
 
 if __name__ == '__main__':
-    test_print_sorter_version()
+    test_print_sorter_versions()
