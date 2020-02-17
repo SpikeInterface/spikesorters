@@ -31,7 +31,7 @@ class SpykingcircusSorter(BaseSorter):
         'template_width_ms': 3,  # Spyking circus parameter
         'filter': True,
         'merge_spikes': True,
-        'auto_merge': 0.5,
+        'auto_merge': 0.75,
         'num_workers': None,
         'whitening_max_elts': 1000,  # I believe it relates to subsampling and affects compute time
         'clustering_max_elts': 10000,  # I believe it relates to subsampling and affects compute time
@@ -48,7 +48,7 @@ class SpykingcircusSorter(BaseSorter):
          'title': "If True, the recording will be filtered"},
         {'name': 'merge_spikes', 'type': 'bool', 'value': True, 'default': True,
          'title': "If True, spikes will be merged at the end."},
-        {'name': 'auto_merge', 'type': 'float', 'value': 0.5, 'default': 0.5, 'title': "Auto-merge value"},
+        {'name': 'auto_merge', 'type': 'float', 'value': 0.75, 'default': 0.75, 'title': "Auto-merge value"},
         {'name': 'num_workers', 'type': 'int', 'value': None, 'default': None, 'title': "Number of parallel workers"},
         {'name': 'whitening_max_elts', 'type': 'int', 'value': 1000, 'default': 1000, 'title': "Related to subsampling"},
         {'name': 'clustering_max_elts', 'type': 'int', 'value': 10000, 'default': 10000, 'title': "Related to subsampling"},
