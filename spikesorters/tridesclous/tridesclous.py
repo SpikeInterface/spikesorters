@@ -33,12 +33,11 @@ class TridesclousSorter(BaseSorter):
         'lowpass_freq': 5000.,
         'peak_sign': '-',
         'relative_threshold': 5,
-        'peak_span_ms': 0.3,
+        'peak_span_ms': 0.7,
         'wf_left_ms': -2.0,
         'wf_right_ms': 3.0,
-        'alien_value_threshold': None,  # in benchmark there are no artifact
         'feature_method': 'auto',  # peak_max/global_pca/by_channel_pca
-        'cluster_method': 'auto',  # sawchaincut/dbscan/kmeans
+        'cluster_method': 'auto',  # pruningshears/dbscan/kmeans
         'clean_catalogue_gui': False,
     }
 
@@ -54,8 +53,6 @@ class TridesclousSorter(BaseSorter):
          'title': "Waveform length before peak (ms)"},
         {'name': 'wf_right_ms', 'type': 'float', 'value': 3.0, 'default': 3.0,
          'title': "Waveform length after peak (ms)"},
-        {'name': 'alien_value_threshold', 'type': 'float', 'value': None, 'default': None,
-         'title': "Threshold for artifacts"},
         {'name': 'feature_method', 'type': 'str', 'value': 'auto', 'default': 'auto',
          'title': "Feature Extraction Method"},
         {'name': 'cluster_method', 'type': 'str', 'value': 'auto', 'default': 'auto', 'title': "Clustering Method"},
@@ -190,10 +187,9 @@ def make_nested_tdc_params(tdc_dataio, chan_grp,
                            lowpass_freq=5000.,
                            peak_sign='-',
                            relative_threshold=5,
-                           peak_span_ms=0.3,
+                           peak_span_ms=0.7,
                            wf_left_ms=-2.0,
                            wf_right_ms=3.0,
-                           alien_value_threshold=None,
                            feature_method='auto',
                            cluster_method='auto'):
     params = tdc.get_auto_params_for_catalogue(tdc_dataio, chan_grp=chan_grp)
@@ -207,8 +203,6 @@ def make_nested_tdc_params(tdc_dataio, chan_grp,
 
     params['extract_waveforms']['wf_left_ms'] = wf_left_ms
     params['extract_waveforms']['wf_right_ms'] = wf_right_ms
-
-    params['clean_waveforms']['alien_value_threshold'] = alien_value_threshold
 
     if feature_method != 'auto':
         params['feature_method'] = feature_method
