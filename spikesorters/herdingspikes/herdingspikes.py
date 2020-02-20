@@ -143,7 +143,7 @@ class HerdingspikesSorter(BaseSorter):
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        return se.HS2SortingExtractor(file_path=Path(output_folder) / 'HS2_sorted.hdf5')
+        return se.HS2SortingExtractor(file_path=Path(output_folder) / 'HS2_sorted.hdf5', load_unit_info=True)
 
 
 HerdingspikesSorter._default_params = {
