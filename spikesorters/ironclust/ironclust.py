@@ -38,18 +38,18 @@ class IronClustSorter(BaseSorter):
     _default_params = dict(
         detect_sign=-1,  # Use -1, 0, or 1, depending on the sign of the spikes in the recording
         adjacency_radius=50,  # Use -1 to include all channels in every neighborhood
-        adjacency_radius_out=75,  # Use -1 to include all channels in every neighborhood
+        adjacency_radius_out=100,  # Use -1 to include all channels in every neighborhood
         detect_threshold=4,  # detection threshold
         prm_template_name='',  # .prm template file name
         freq_min=300,
-        freq_max=6000,
-        merge_thresh=0.99,  # Threshold for automated merging
-        pc_per_chan=3,  # Number of principal components per channel
+        freq_max=0,
+        merge_thresh=0.97,  # Threshold for automated merging
+        pc_per_chan=9,  # Number of principal components per channel
         whiten=False,  # Whether to do channel whitening as part of preprocessing
         filter_type='bandpass',  # none, bandpass, wiener, fftdiff, ndiff
         filter_detect_type='none',  # none, bandpass, wiener, fftdiff, ndiff
-        common_ref_type='none',  # none, mean, median
-        batch_sec_drift=300,  # batch duration in seconds. clustering time duration
+        common_ref_type='trimmean',  # none, mean, median
+        batch_sec_drift=600,  # batch duration in seconds. clustering time duration
         step_sec_drift=20,  # compute anatomical similarity every n sec
         knn=30,  # K nearest neighbors
         min_count=30,  # Minimum cluster size
@@ -61,7 +61,11 @@ class IronClustSorter(BaseSorter):
         delta_cut=1,  # Cluster detection threshold (delta-cutoff)
         post_merge_mode=1,  # post merge mode
         sort_mode=1,  # sort mode
-        fParfor=False #parfor loop
+        fParfor=False, #parfor loop
+        filter=True, # Enable or disable filter
+        clip_pre=.5, # pre-peak clip duration in ms
+        clip_post=1, # post-peak clip duration in ms
+        merge_thresh_cc=1 #cross-correlogram merging threshold, set to 1 to disable
     )
 
     _extra_gui_params = [
@@ -91,6 +95,10 @@ class IronClustSorter(BaseSorter):
         {'name': 'delta_cut', 'type': 'int', 'value': 1, 'default': 1, 'title': "Cluster detection threshold (delta-cutoff)"},
         {'name': 'post_merge_mode', 'type': 'int', 'value': 1, 'default': 1, 'title': "post merge mode"},
         {'name': 'sort_mode', 'type': 'int', 'value': 1, 'default': 1, 'title': "sort mode"},
+        {'name': 'filter', 'type': 'bool', 'value': True, 'default': True, 'title': "filter on/off"},
+        {'name': 'clip_pre', 'type': 'float', 'value': .25, 'default': .25, 'title': "pre-peak clip duration in ms"},
+        {'name': 'clip_post', 'type': 'float', 'value': .75, 'default': .75, 'title': "post-peak clip duration in ms"},
+        {'name': 'merge_thresh_cc', 'type': 'float', 'value': 1, 'default': 1, 'title': "cross-correlogram merging threshold, set to 1 to disable"}        
     ]
 
     sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
