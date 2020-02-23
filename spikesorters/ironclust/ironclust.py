@@ -43,8 +43,8 @@ class IronClustSorter(BaseSorter):
         prm_template_name='',  # .prm template file name
         freq_min=300,
         freq_max=0,
-        merge_thresh=0.97,  # Threshold for automated merging
-        pc_per_chan=9,  # Number of principal components per channel
+        merge_thresh=0.95,  # Threshold for automated merging
+        pc_per_chan=6,  # Number of principal components per channel
         whiten=False,  # Whether to do channel whitening as part of preprocessing
         filter_type='bandpass',  # none, bandpass, wiener, fftdiff, ndiff
         filter_detect_type='none',  # none, bandpass, wiener, fftdiff, ndiff
@@ -63,8 +63,8 @@ class IronClustSorter(BaseSorter):
         sort_mode=1,  # sort mode
         fParfor=False, #parfor loop
         filter=True, # Enable or disable filter
-        clip_pre=.5, # pre-peak clip duration in ms
-        clip_post=1, # post-peak clip duration in ms
+        clip_pre=0.25, # pre-peak clip duration in ms
+        clip_post=0.75, # post-peak clip duration in ms
         merge_thresh_cc=1 #cross-correlogram merging threshold, set to 1 to disable
     )
 
