@@ -6,7 +6,6 @@ from spikesorters.tests.common_tests import SorterCommonTestSuite
 
 
 # This run several tests
-@pytest.mark.skipif(True, reason='travis bug not fixed yet')
 @pytest.mark.skipif(not HerdingspikesSorter.installed, reason='herdingspikes not installed')
 class HerdingspikesSorterCommonTestSuite(SorterCommonTestSuite, unittest.TestCase):
     SorterClass = HerdingspikesSorter
