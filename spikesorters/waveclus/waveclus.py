@@ -6,9 +6,7 @@ import copy
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
-from ..utils.ssmdarecordingextractor import SSMdaRecordingExtractor
 from ..utils.shellscript import ShellScript
-from ..sorter_tools import get_git_commit
 
 
 def check_if_installed(waveclus_path: Union[str, None]):
@@ -102,7 +100,7 @@ class WaveClusSorter(BaseSorter):
 
         dataset_dir = output_folder / 'waveclus_dataset'
         # Generate three files in the dataset directory: raw.mda, geom.csv, params.json
-        SSMdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir), _preserve_dtype=True)
+        se.MdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir))
 
     def _run(self, recording, output_folder):
         dataset_dir = output_folder / 'waveclus_dataset'

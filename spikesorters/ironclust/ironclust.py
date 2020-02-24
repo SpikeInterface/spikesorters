@@ -6,7 +6,6 @@ import sys
 
 import spikeextractors as se
 
-from ..utils.ssmdarecordingextractor import SSMdaRecordingExtractor
 from ..utils.shellscript import ShellScript
 from ..basesorter import BaseSorter
 
@@ -143,7 +142,7 @@ class IronClustSorter(BaseSorter):
 
         dataset_dir = output_folder / 'ironclust_dataset'
         # Generate three files in the dataset directory: raw.mda, geom.csv, params.json
-        SSMdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir), _preserve_dtype=True)
+        se.MdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir))
 
     def _run(self, recording: se.RecordingExtractor, output_folder: Path):
         dataset_dir = output_folder / 'ironclust_dataset'
