@@ -24,7 +24,6 @@ class SpykingcircusSorter(BaseSorter):
     requires_locations = False
 
     _default_params = {
-        'probe_file': None,
         'detect_sign': -1,  # -1 - 1 - 0
         'adjacency_radius': 200,  # Channel neighborhood adjacency radius corresponding to geom file
         'detect_threshold': 6,  # Threshold for detection
@@ -79,11 +78,11 @@ class SpykingcircusSorter(BaseSorter):
         p = self.params
         source_dir = Path(__file__).parent
 
-        # save prb file:
-        if p['probe_file'] is None:
-            p['probe_file'] = output_folder / 'probe.prb'
-            recording.save_to_probe_file(p['probe_file'], grouping_property=self.grouping_property,
-                                         radius=p['adjacency_radius'])
+        # save prb file
+        # note: only one group here, the split is done in basesorter
+        probe_file = output_folder / 'probe.prb'
+        recording.save_to_probe_file(probe_file, grouping_property=None,
+                                     radius=p['adjacency_radius'])
 
         # save binary file
         file_name = 'recording'
@@ -119,7 +118,7 @@ class SpykingcircusSorter(BaseSorter):
             auto = p['auto_merge']
         else:
             auto = 0
-        circus_config = ''.join(circus_config).format(sample_rate, p['probe_file'], p['template_width_ms'],
+        circus_config = ''.join(circus_config).format(sample_rate, probe_file, p['template_width_ms'],
                     p['detect_threshold'], detect_sign, p['filter'], p['whitening_max_elts'],
                     p['clustering_max_elts'], auto)
         with (output_folder / (file_name + '.params')).open('w') as f:

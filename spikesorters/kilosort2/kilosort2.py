@@ -106,23 +106,15 @@ class Kilosort2Sorter(BaseSorter):
             raise Exception(Kilosort2Sorter.installation_mesg)
         assert isinstance(Kilosort2Sorter.kilosort2_path, str)
 
-        # prepare electrode positions
-        if self.grouping_property == 'group' and 'group' in recording.get_shared_channel_property_names():
-            groups = recording.get_channel_groups()
-        else:
-            groups = [1] * recording.get_num_channels()
-        if 'location' in recording.get_shared_channel_property_names():
-            positions = np.array(recording.get_channel_locations())
-            if positions.shape[1] != 2:
-                raise RuntimeError("3D 'location' are not supported. Set 2D locations instead")
-        else:
-            print("'location' information is not found. Using linear configuration")
-            positions = np.array(
-                [[0, i_ch] for i_ch in range(recording.get_num_channels())])
+        # prepare electrode positions for this group (only one group, the split is done in basesorter)
+        groups = [1] * recording.get_num_channels()
+        positions = np.array(recording.get_channel_locations())
+        if positions.shape[1] != 2:
+            raise RuntimeError("3D 'location' are not supported. Set 2D locations instead")
 
         # save binary file
         input_file_path = output_folder / 'recording'
-        recording.write_to_binary_dat_format(input_file_path, dtype='int16')
+        recording.write_to_binary_dat_format(input_file_path, dtype='int16', chunk_mb=500)
 
         if p['car']:
             use_car = 1
