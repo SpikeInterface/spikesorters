@@ -98,10 +98,8 @@ class KlustaSorter(BaseSorter):
         else:
             # save binary file (chunk by hcunk) into a new file
             raw_filename = output_folder / 'recording.dat'
-            n_chan = recording.get_num_channels()
-            chunk_size = 2 ** 24 // n_chan
             dtype = 'int16'
-            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype=dtype, chunk_size=chunk_size)
+            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype=dtype, chunk_mb=500)
 
         if p['detect_sign'] < 0:
             detect_sign = 'negative'

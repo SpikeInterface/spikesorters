@@ -114,9 +114,7 @@ class Kilosort2Sorter(BaseSorter):
 
         # save binary file
         input_file_path = output_folder / 'recording'
-        n_chan = recording.get_num_channels()
-        chunk_size = 2 ** 24 // n_chan
-        recording.write_to_binary_dat_format(input_file_path, dtype='int16', chunk_size=chunk_size)
+        recording.write_to_binary_dat_format(input_file_path, dtype='int16', chunk_mb=500)
 
         if p['car']:
             use_car = 1

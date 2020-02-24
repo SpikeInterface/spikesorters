@@ -102,9 +102,7 @@ class TridesclousSorter(BaseSorter):
                 print('Local copy of recording')
             # save binary file (chunk by hcunk) into a new file
             raw_filename = output_folder / 'raw_signals.raw'
-            n_chan = recording.get_num_channels()
-            chunk_size = 2 ** 24 // n_chan
-            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype='float32', chunk_size=chunk_size)
+            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype='float32', chunk_mb=500)
             dtype = 'float32'
             offset = 0
 
