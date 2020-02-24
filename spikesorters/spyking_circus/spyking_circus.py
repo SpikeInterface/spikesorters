@@ -1,14 +1,12 @@
 import copy
 from pathlib import Path
 import os
-import shutil
 import numpy as np
 import sys
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
 from ..utils.shellscript import ShellScript
-from ..sorter_tools import _run_command_and_print_output
 
 try:
     import circus
@@ -26,16 +24,14 @@ class SpykingcircusSorter(BaseSorter):
     requires_locations = False
 
     _default_params = {
-        'probe_file': None,
         'detect_sign': -1,  # -1 - 1 - 0
         'adjacency_radius': 200,  # Channel neighborhood adjacency radius corresponding to geom file
         'detect_threshold': 6,  # Threshold for detection
         'template_width_ms': 3,  # Spyking circus parameter
         'filter': True,
         'merge_spikes': True,
-        'auto_merge': 0.5,
+        'auto_merge': 0.75,
         'num_workers': None,
-        'electrode_dimensions': None,
         'whitening_max_elts': 1000,  # I believe it relates to subsampling and affects compute time
         'clustering_max_elts': 10000,  # I believe it relates to subsampling and affects compute time
         }
@@ -51,9 +47,8 @@ class SpykingcircusSorter(BaseSorter):
          'title': "If True, the recording will be filtered"},
         {'name': 'merge_spikes', 'type': 'bool', 'value': True, 'default': True,
          'title': "If True, spikes will be merged at the end."},
-        {'name': 'auto_merge', 'type': 'float', 'value': 0.5, 'default': 0.5, 'title': "Auto-merge value"},
+        {'name': 'auto_merge', 'type': 'float', 'value': 0.75, 'default': 0.75, 'title': "Auto-merge value"},
         {'name': 'num_workers', 'type': 'int', 'value': None, 'default': None, 'title': "Number of parallel workers"},
-        {'name': 'electrode_dimensions', 'type': 'list', 'value': None, 'default': None, 'title': "The dimensions of the electrode"},
         {'name': 'whitening_max_elts', 'type': 'int', 'value': 1000, 'default': 1000, 'title': "Related to subsampling"},
         {'name': 'clustering_max_elts', 'type': 'int', 'value': 10000, 'default': 10000, 'title': "Related to subsampling"},
     ]
@@ -66,7 +61,7 @@ class SpykingcircusSorter(BaseSorter):
         >>> pip install spyking-circus
 
         Need MPICH working, for ubuntu do:
-            sudo apt install libmpich-dev
+            sudo apt install libmpich-dev mpich
 
         More information on Spyking-Circus at:
             https://spyking-circus.readthedocs.io/en/latest/
@@ -83,15 +78,29 @@ class SpykingcircusSorter(BaseSorter):
         p = self.params
         source_dir = Path(__file__).parent
 
-        # save prb file:
-        if p['probe_file'] is None:
-            p['probe_file'] = output_folder / 'probe.prb'
-            recording.save_to_probe_file(p['probe_file'], format='spyking_circus',
-                                         radius=p['adjacency_radius'], dimensions=p['electrode_dimensions'])
+        # save prb file
+        # note: only one group here, the split is done in basesorter
+        probe_file = output_folder / 'probe.prb'
+        recording.save_to_probe_file(probe_file, grouping_property=None,
+                                     radius=p['adjacency_radius'])
 
         # save binary file
         file_name = 'recording'
-        np.save(str(output_folder / file_name), recording.get_traces().astype('float32'))
+        # We should make this copy more efficient with chunks
+
+        from numpy.lib.format import open_memmap
+
+        n_chan = recording.get_num_channels()
+        n_frames = recording.get_num_frames()
+        chunk_size = 2 ** 24 // n_chan
+        npy_file = str(output_folder / file_name) + '.npy'
+        data_file = open_memmap(npy_file, shape=(n_chan, n_frames), dtype=np.float32, mode='w+')
+        nb_chunks = n_frames // chunk_size
+        for i in range(nb_chunks + 1):
+            start_frame = i*chunk_size
+            end_frame = min((i+1)*chunk_size, n_frames)
+            data = recording.get_traces(start_frame=start_frame, end_frame=end_frame).astype('float32')
+            data_file[:, start_frame:end_frame] = data
 
         if p['detect_sign'] < 0:
             detect_sign = 'negative'
@@ -109,14 +118,14 @@ class SpykingcircusSorter(BaseSorter):
             auto = p['auto_merge']
         else:
             auto = 0
-        circus_config = ''.join(circus_config).format(sample_rate, p['probe_file'], p['template_width_ms'],
+        circus_config = ''.join(circus_config).format(sample_rate, probe_file, p['template_width_ms'],
                     p['detect_threshold'], detect_sign, p['filter'], p['whitening_max_elts'],
                     p['clustering_max_elts'], auto)
         with (output_folder / (file_name + '.params')).open('w') as f:
             f.writelines(circus_config)
 
         if p['num_workers'] is None:
-            p['num_workers'] = np.maximum(1, int(os.cpu_count()))
+            p['num_workers'] = np.maximum(1, int(os.cpu_count()/2))
 
     def _run(self,  recording, output_folder):
         num_workers = self.params['num_workers']

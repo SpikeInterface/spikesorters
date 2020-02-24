@@ -1,3 +1,8 @@
+import os, getpass
+if getpass.getuser() == 'samuel':
+    ironclust_path = '/home/samuel/Documents/Spikeinterface/ironclust'
+    os.environ["IRONCLUST_PATH"] = ironclust_path
+
 import unittest
 import pytest
 import spikeextractors as se

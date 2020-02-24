@@ -9,8 +9,7 @@ import copy
 import spikeextractors as se
 from ..basesorter import BaseSorter
 from ..utils.shellscript import ShellScript
-
-from ..sorter_tools import _call_command_split
+from ..sorter_tools import get_git_commit
 
 
 def check_if_installed(kilosort2_path: Union[str, None]):
@@ -43,7 +42,7 @@ class Kilosort2Sorter(BaseSorter):
         'preclust_threshold': 8,
         'car': True,
         'minFR': 0.1,
-        'electrode_dimensions': None,
+        'minfr_goodchannels': 0.1,
         'freq_min': 150,
         'sigmaMask': 30,
         'nPCs': 3
@@ -57,9 +56,9 @@ class Kilosort2Sorter(BaseSorter):
         {'name': 'preclust_threshold', 'type': 'float', 'value': 8, 'default': 8,
          'title': "Threshold crossings for pre-clustering"},
         {'name': 'car', 'type': 'bool', 'value': True, 'default': True, 'title': "car"},
-        {'name': 'minFR', 'type': 'float', 'value': 0.1, 'default': 0.1, 'title': "minFR"},
-        {'name': 'electrode_dimensions', 'type': 'list', 'value': None, 'default': None,
-         'title': "Electrode dimensions of probe"},
+        {'name': 'minFR', 'type': 'float', 'value': 0.1, 'default': 0.1, 'title': "Minimum FR to keep templates"},
+        {'name': 'minfr_goodchannels', 'type': 'float', 'value': 0.1, 'default': 0.1, 'title': "Minimum FR to consider "
+                                                                                               "a channel 'good'"},
         {'name': 'freq_min', 'type': 'float', 'value': 150.0, 'default': 150.0, 'title': "Low-pass frequency"},
         {'name': 'sigmaMask', 'type': 'int', 'value': 30, 'default': 30, 'title': "Sigma mask"},
         {'name': 'nPCs', 'type': 'int', 'value': 3, 'default': 3, 'title': "Number of principal components"},
@@ -83,7 +82,11 @@ class Kilosort2Sorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
-        return 'unknown'
+        commit = get_git_commit(os.getenv('KILOSORT2_PATH', None))
+        if commit is None:
+            return 'unknown'
+        else:
+            return 'git-'+commit
 
     @staticmethod
     def set_kilosort2_path(kilosort2_path: str):
@@ -103,25 +106,15 @@ class Kilosort2Sorter(BaseSorter):
             raise Exception(Kilosort2Sorter.installation_mesg)
         assert isinstance(Kilosort2Sorter.kilosort2_path, str)
 
-        # prepare electrode positions
-        electrode_dimensions = p['electrode_dimensions']
-        if electrode_dimensions is None:
-            electrode_dimensions = [0, 1]
-        if 'group' in recording.get_shared_channel_property_names():
-            groups = recording.get_channel_groups()
-        else:
-            groups = [1] * recording.get_num_channels()
-        if 'location' in recording.get_shared_channel_property_names():
-            positions = np.array(recording.get_channel_locations())
-        else:
-            print("'location' information is not found. Using linear configuration")
-            positions = np.array(
-                [[0, i_ch] for i_ch in range(recording.get_num_channels())])
-            electrode_dimensions = [0, 1]
+        # prepare electrode positions for this group (only one group, the split is done in basesorter)
+        groups = [1] * recording.get_num_channels()
+        positions = np.array(recording.get_channel_locations())
+        if positions.shape[1] != 2:
+            raise RuntimeError("3D 'location' are not supported. Set 2D locations instead")
 
         # save binary file
         input_file_path = output_folder / 'recording'
-        recording.write_to_binary_dat_format(input_file_path, dtype='int16')
+        recording.write_to_binary_dat_format(input_file_path, dtype='int16', chunk_mb=500)
 
         if p['car']:
             use_car = 1
@@ -152,6 +145,7 @@ class Kilosort2Sorter(BaseSorter):
             dat_file=str((output_folder / 'recording.dat').absolute()),
             projection_threshold=p['projection_threshold'],
             preclust_threshold=p['preclust_threshold'],
+            minfr_goodchannels = p['minfr_goodchannels'],
             minFR=p['minFR'],
             freq_min=p['freq_min'],
             sigmaMask=p['sigmaMask'],
@@ -163,8 +157,8 @@ class Kilosort2Sorter(BaseSorter):
         kilosort2_channelmap_txt = kilosort2_channelmap_txt.format(
             nchan=recording.get_num_channels(),
             sample_rate=recording.get_sampling_frequency(),
-            xcoords=list(positions[:, electrode_dimensions[0]]),
-            ycoords=list(positions[:, electrode_dimensions[1]]),
+            xcoords=[p[0] for p in positions],
+            ycoords=[p[1] for p in positions],
             kcoords=groups
         )
 
@@ -187,7 +181,7 @@ class Kilosort2Sorter(BaseSorter):
         else:
             shell_cmd = '''
                         #!/bin/bash
-                        cd {tmpdir}
+                        cd "{tmpdir}"
                         matlab -nosplash -nodisplay -r kilosort2_master
                     '''.format(tmpdir=output_folder)
         shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)

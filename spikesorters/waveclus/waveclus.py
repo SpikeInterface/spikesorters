@@ -6,7 +6,6 @@ import copy
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
-from ..utils.ssmdarecordingextractor import SSMdaRecordingExtractor
 from ..utils.shellscript import ShellScript
 
 
@@ -76,7 +75,13 @@ class WaveClusSorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
-        return 'unknown'
+        p = os.getenv('WAVECLUS_PATH', None)
+        if p is None:
+            return 'unknown'
+        else:
+            with open(os.path.join(p, 'version.txt'), mode='r', encoding='utf8') as f:
+                version = f.readline()
+        return version
 
     @staticmethod
     def set_waveclus_path(waveclus_path: str):
@@ -95,7 +100,7 @@ class WaveClusSorter(BaseSorter):
 
         dataset_dir = output_folder / 'waveclus_dataset'
         # Generate three files in the dataset directory: raw.mda, geom.csv, params.json
-        SSMdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir), _preserve_dtype=True)
+        se.MdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir))
 
     def _run(self, recording, output_folder):
         dataset_dir = output_folder / 'waveclus_dataset'
@@ -155,11 +160,10 @@ class WaveClusSorter(BaseSorter):
         else:
             shell_cmd = '''
                 #!/bin/bash
-                cd {tmpdir}
+                cd "{tmpdir}"
                 matlab -nosplash -nodisplay -r run_waveclus
             '''.format(tmpdir=tmpdir)
         shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)
-        shell_cmd.write()
         shell_cmd.start()
 
         retcode = shell_cmd.wait()

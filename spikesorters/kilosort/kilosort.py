@@ -9,8 +9,7 @@ import numpy as np
 import spikeextractors as se
 from ..basesorter import BaseSorter
 from ..utils.shellscript import ShellScript
-
-from ..sorter_tools import _call_command_split
+from ..sorter_tools import get_git_commit
 
 
 def check_if_installed(kilosort_path: Union[str, None]):
@@ -41,7 +40,6 @@ class KilosortSorter(BaseSorter):
         'detect_threshold': 6,
         'car': True,
         'useGPU': True,
-        'electrode_dimensions': None,
         'freq_min': 300,
         'freq_max': 6000
     }
@@ -50,7 +48,6 @@ class KilosortSorter(BaseSorter):
         {'name': 'detect_threshold', 'type': 'float', 'value': 6.0, 'default': 6.0, 'title': "Relative detection threshold"},
         {'name': 'car', 'type': 'bool', 'value': True, 'default': True, 'title': "car"},
         {'name': 'useGPU', 'type': 'bool', 'value': True, 'default': True, 'title': "If True, will use GPU"},
-        {'name': 'electrode_dimensions', 'type': 'list', 'value': None, 'default': None, 'title': "Electrode dimensions of probe"},
         {'name': 'freq_min', 'type': 'float', 'value': 300.0, 'default': 300.0, 'title': "Low-pass frequency"},
         {'name': 'freq_max', 'type': 'float', 'value': 6000.0, 'default': 6000.0, 'title': "High-pass frequency"},
     ]
@@ -73,7 +70,11 @@ class KilosortSorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
-        return 'unknown'
+        commit = get_git_commit(os.getenv('KILOSORT_PATH', None))
+        if commit is None:
+            return 'unknown'
+        else:
+            return 'git-'+commit
 
     @staticmethod
     def set_kilosort_path(kilosort_path: str):
@@ -93,25 +94,15 @@ class KilosortSorter(BaseSorter):
             raise Exception(KilosortSorter.installation_mesg)
         assert isinstance(KilosortSorter.kilosort_path, str)
 
-        # prepare electrode positions
-        electrode_dimensions = p['electrode_dimensions']
-        if electrode_dimensions is None:
-            electrode_dimensions = [0, 1]
-        if 'group' in recording.get_shared_channel_property_names():
-            groups = recording.get_channel_groups()
-        else:
-            groups = [1] * recording.get_num_channels()
-        if 'location' in recording.get_shared_channel_property_names():
-            positions = np.array(recording.get_channel_locations())
-        else:
-            print("'location' information is not found. Using linear configuration")
-            positions = np.array(
-                [[0, i_ch] for i_ch in range(recording.get_num_channels())])
-            electrode_dimensions = [0, 1]
+        # prepare electrode positions for this group (only one group, the split is done in basesorter)
+        groups = [1] * recording.get_num_channels()
+        positions = np.array(recording.get_channel_locations())
+        if positions.shape[1] != 2:
+            raise RuntimeError("3D 'location' are not supported. Set 2D locations instead")
 
         # save binary file
         input_file_path = output_folder / 'recording'
-        recording.write_to_binary_dat_format(input_file_path, dtype='int16')
+        recording.write_to_binary_dat_format(input_file_path, dtype='int16', chunk_mb=500)
 
         # set up kilosort config files and run kilosort on data
         with (source_dir / 'kilosort_master.m').open('r') as f:
@@ -164,8 +155,8 @@ class KilosortSorter(BaseSorter):
         kilosort_channelmap_txt = kilosort_channelmap_txt.format(
             nchan=recording.get_num_channels(),
             sample_rate=recording.get_sampling_frequency(),
-            xcoords=list(positions[:, electrode_dimensions[0]]),
-            ycoords=list(positions[:, electrode_dimensions[1]]),
+            xcoords=[p[0] for p in positions],
+            ycoords=[p[1] for p in positions],
             kcoords=groups
         )
 
@@ -188,7 +179,7 @@ class KilosortSorter(BaseSorter):
         else:
             shell_cmd = '''
                         #!/bin/bash
-                        cd {tmpdir}
+                        cd "{tmpdir}"
                         matlab -nosplash -nodisplay -r kilosort_master
                     '''.format(tmpdir=output_folder)
         shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)

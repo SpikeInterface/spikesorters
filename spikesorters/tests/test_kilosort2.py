@@ -1,3 +1,9 @@
+import os, getpass
+if getpass.getuser() == 'samuel':
+    kilosort2_path = '/home/samuel/Documents/Spikeinterface/Kilosort2'
+    os.environ["KILOSORT2_PATH"] = kilosort2_path
+    
+    
 import unittest
 import pytest
 import spikeextractors as se

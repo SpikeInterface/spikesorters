@@ -33,13 +33,11 @@ class TridesclousSorter(BaseSorter):
         'lowpass_freq': 5000.,
         'peak_sign': '-',
         'relative_threshold': 5,
-        'peak_span_ms': 0.3,
+        'peak_span_ms': 0.7,
         'wf_left_ms': -2.0,
         'wf_right_ms': 3.0,
-        'nb_max': 20000,
-        'alien_value_threshold': None,  # in benchmark there are no artifact
         'feature_method': 'auto',  # peak_max/global_pca/by_channel_pca
-        'cluster_method': 'auto',  # sawchaincut/dbscan/kmeans
+        'cluster_method': 'auto',  # pruningshears/dbscan/kmeans
         'clean_catalogue_gui': False,
     }
 
@@ -55,9 +53,6 @@ class TridesclousSorter(BaseSorter):
          'title': "Waveform length before peak (ms)"},
         {'name': 'wf_right_ms', 'type': 'float', 'value': 3.0, 'default': 3.0,
          'title': "Waveform length after peak (ms)"},
-        {'name': 'nb_max', 'type': 'int', 'value': 20000, 'default': 20000, 'title': "nb_max"},
-        {'name': 'alien_value_threshold', 'type': 'float', 'value': None, 'default': None,
-         'title': "Threshold for artifacts"},
         {'name': 'feature_method', 'type': 'str', 'value': 'auto', 'default': 'auto',
          'title': "Feature Extraction Method"},
         {'name': 'cluster_method', 'type': 'str', 'value': 'auto', 'default': 'auto', 'title': "Clustering Method"},
@@ -90,9 +85,10 @@ class TridesclousSorter(BaseSorter):
             shutil.rmtree(str(output_folder))
         os.makedirs(str(output_folder))
 
-        # save prb file:
+        # save prb file
+        # note: only one group here, the split is done in basesorter
         probe_file = output_folder / 'probe.prb'
-        recording.save_to_probe_file(probe_file, format='spyking_circus')
+        recording.save_to_probe_file(probe_file, grouping_property=None)
 
         # source file
         if isinstance(recording, se.BinDatRecordingExtractor) and recording._time_axis == 0:
@@ -106,9 +102,7 @@ class TridesclousSorter(BaseSorter):
                 print('Local copy of recording')
             # save binary file (chunk by hcunk) into a new file
             raw_filename = output_folder / 'raw_signals.raw'
-            n_chan = recording.get_num_channels()
-            chunk_size = 2 ** 24 // n_chan
-            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype='float32', chunk_size=chunk_size)
+            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype='float32', chunk_mb=500)
             dtype = 'float32'
             offset = 0
 
@@ -163,7 +157,12 @@ class TridesclousSorter(BaseSorter):
 
             if self.verbose:
                 print(cc)
+            
+            t0 = time.perf_counter()
             cc.make_catalogue_for_peeler()
+            if self.verbose:
+                t1 = time.perf_counter()
+                print('make_catalogue_for_peeler', t1-t0)
 
             # apply Peeler (template matching)
             initial_catalogue = tdc_dataio.load_catalogue(chan_grp=chan_grp)
@@ -187,11 +186,9 @@ def make_nested_tdc_params(tdc_dataio, chan_grp,
                            lowpass_freq=5000.,
                            peak_sign='-',
                            relative_threshold=5,
-                           peak_span_ms=0.3,
+                           peak_span_ms=0.7,
                            wf_left_ms=-2.0,
                            wf_right_ms=3.0,
-                           nb_max=20000,
-                           alien_value_threshold=None,
                            feature_method='auto',
                            cluster_method='auto'):
     params = tdc.get_auto_params_for_catalogue(tdc_dataio, chan_grp=chan_grp)
@@ -205,9 +202,6 @@ def make_nested_tdc_params(tdc_dataio, chan_grp,
 
     params['extract_waveforms']['wf_left_ms'] = wf_left_ms
     params['extract_waveforms']['wf_right_ms'] = wf_right_ms
-    params['extract_waveforms']['nb_max'] = nb_max
-
-    params['clean_waveforms']['alien_value_threshold'] = alien_value_threshold
 
     if feature_method != 'auto':
         params['feature_method'] = feature_method

@@ -9,13 +9,16 @@ klusta
 klustakwik2==0.2.7
 
 # tridesclous
-tridesclous==1.2.2
+pyqt5==5.13
+hdbscan
+tridesclous==1.4.2
 
-# ms4
-ml_ms4alg==0.3.2
+# ms4 : fail on travis
+# ml_ms4alg==0.3.2
 
 # herdingspikes
-herdingspikes==0.3.3
+herdingspikes==0.3.7
 
 # spyking-circus
-spyking-circus==0.8.3 --no-binary=mpi4py
+pyqt5==5.13
+spyking-circus==0.9.2 --no-binary=mpi4py

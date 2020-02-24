@@ -6,7 +6,6 @@ import sys
 
 import spikeextractors as se
 
-from ..utils.ssmdarecordingextractor import SSMdaRecordingExtractor
 from ..utils.shellscript import ShellScript
 from ..basesorter import BaseSorter
 
@@ -38,18 +37,18 @@ class IronClustSorter(BaseSorter):
     _default_params = dict(
         detect_sign=-1,  # Use -1, 0, or 1, depending on the sign of the spikes in the recording
         adjacency_radius=50,  # Use -1 to include all channels in every neighborhood
-        adjacency_radius_out=75,  # Use -1 to include all channels in every neighborhood
-        detect_threshold=4.5,  # detection threshold
+        adjacency_radius_out=100,  # Use -1 to include all channels in every neighborhood
+        detect_threshold=4,  # detection threshold
         prm_template_name='',  # .prm template file name
         freq_min=300,
-        freq_max=6000,
-        merge_thresh=0.985,  # Threshold for automated merging
-        pc_per_chan=2,  # Number of principal components per channel
-        whiten=True,  # Whether to do channel whitening as part of preprocessing
+        freq_max=0,
+        merge_thresh=0.95,  # Threshold for automated merging
+        pc_per_chan=6,  # Number of principal components per channel
+        whiten=False,  # Whether to do channel whitening as part of preprocessing
         filter_type='bandpass',  # none, bandpass, wiener, fftdiff, ndiff
         filter_detect_type='none',  # none, bandpass, wiener, fftdiff, ndiff
-        common_ref_type='none',  # none, mean, median
-        batch_sec_drift=300,  # batch duration in seconds. clustering time duration
+        common_ref_type='trimmean',  # none, mean, median
+        batch_sec_drift=600,  # batch duration in seconds. clustering time duration
         step_sec_drift=20,  # compute anatomical similarity every n sec
         knn=30,  # K nearest neighbors
         min_count=30,  # Minimum cluster size
@@ -60,7 +59,12 @@ class IronClustSorter(BaseSorter):
         feature_type='gpca',  # gpca, pca, vpp, vmin, vminmax, cov, energy, xcov
         delta_cut=1,  # Cluster detection threshold (delta-cutoff)
         post_merge_mode=1,  # post merge mode
-        sort_mode=1  # sort mode
+        sort_mode=1,  # sort mode
+        fParfor=False, #parfor loop
+        filter=True, # Enable or disable filter
+        clip_pre=0.25, # pre-peak clip duration in ms
+        clip_post=0.75, # post-peak clip duration in ms
+        merge_thresh_cc=1 #cross-correlogram merging threshold, set to 1 to disable
     )
 
     _extra_gui_params = [
@@ -90,6 +94,10 @@ class IronClustSorter(BaseSorter):
         {'name': 'delta_cut', 'type': 'int', 'value': 1, 'default': 1, 'title': "Cluster detection threshold (delta-cutoff)"},
         {'name': 'post_merge_mode', 'type': 'int', 'value': 1, 'default': 1, 'title': "post merge mode"},
         {'name': 'sort_mode', 'type': 'int', 'value': 1, 'default': 1, 'title': "sort mode"},
+        {'name': 'filter', 'type': 'bool', 'value': True, 'default': True, 'title': "filter on/off"},
+        {'name': 'clip_pre', 'type': 'float', 'value': .25, 'default': .25, 'title': "pre-peak clip duration in ms"},
+        {'name': 'clip_post', 'type': 'float', 'value': .75, 'default': .75, 'title': "post-peak clip duration in ms"},
+        {'name': 'merge_thresh_cc', 'type': 'float', 'value': 1, 'default': 1, 'title': "cross-correlogram merging threshold, set to 1 to disable"}        
     ]
 
     sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
@@ -97,7 +105,7 @@ class IronClustSorter(BaseSorter):
         sorter_gui_params.append(param)
 
     installation_mesg = """\nTo use IronClust run:\n
-        >>> git clone https://github.com/jamesjun/ironclust
+        >>> git clone https://github.com/flatironinstitute/ironclust
     and provide the installation path by setting the IRONCLUST_PATH
     environment variables or using IronClustSorter.set_ironclust_path().\n\n
     """
@@ -107,6 +115,14 @@ class IronClustSorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
+        version_filename = os.path.join(os.environ["IRONCLUST_PATH"], 'matlab', 'version.txt')
+        if  os.path.exists(version_filename):
+            with open(version_filename, mode='r', encoding='utf8') as f:
+                line = f.readline()
+                d = {}
+                exec(line, None, d)
+                version = d['version']
+                return version
         return 'unknown'
 
     @staticmethod
@@ -126,7 +142,7 @@ class IronClustSorter(BaseSorter):
 
         dataset_dir = output_folder / 'ironclust_dataset'
         # Generate three files in the dataset directory: raw.mda, geom.csv, params.json
-        SSMdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir), _preserve_dtype=True)
+        se.MdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir))
 
     def _run(self, recording: se.RecordingExtractor, output_folder: Path):
         dataset_dir = output_folder / 'ironclust_dataset'
@@ -180,7 +196,7 @@ class IronClustSorter(BaseSorter):
         else:
             shell_cmd = '''
                 #!/bin/bash
-                cd {tmpdir}
+                cd "{tmpdir}"
                 matlab -nosplash -nodisplay -r run_ironclust
             '''.format(tmpdir=tmpdir)
 

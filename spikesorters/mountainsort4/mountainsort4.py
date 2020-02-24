@@ -6,7 +6,6 @@ from spiketoolkit.preprocessing import bandpass_filter, whiten
 
 from ..basesorter import BaseSorter
 
-
 try:
     import ml_ms4alg
 
@@ -74,6 +73,8 @@ class Mountainsort4Sorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
+        if hasattr(ml_ms4alg, '__version__'):
+            return ml_ms4alg.__version__
         return 'unknown'
 
     def _setup_recording(self, recording, output_folder):
@@ -94,10 +95,7 @@ class Mountainsort4Sorter(BaseSorter):
         if p['whiten']:
             recording = whiten(recording=recording)
 
-        # Check location
-        if 'location' not in recording.get_shared_channel_property_names():
-            for i, chan in enumerate(recording.get_channel_ids()):
-                recording.set_channel_property(chan, 'location', [0, i])
+        # Check location no more needed done in basesorter
 
         sorting = ml_ms4alg.mountainsort4(
             recording=recording,
