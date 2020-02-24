@@ -26,7 +26,6 @@ class KlustaSorter(BaseSorter):
     requires_locations = False
 
     _default_params = {
-        'probe_file': None,
         'adjacency_radius': None,
         'threshold_strong_std_factor': 5,
         'threshold_weak_std_factor': 2,
@@ -84,11 +83,11 @@ class KlustaSorter(BaseSorter):
 
         experiment_name = output_folder / 'recording'
 
-        # save prb file:
-        if p['probe_file'] is None:
-            p['probe_file'] = output_folder / 'probe.prb'
-            recording.save_to_probe_file(p['probe_file'], grouping_property=self.grouping_property,
-                                         radius=p['adjacency_radius'])
+        # save prb file 
+        # note: only one group here, the split is done in basesorter
+        probe_file = output_folder / 'probe.prb'
+        recording.save_to_probe_file(probe_file, grouping_property=None,
+                                     radius=p['adjacency_radius'])
 
         # source file
         if isinstance(recording, se.BinDatRecordingExtractor) and recording._time_axis == 0 and \
@@ -99,10 +98,8 @@ class KlustaSorter(BaseSorter):
         else:
             # save binary file (chunk by hcunk) into a new file
             raw_filename = output_folder / 'recording.dat'
-            n_chan = recording.get_num_channels()
-            chunk_size = 2 ** 24 // n_chan
             dtype = 'int16'
-            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype=dtype, chunk_size=chunk_size)
+            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype=dtype, chunk_mb=500)
 
         if p['detect_sign'] < 0:
             detect_sign = 'negative'
@@ -117,7 +114,7 @@ class KlustaSorter(BaseSorter):
 
         # Note: should use format with dict approach here
         klusta_config = ''.join(klusta_config).format(experiment_name,
-                                                      p['probe_file'], raw_filename,
+                                                      probe_file, raw_filename,
                                                       float(recording.get_sampling_frequency()),
                                                       recording.get_num_channels(), "'{}'".format(dtype),
                                                       p['threshold_strong_std_factor'], p['threshold_weak_std_factor'],

@@ -95,10 +95,7 @@ class Mountainsort4Sorter(BaseSorter):
         if p['whiten']:
             recording = whiten(recording=recording)
 
-        # Check location
-        if 'location' not in recording.get_shared_channel_property_names():
-            for i, chan in enumerate(recording.get_channel_ids()):
-                recording.set_channel_property(chan, 'location', [0, i])
+        # Check location no more needed done in basesorter
 
         sorting = ml_ms4alg.mountainsort4(
             recording=recording,
