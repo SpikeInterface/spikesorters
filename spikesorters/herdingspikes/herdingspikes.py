@@ -143,27 +143,27 @@ class HerdingspikesSorter(BaseSorter):
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        return se.HS2SortingExtractor(file_path=Path(output_folder) / 'HS2_sorted.hdf5')
+        return se.HS2SortingExtractor(file_path=Path(output_folder) / 'HS2_sorted.hdf5', load_unit_info=True)
 
 
 HerdingspikesSorter._default_params = {
     # core params
     'clustering_bandwidth': 5.0,
-    'clustering_alpha': 6.0,
+    'clustering_alpha': 7.0,
     'clustering_n_jobs': -1,
     'clustering_bin_seeding': True,
     'clustering_min_bin_freq': 8,
     'clustering_subset': None,
     'left_cutout_time': 0.2,
-    'right_cutout_time': 1.0,
-    'detection_threshold': 14,
+    'right_cutout_time': 1.6,
+    'detection_threshold': 15,
 
     # extra probe params
     'probe_masked_channels': [],
     'probe_inner_radius': 70,
     'probe_neighbor_radius': 90,
-    'probe_event_length': 0.2,
-    'probe_peak_jitter': 0.1,
+    'probe_event_length': 0.25,
+    'probe_peak_jitter': 0.18,
 
     # extra detection params
     'num_com_centers': 1,
