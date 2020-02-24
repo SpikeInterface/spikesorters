@@ -86,7 +86,15 @@ class BaseSorter:
             self.recording_list = recording.get_sub_extractors_by_property(grouping_property)
             n_group = len(self.recording_list)
             self.output_folders = [output_folder / str(i) for i in range(n_group)]
-
+            
+        # make dummy location if no location because some sorter need it
+        for recording in self.recording_list:
+            print('WARNING! No channel location given. Make dummy location.')
+            if 'location' not in recording.get_shared_channel_property_names():
+                channel_ids = recording.get_channel_ids()
+                locations = np.array([[0, i] for i in range(len(channel_ids))])
+                recording.set_channel_locations(channel_ids, locations)
+        
         # make folders
         for output_folder in self.output_folders:
             if not output_folder.is_dir():
@@ -194,11 +202,14 @@ class BaseSorter:
     def _setup_recording(self, recording, output_folder):
         # need be iplemented in subclass
         # this setup ONE recording (or SubExtractor)
+        # this must copy (or not) the trace in the appropirate format
+        # this must take care of geometry file (ORB, CSV, ...)
         raise NotImplementedError
 
     def _run(self, recording, output_folder):
         # need be iplemented in subclass
         # this run the sorter on ONE recording (or SubExtractor)
+        # this must run or generate the command line to run the sorter for one recording
         raise NotImplementedError
 
     @staticmethod

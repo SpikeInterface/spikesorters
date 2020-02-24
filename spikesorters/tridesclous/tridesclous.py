@@ -85,9 +85,10 @@ class TridesclousSorter(BaseSorter):
             shutil.rmtree(str(output_folder))
         os.makedirs(str(output_folder))
 
-        # save prb file:
+        # save prb file
+        # note: only one group here, the split is done in basesorter
         probe_file = output_folder / 'probe.prb'
-        recording.save_to_probe_file(probe_file, grouping_property=self.grouping_property)
+        recording.save_to_probe_file(probe_file, grouping_property=None)
 
         # source file
         if isinstance(recording, se.BinDatRecordingExtractor) and recording._time_axis == 0:
