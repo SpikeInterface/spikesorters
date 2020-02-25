@@ -229,11 +229,11 @@ class BaseSorter:
             sorting = sorting_list[0]
         else:
             for i, sorting in enumerate(sorting_list):
-                group = self.recording_list[i].get_channel_property(self.recording_list[i].get_channel_ids()[0],
-                                                                    'group')
+                property = self.recording_list[i].get_channel_property(self.recording_list[i].get_channel_ids()[0],
+                                                                       self.grouping_property)
                 if sorting is not None:
                     for unit in sorting.get_unit_ids():
-                        sorting.set_unit_property(unit, 'group', group)
+                        sorting.set_unit_property(unit, self.grouping_property, property)
 
             # reassemble the sorting outputs
             sorting_list = [sort for sort in sorting_list if sort is not None]
@@ -247,7 +247,6 @@ class BaseSorter:
                 shutil.rmtree(str(out), ignore_errors=True)
         sorting.set_sampling_frequency(self.recording_list[0].get_sampling_frequency())
         return sorting
-
 
 
 def _check_json(d):
