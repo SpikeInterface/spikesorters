@@ -231,11 +231,11 @@ class BaseSorter:
             sorting = sorting_list[0]
         else:
             for i, sorting in enumerate(sorting_list):
-                group = self.recording_list[i].get_channel_property(self.recording_list[i].get_channel_ids()[0],
-                                                                    'group')
+                property_name = self.recording_list[i].get_channel_property(self.recording_list[i].get_channel_ids()[0],
+                                                                            self.grouping_property)
                 if sorting is not None:
                     for unit in sorting.get_unit_ids():
-                        sorting.set_unit_property(unit, 'group', group)
+                        sorting.set_unit_property(unit, self.grouping_property, property_name)
 
             # reassemble the sorting outputs
             sorting_list = [sort for sort in sorting_list if sort is not None]
