@@ -94,13 +94,13 @@ class SpykingcircusSorter(BaseSorter):
         n_frames = recording.get_num_frames()
         chunk_size = 2 ** 24 // n_chan
         npy_file = str(output_folder / file_name) + '.npy'
-        data_file = open_memmap(npy_file, shape=(n_chan, n_frames), dtype=np.float32, mode='w+')
+        data_file = open_memmap(npy_file, shape=(n_frames, n_chan), dtype=np.float32, mode='w+')
         nb_chunks = n_frames // chunk_size
         for i in range(nb_chunks + 1):
             start_frame = i*chunk_size
             end_frame = min((i+1)*chunk_size, n_frames)
             data = recording.get_traces(start_frame=start_frame, end_frame=end_frame).astype('float32')
-            data_file[:, start_frame:end_frame] = data
+            data_file[start_frame:end_frame, :] = data.T
 
         if p['detect_sign'] < 0:
             detect_sign = 'negative'
