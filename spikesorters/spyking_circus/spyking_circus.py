@@ -25,7 +25,7 @@ class SpykingcircusSorter(BaseSorter):
 
     _default_params = {
         'detect_sign': -1,  # -1 - 1 - 0
-        'adjacency_radius': 200,  # Channel neighborhood adjacency radius corresponding to geom file
+        'adjacency_radius': 100,  # Channel neighborhood adjacency radius corresponding to geom file
         'detect_threshold': 6,  # Threshold for detection
         'template_width_ms': 3,  # Spyking circus parameter
         'filter': True,
@@ -39,7 +39,7 @@ class SpykingcircusSorter(BaseSorter):
     _extra_gui_params = [
         {'name': 'detect_sign', 'type': 'int', 'value': -1, 'default': -1,
          'title': "Use -1, 0, or 1, depending on the sign of the spikes in the recording"},
-        {'name': 'adjacency_radius', 'type': 'float', 'value': 200.0, 'default': 200.0,
+        {'name': 'adjacency_radius', 'type': 'float', 'value': 100.0, 'default': 100.0,
          'title': "Distance (in microns) of the adjacency radius"},
         {'name': 'detect_threshold', 'type': 'float', 'value': 6.0, 'default': 6.0, 'title': "Threshold for detection"},
         {'name': 'template_width_ms', 'type': 'float', 'value': 3.0, 'default': 3.0, 'title': "Width of templates (ms)"},
