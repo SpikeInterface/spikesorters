@@ -163,7 +163,7 @@ HerdingspikesSorter._default_params = {
     'probe_inner_radius': 70,
     'probe_neighbor_radius': 90,
     'probe_event_length': 0.26,
-    'probe_peak_jitter': 0.16,
+    'probe_peak_jitter': 0.2,
 
     # extra detection params
     'num_com_centers': 1,
