@@ -160,8 +160,8 @@ HerdingspikesSorter._default_params = {
 
     # extra probe params
     'probe_masked_channels': [],
-    'probe_inner_radius': 60, #70,
-    'probe_neighbor_radius': 80, #90,
+    'probe_inner_radius': 70,
+    'probe_neighbor_radius': 90,
     'probe_event_length': 0.26,
     'probe_peak_jitter': 0.16,
 
