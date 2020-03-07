@@ -41,9 +41,9 @@ class HerdingspikesSorter(BaseSorter):
             'title': "Number of spikes used to build clusters. All by default."},
         {'name': 'left_cutout_time', 'type': 'float', 'value': 0.2, 'default': 0.2,
             'title': "Cutout size before peak (ms)"},
-        {'name': 'right_cutout_time', 'type': 'float', 'value': 1.5, 'default': 1.5,
+        {'name': 'right_cutout_time', 'type': 'float', 'value': 0.8, 'default': 0.8,
             'title': "Cutout size after peak (ms)"},
-        {'name': 'detection_threshold', 'type': 'int', 'value': 14, 'default': 14,
+        {'name': 'detection_threshold', 'type': 'int', 'value': 15, 'default': 15,
             'title': "Detection threshold"},
         {'name': 'probe_masked_channels', 'type': 'list', 'value': [], 'default': [],
             'title': "Masked channels"},
@@ -155,8 +155,8 @@ HerdingspikesSorter._default_params = {
     'clustering_min_bin_freq': 10,
     'clustering_subset': None,
     'left_cutout_time': 0.2,
-    'right_cutout_time': 1.5,
-    'detection_threshold': 14,
+    'right_cutout_time': 0.8,
+    'detection_threshold': 15,
 
     # extra probe params
     'probe_masked_channels': [],
