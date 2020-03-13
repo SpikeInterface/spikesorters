@@ -20,4 +20,4 @@ tridesclous==1.4.2
 herdingspikes==0.3.7
 
 # spyking-circus
-spyking-circus==0.9.5 --no-binary=mpi4py
+spyking-circus==0.9.6 --no-binary=mpi4py
