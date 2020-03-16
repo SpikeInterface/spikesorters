@@ -49,7 +49,7 @@ class ShellScript():
             script_path = self._script_path
         else:
             tempdir = tempfile.mkdtemp(prefix='tmp_shellscript')
-            if 'win' in sys.platform:
+            if 'win' in sys.platform and sys.platform != 'darwin':
                 script_path = os.path.join(tempdir, 'script.bat')
             else:
                 script_path = os.path.join(tempdir, 'script.sh')

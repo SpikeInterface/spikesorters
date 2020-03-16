@@ -6,7 +6,7 @@ h5py
 tqdm
 click
 klusta
-klustakwik2==0.2.7
+klustakwik2==0.2.6
 
 # tridesclous
 pyqt5==5.13
@@ -14,7 +14,7 @@ hdbscan
 tridesclous==1.4.2
 
 # ms4 : fail on travis
-# ml_ms4alg==0.3.2
+ml_ms4alg==0.3.2
 
 # herdingspikes
 herdingspikes==0.3.7

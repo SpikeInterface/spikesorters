@@ -192,7 +192,7 @@ class IronClustSorter(BaseSorter):
         matlab_cmd = ShellScript(cmd, script_path=str(tmpdir / 'run_ironclust.m'))
         matlab_cmd.write()
 
-        if "win" in sys.platform:
+        if 'win' in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
                 cd {tmpdir}
                 matlab -nosplash -nodisplay -wait -r run_ironclust

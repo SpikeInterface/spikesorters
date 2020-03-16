@@ -173,7 +173,7 @@ class Kilosort2Sorter(BaseSorter):
         shutil.copy(str(source_dir.parent / 'utils' / 'constructNPYheader.m'), str(output_folder))
 
     def _run(self, recording, output_folder):
-        if "win" in sys.platform:
+        if 'win' in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
                         cd {tmpdir}
                         matlab -nosplash -nodisplay -wait -r kilosort2_master
