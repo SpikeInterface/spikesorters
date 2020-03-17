@@ -1,3 +1,4 @@
+from .hdsort import HDSortSorter
 from .klusta import KlustaSorter
 from .tridesclous import TridesclousSorter
 from .mountainsort4 import Mountainsort4Sorter
@@ -9,6 +10,7 @@ from .herdingspikes import HerdingspikesSorter
 from .waveclus import WaveClusSorter
 
 sorter_full_list = [
+    HDSortSorter,
     KlustaSorter,
     TridesclousSorter,
     Mountainsort4Sorter,
@@ -125,6 +127,36 @@ def get_default_params(sorter_name_or_class):
         raise (ValueError('Unknown sorter'))
 
     return SorterClass.default_params()
+
+
+def run_hdsort(*args, **kwargs):
+    """
+    Runs HDsort sorter
+
+    Parameters
+    ----------
+    *args: arguments of 'run_sorter'
+        recording: RecordingExtractor
+            The recording extractor to be spike sorted
+        output_folder: str or Path
+            Path to output folder
+        delete_output_folder: bool
+            If True, output folder is deleted (default False)
+        grouping_property: str
+            Splits spike sorting by 'grouping_property' (e.g. 'groups')
+        parallel: bool
+            If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
+        verbose: bool
+            If True, output is verbose
+    **kwargs: keyword args
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params('hdsort')
+
+    Returns
+    -------
+    sortingextractor: SortingExtractor
+        The spike sorted data
+    """
+    return run_sorter('hdsort', *args, **kwargs)
 
 
 def run_klusta(*args, **kwargs):
