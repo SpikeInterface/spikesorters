@@ -1,4 +1,4 @@
-%try
+try
     % prepare for kilosort execution
     addpath(genpath('{hdsort_path}'), '{utils_path}/mdaio');
 
@@ -79,10 +79,9 @@
     mr_mda = [firstColumn, spikeTimes, spikeClusters];
     output_mda = fullfile(outputFolder, 'firings.mda');
     writemda(mr_mda', 'firings.mda', 'float64');
-%catch
-%    fprintf('----------------------------------------');
-%    fprintf(lasterr());
-%    quit(1);
-%end
-%quit(0);
-
+catch
+    fprintf('----------------------------------------');
+    fprintf(lasterr());
+    quit(1);
+end
+quit(0);
