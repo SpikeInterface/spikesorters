@@ -106,24 +106,20 @@ class HDSortSorter(BaseSorter):
         source_dir = Path(__file__).parent
         utils_path = source_dir.parent / 'utils'
 
-        # if isinstance(recording, se.Mea1kRecordingExtractor):
-        #     self.params['file_name'] = str(Path(recording._file_path.absolute()))
-        #     self.params['file_format'] = 'mea1k'
-        # elif isinstance(recording, se.MaxOneRecordingExtractor):
-        #     self.params['file_name'] = str(Path(recording._file_path.absolute()))
-        #     self.params['file_format'] = 'mea1k'
-        # else:
-        #     file_name = output_folder / 'recording.h5'
-        #     # Generate three files dataset in Mea1k format
-        #     se.Mea1kRecordingExtractor.write_recording(recording=recording, save_path=str(file_name))
-        #     self.params['file_name'] = str(file_name.absolute())
-        #     self.params['file_format'] = 'mea1k'
-
-        file_name = output_folder / 'recording.h5'
-        # Generate three files dataset in Mea1k format
-        se.Mea1kRecordingExtractor.write_recording(recording=recording, save_path=str(file_name))
-        self.params['file_name'] = str(file_name.absolute())
-        self.params['file_format'] = 'mea1k'
+        if isinstance(recording, se.Mea1kRecordingExtractor):
+            self.params['file_name'] = str(Path(recording._file_path).absolute())
+            self.params['file_format'] = 'mea1k'
+            print('Using Mea1k format')
+        elif isinstance(recording, se.MaxOneRecordingExtractor):
+            self.params['file_name'] = str(Path(recording._file_path).absolute())
+            self.params['file_format'] = 'maxone'
+            print('Using MaxOne format')
+        else:
+            file_name = output_folder / 'recording.h5'
+            # Generate three files dataset in Mea1k format
+            se.Mea1kRecordingExtractor.write_recording(recording=recording, save_path=str(file_name))
+            self.params['file_name'] = str(file_name.absolute())
+            self.params['file_format'] = 'mea1k'
 
         p = self.params
         p['sort_name'] = 'hdsort_output'
@@ -209,7 +205,6 @@ class HDSortSorter(BaseSorter):
         samplerate_fname = str(output_folder / 'samplerate.txt')
         with open(samplerate_fname, 'r') as f:
             samplerate = float(f.read())
-        print(samplerate)
 
         sorting = se.MdaSortingExtractor(file_path=result_fname, sampling_frequency=samplerate)
 
