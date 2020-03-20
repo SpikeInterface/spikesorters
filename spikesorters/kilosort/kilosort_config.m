@@ -33,9 +33,9 @@ ops.nfullpasses         = 6;      % number of complete passes through data durin
 ops.maxFR               = 20000;  % maximum number of spikes to extract per batch (20000)		
 ops.fshigh              = {freq_min};    % frequency for high pass filtering
 ops.fslow               = {freq_max};   % frequency for low pass filtering (optional)
-ops.ntbuff              = 64;     % samples of symmetrical buffer for whitening and spike detection
+ops.ntbuff              = {ntbuff};     % samples of symmetrical buffer for whitening and spike detection
 ops.scaleproc           = 200;    % int16 scaling of whitened data
-ops.NT                  = {Nt}; %32*1024+ ops.ntbuff;
+ops.NT                  = {NT}; %32*1024+ ops.ntbuff;
 % this is the batch size (try decreasing if out of memory)
 % for GPU should be multiple of 32 + ntbuff		
 		

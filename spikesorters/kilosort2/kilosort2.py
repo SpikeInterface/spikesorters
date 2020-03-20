@@ -45,7 +45,10 @@ class Kilosort2Sorter(BaseSorter):
         'minfr_goodchannels': 0.1,
         'freq_min': 150,
         'sigmaMask': 30,
-        'nPCs': 3
+        'nPCs': 3,
+        'ntbuff': 64,
+        'nfilt_factor': 4,
+        'NT': None
     }
 
     _extra_gui_params = [
@@ -62,6 +65,13 @@ class Kilosort2Sorter(BaseSorter):
         {'name': 'freq_min', 'type': 'float', 'value': 150.0, 'default': 150.0, 'title': "Low-pass frequency"},
         {'name': 'sigmaMask', 'type': 'int', 'value': 30, 'default': 30, 'title': "Sigma mask"},
         {'name': 'nPCs', 'type': 'int', 'value': 3, 'default': 3, 'title': "Number of principal components"},
+        {'name': 'ntbuff', 'type': 'int', 'value': 64, 'default': 64, 'title': "Samples of symmetrical buffer "
+                                                                               "for whitening and spike detection"},
+        {'name': 'nfilt_factor', 'type': 'int', 'value': 4, 'default': 4,
+         'title': "Max number of clusters per good channel (even temporary ones)"},
+        {'name': 'NT', 'type': 'int', 'value': None, 'default': None, 'title': "Batch size (try decreasing if "
+                                                                               "out of memory) for GPU should be "
+                                                                               "multiple of 32 + ntbuff	"},
     ]
 
     sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
@@ -86,7 +96,7 @@ class Kilosort2Sorter(BaseSorter):
         if commit is None:
             return 'unknown'
         else:
-            return 'git-'+commit
+            return 'git-' + commit
 
     @staticmethod
     def set_kilosort2_path(kilosort2_path: str):
@@ -139,19 +149,27 @@ class Kilosort2Sorter(BaseSorter):
             config_path=str((output_folder / 'kilosort2_config.m').absolute()),
         )
 
+        if p['NT'] is None:
+            p['NT'] = 64 * 1024 + p['ntbuff']
+        else:
+            p['NT'] = p['NT'] // 32 * 32  # make sure is multiple of 32
+
         kilosort2_config_txt = kilosort2_config_txt.format(
             nchan=recording.get_num_channels(),
             sample_rate=recording.get_sampling_frequency(),
             dat_file=str((output_folder / 'recording.dat').absolute()),
             projection_threshold=p['projection_threshold'],
             preclust_threshold=p['preclust_threshold'],
-            minfr_goodchannels = p['minfr_goodchannels'],
+            minfr_goodchannels=p['minfr_goodchannels'],
             minFR=p['minFR'],
             freq_min=p['freq_min'],
             sigmaMask=p['sigmaMask'],
             kilo_thresh=p['detect_threshold'],
             use_car=use_car,
-            nPCs=p['nPCs']
+            nPCs=int(p['nPCs']),
+            ntbuff=int(p['ntbuff']),
+            nfilter_factor=int(p['nfilter_factor']),
+            NT=int(p['NT'])
         )
 
         kilosort2_channelmap_txt = kilosort2_channelmap_txt.format(
