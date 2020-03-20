@@ -67,8 +67,8 @@ class Kilosort2Sorter(BaseSorter):
         {'name': 'nPCs', 'type': 'int', 'value': 3, 'default': 3, 'title': "Number of principal components"},
         {'name': 'ntbuff', 'type': 'int', 'value': 64, 'default': 64, 'title': "Samples of symmetrical buffer "
                                                                                "for whitening and spike detection"},
-        {'name': 'Nfilt', 'type': 'int', 'value': None, 'default': None,
-         'title': "Max number of clusters per good channel (even temporary ones) 4"},
+        {'name': 'nfilt_factor', 'type': 'int', 'value': 4, 'default': 4,
+         'title': "Max number of clusters per good channel (even temporary ones)"},
         {'name': 'NT', 'type': 'int', 'value': None, 'default': None, 'title': "Batch size (try decreasing if "
                                                                                "out of memory) for GPU should be "
                                                                                "multiple of 32 + ntbuff	"},
