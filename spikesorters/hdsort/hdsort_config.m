@@ -8,9 +8,15 @@ P.parfor = {parfor};
 P.hpf = {hpf};
 P.hpf = {lpf};
 
+% leg creation
+P.legs.maxElPerGroup = {max_el_per_group};
+P.legs.minElPerGroup = {min_el_per_group};
+P.legs.addIfNearerThan = {add_if_nearer_than}; % always add direct neighbors
+P.legs.maxDistanceWithinGroup = {max_distance_within_group};
+
 % spike detection
 P.spikeDetection.method = '-';
-P.spikeDetection.thr = {detect_threshold}; %4.2
+P.spikeDetection.thr = {detect_threshold};
 P.artefactDetection.use = 0;
 
 % pre-clustering
