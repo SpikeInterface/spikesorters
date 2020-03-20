@@ -65,6 +65,13 @@ class Kilosort2Sorter(BaseSorter):
         {'name': 'freq_min', 'type': 'float', 'value': 150.0, 'default': 150.0, 'title': "Low-pass frequency"},
         {'name': 'sigmaMask', 'type': 'int', 'value': 30, 'default': 30, 'title': "Sigma mask"},
         {'name': 'nPCs', 'type': 'int', 'value': 3, 'default': 3, 'title': "Number of principal components"},
+        {'name': 'ntbuff', 'type': 'int', 'value': 64, 'default': 64, 'title': "Samples of symmetrical buffer "
+                                                                               "for whitening and spike detection"},
+        {'name': 'Nfilt', 'type': 'int', 'value': None, 'default': None,
+         'title': "Max number of clusters per good channel (even temporary ones) 4"},
+        {'name': 'NT', 'type': 'int', 'value': None, 'default': None, 'title': "Batch size (try decreasing if "
+                                                                               "out of memory) for GPU should be "
+                                                                               "multiple of 32 + ntbuff	"},
     ]
 
     sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)

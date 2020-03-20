@@ -41,15 +41,27 @@ class KilosortSorter(BaseSorter):
         'car': True,
         'useGPU': True,
         'freq_min': 300,
-        'freq_max': 6000
+        'freq_max': 6000,
+        'ntbuff': 64,
+        'Nfilt': None,
+        'NT': None
     }
 
     _extra_gui_params = [
-        {'name': 'detect_threshold', 'type': 'float', 'value': 6.0, 'default': 6.0, 'title': "Relative detection threshold"},
+        {'name': 'detect_threshold', 'type': 'float', 'value': 6.0, 'default': 6.0,
+         'title': "Relative detection threshold"},
         {'name': 'car', 'type': 'bool', 'value': True, 'default': True, 'title': "car"},
         {'name': 'useGPU', 'type': 'bool', 'value': True, 'default': True, 'title': "If True, will use GPU"},
         {'name': 'freq_min', 'type': 'float', 'value': 300.0, 'default': 300.0, 'title': "Low-pass frequency"},
         {'name': 'freq_max', 'type': 'float', 'value': 6000.0, 'default': 6000.0, 'title': "High-pass frequency"},
+        {'name': 'ntbuff', 'type': 'int', 'value': 64, 'default': 64, 'title': "Samples of symmetrical buffer "
+                                                                               "for whitening and spike detection"},
+        {'name': 'Nfilt', 'type': 'int', 'value': None, 'default': None, 'title': "Number of clusters to use "
+                                                                                  "(2-4 times more than Nchan, "
+                                                                                  "should be a multiple of 32)"},
+        {'name': 'NT', 'type': 'int', 'value': None, 'default': None, 'title': "Batch size (try decreasing if "
+                                                                               "out of memory) for GPU should be "
+                                                                               "multiple of 32 + ntbuff	"},
     ]
 
     sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
@@ -74,7 +86,7 @@ class KilosortSorter(BaseSorter):
         if commit is None:
             return 'unknown'
         else:
-            return 'git-'+commit
+            return 'git-' + commit
 
     @staticmethod
     def set_kilosort_path(kilosort_path: str):
@@ -113,10 +125,16 @@ class KilosortSorter(BaseSorter):
             kilosort_channelmap_txt = f.read()
 
         nchan = recording.get_num_channels()
-        Nfilt = (nchan // 32) * 32 * 8
-        if Nfilt == 0:
-            Nfilt = nchan * 8
-        Nt = 128 * 1024 + 64
+        if p['Nfilt'] is None:
+            p['Nfilt'] = (nchan // 32) * 32 * 8
+        else:
+            p['Nfilt'] = p['Nfilt'] // 32 * 32
+        if p['Nfilt'] == 0:
+            p['Nfilt'] = nchan * 8
+        if p['NT'] is None:
+            p['NT'] = 64 * 1024 + p['ntbuff']
+        else:
+            p['NT'] = p['NT'] // 32 * 32  # make sure is multiple of 32
 
         if p['useGPU']:
             useGPU = 1
@@ -144,8 +162,9 @@ class KilosortSorter(BaseSorter):
             nchan=recording.get_num_channels(),
             sample_rate=recording.get_sampling_frequency(),
             dat_file=str((output_folder / 'recording.dat').absolute()),
-            Nfilt=Nfilt,
-            Nt=Nt,
+            Nfilt=int(p['Nfilt']),
+            ntbuff=int(p['ntbuff']),
+            NT=int(p['Nt']),
             kilo_thresh=p['detect_threshold'],
             use_car=use_car,
             freq_min=p['freq_min'],
