@@ -3,6 +3,7 @@ import tempfile
 import shutil
 import signal
 import os
+from pathlib import Path
 import time
 import sys
 from typing import Optional, List, Any
@@ -46,16 +47,21 @@ class ShellScript():
 
     def start(self) -> None:
         if self._script_path is not None:
-            script_path = self._script_path
+            script_path = Path(self._script_path)
+            if script_path.suffix == '':
+                if 'win' in sys.platform and sys.platform != 'darwin':
+                    script_path = script_path.parent / (script_path.name + '.bat')
+                else:
+                    script_path = script_path.parent / (script_path.name + '.sh')
         else:
-            tempdir = tempfile.mkdtemp(prefix='tmp_shellscript')
+            tempdir = Path(tempfile.mkdtemp(prefix='tmp_shellscript'))
             if 'win' in sys.platform and sys.platform != 'darwin':
-                script_path = os.path.join(tempdir, 'script.bat')
+                script_path = tempdir / 'script.bat'
             else:
-                script_path = os.path.join(tempdir, 'script.sh')
+                script_path = tempdir / 'script.sh'
             self._dirs_to_remove.append(tempdir)
         self.write(script_path)
-        cmd = script_path
+        cmd = str(script_path)
         print('RUNNING SHELL SCRIPT: ' + cmd)
         self._start_time = time.time()
         self._process = subprocess.Popen(cmd)
@@ -74,7 +80,7 @@ class ShellScript():
         if self._keep_temp_files:
             return
         for dirpath in self._dirs_to_remove:
-            _rmdir_with_retries(dirpath, num_retries=5)
+            _rmdir_with_retries(str(dirpath), num_retries=5)
 
     def stop(self) -> None:
         if not self.isRunning():

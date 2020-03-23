@@ -129,7 +129,7 @@ class SpykingcircusSorter(BaseSorter):
 
     def _run(self,  recording, output_folder):
         num_workers = self.params['num_workers']
-        if 'win' in sys.platform:
+        if 'win' in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
                         spyking-circus {recording} -c {num_workers}
                     '''.format(recording=output_folder / 'recording.npy', num_workers=num_workers)
@@ -139,10 +139,10 @@ class SpykingcircusSorter(BaseSorter):
                         spyking-circus {recording} -c {num_workers}
                     '''.format(recording=output_folder / 'recording.npy', num_workers=num_workers)
 
-        shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)
-        shell_cmd.start()
+        shell_script = ShellScript(shell_cmd, script_path=str(output_folder / self.sorter_name))
+        shell_script.start()
 
-        retcode = shell_cmd.wait()
+        retcode = shell_script.wait()
 
         if retcode != 0:
             raise Exception('spykingcircus returned a non-zero exit code')
