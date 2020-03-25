@@ -128,7 +128,7 @@ class KlustaSorter(BaseSorter):
             f.writelines(klusta_config)
 
     def _run(self, recording, output_folder):
-        if 'win' in sys.platform:
+        if 'win' in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
                         klusta --overwrite {klusta_config}
                     '''.format(klusta_config=output_folder / 'config.prm')
@@ -138,10 +138,10 @@ class KlustaSorter(BaseSorter):
                         klusta {klusta_config} --overwrite
                     '''.format(klusta_config=output_folder / 'config.prm')
 
-        shell_cmd = ShellScript(shell_cmd, keep_temp_files=True)
-        shell_cmd.start()
+        shell_script = ShellScript(shell_cmd, script_path=str(output_folder / self.sorter_name))
+        shell_script.start()
 
-        retcode = shell_cmd.wait()
+        retcode = shell_script.wait()
 
         if retcode != 0:
             raise Exception('klusta returned a non-zero exit code')
