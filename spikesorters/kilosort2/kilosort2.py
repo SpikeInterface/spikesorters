@@ -168,7 +168,7 @@ class Kilosort2Sorter(BaseSorter):
             use_car=use_car,
             nPCs=int(p['nPCs']),
             ntbuff=int(p['ntbuff']),
-            nfilter_factor=int(p['nfilt_factor']),
+            nfilt_factor=int(p['nfilt_factor']),
             NT=int(p['NT'])
         )
 
