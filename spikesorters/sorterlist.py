@@ -29,7 +29,7 @@ installed_sorter_list = [s for s in sorter_full_list if s.installed]
 
 # generic laucnher via function approach
 def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_output_folder=False,
-               grouping_property=None, parallel=False, verbose=False, **params):
+               grouping_property=None, parallel=False, verbose=False, raise_error=True, **params):
     """
     Generic function to run a sorter via function approach.
 
@@ -57,6 +57,9 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
         If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
     verbose: bool
         If True, output is verbose
+    raise_error: bool
+        If True, an error is raised if spike sorting faisl (default). If False, the process continues and the error is
+        logged in the log file.
     **params: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params(sorter_name_or_class)'
 
