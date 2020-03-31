@@ -23,7 +23,6 @@ sorter_full_list = [
 ]
 
 sorter_dict = {s.sorter_name: s for s in sorter_full_list}
-
 installed_sorter_list = [s for s in sorter_full_list if s.installed]
 
 

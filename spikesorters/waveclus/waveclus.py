@@ -43,24 +43,6 @@ class WaveClusSorter(BaseSorter):
         'template_sdnum': 3,
     }
 
-    _extra_gui_params = [
-        {'name': 'detect_threshold', 'type': 'float', 'value': 5.0, 'default': 5.0,
-         'title': "Relative detection threshold"},
-        {'name': 'detect_sign', 'type': 'int', 'value': -1, 'default': -1,
-         'title': "Use -1, 0, or 1, depending on the sign of the spikes in the recording"},
-        {'name': 'feature_type', 'type': 'str', 'value': 'wav', 'default': 'wav',
-         'title': "Feature type ('wav', 'pca')"},
-        {'name': 'scales', 'type': 'int', 'value': 4, 'default': 4, 'title': "Number of wavelet scales"},
-        {'name': 'min_clus', 'type': 'int', 'value': 20, 'default': 20, 'title': "Minimum size of a cluster"},
-        {'name': 'maxtemp', 'type': 'float', 'value': 0.251, 'default': 0.251, 'title': "Maximum temperature for SPC"},
-        {'name': 'template_sdnum', 'type': 'int', 'value': 3, 'default': 3,
-         'title': "Max radius of cluster in std devs"},
-    ]
-
-    _gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
-    for param in _extra_gui_params:
-        _gui_params.append(param)
-
     installation_mesg = """\nTo use WaveClus run:\n
         >>> git clone https://github.com/csn-le/wave_clus
     and provide the installation path by setting the WAVECLUS_PATH

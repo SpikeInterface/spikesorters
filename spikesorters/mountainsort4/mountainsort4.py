@@ -38,29 +38,6 @@ class Mountainsort4Sorter(BaseSorter):
         'noise_overlap_threshold': 0.15,  # Use None for no automated curation'
     }
 
-    _extra_gui_params = [
-        {'name': 'detect_sign', 'type': 'int', 'value': -1, 'default': -1,
-         'title': "Use -1, 0, or 1, depending on the sign of the spikes in the recording"},
-        {'name': 'adjacency_radius', 'type': 'float', 'value': -1, 'default': -1,
-         'title': "Use -1 to include all channels in every neighborhood"},
-        {'name': 'freq_min', 'type': 'float', 'value': 300.0, 'default': 300.0, 'title': "Low-pass frequency"},
-        {'name': 'freq_max', 'type': 'float', 'value': 6000.0, 'default': 6000.0, 'title': "High-pass frequency"},
-        {'name': 'filter', 'type': 'bool', 'value': False, 'default': False,
-         'title': "Bandpass filters the recording if True"},
-        {'name': 'whiten', 'type': 'bool', 'value': True, 'default': True, 'title': "Whitens the recording if True"},
-        {'name': 'curation', 'type': 'bool', 'value': False, 'default': False, 'title': "Curates the output if True"},
-        {'name': 'num_workers', 'type': 'int', 'value': None, 'default': None, 'title': "Number of parallel workers"},
-        {'name': 'clip_size', 'type': 'int', 'value': 50, 'default': 50, 'title': "Clip size"},
-        {'name': 'detect_threshold', 'type': 'float', 'value': 3.0, 'default': 3.0, 'title': "Threshold for detection"},
-        {'name': 'detect_interval', 'type': 'int', 'value': 10, 'default': 10,
-         'title': "Minimum number of timepoints between events detected on the same channel"},
-        {'name': 'noise_overlap_threshold', 'type': 'float', 'value': 0.15, 'default': 0.15,
-         'title': "Use None for no automated curation"},
-    ]
-
-    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
-    for param in _extra_gui_params:
-        sorter_gui_params.append(param)
     installation_mesg = """
        >>> pip install ml_ms4alg
 

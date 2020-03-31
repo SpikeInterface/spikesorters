@@ -69,45 +69,6 @@ class IronClustSorter(BaseSorter):
         merge_overlap_thresh=0.95   #knn-overlap merge threshold
     )
 
-    _extra_gui_params = [
-        {'name': 'detect_sign', 'type': 'int', 'value': -1, 'default': -1,
-         'title': "Use -1, 0, or 1, depending on the sign of the spikes in the recording"},
-        {'name': 'adjacency_radius', 'type': 'float', 'value': 50.0, 'default': 50.0, 'title': "Use -1 to include all channels in every neighborhood"},
-        {'name': 'adjacency_radius_out', 'type': 'float', 'value': 75.0, 'default': 75.0, 'title': "Use -1 to include all channels in every neighborhood"},
-        {'name': 'detect_threshold', 'type': 'float', 'value': 4.5, 'default': 4.5, 'title': "Threshold for detection"},
-        {'name': 'freq_min', 'type': 'float', 'value': 300.0, 'default': 300.0, 'title': "Low-pass frequency"},
-        {'name': 'freq_max', 'type': 'float', 'value': 6000.0, 'default': 6000.0, 'title': "High-pass frequency"},
-        {'name': 'prm_template_name', 'type': 'str', 'value': '', 'default': '', 'title': ".prm template file name"},
-        {'name': 'merge_thresh', 'type': 'float', 'value': 0.985, 'default': 0.985, 'title': "Threshold for merging"},
-        {'name': 'pc_per_chan', 'type': 'int', 'value': 2, 'default': 2, 'title': "Number of principal components per channel"},
-        {'name': 'whiten', 'type': 'bool', 'value': True, 'default': True, 'title': "Whitens the recording if True"},
-        {'name': 'filter_type', 'type': 'str', 'value': 'bandpass', 'default': 'bandpass', 'title': "none, bandpass, wiener, fftdiff, ndiff"},
-        {'name': 'filter_detect_type', 'type': 'str', 'value': 'none', 'default': 'none', 'title': "none, bandpass, wiener, fftdiff, ndiff"},
-        {'name': 'common_ref_type', 'type': 'str', 'value': 'none', 'default': 'none', 'title': "none, bandpass, wiener, fftdiff, ndiff"},
-        {'name': 'batch_sec_drift', 'type': 'int', 'value': 300, 'default': 300, 'title': "batch duration in seconds. clustering time duration"},
-        {'name': 'step_sec_drift', 'type': 'int', 'value': 20, 'default': 20, 'title': "compute anatomical similarity every n sec"},
-        {'name': 'knn', 'type': 'int', 'value': 30, 'default': 30, 'title': "K nearest neighbors"},
-        {'name': 'min_count', 'type': 'int', 'value': 30, 'default': 30, 'title': "Minimum cluster size"},
-        {'name': 'fGpu', 'type': 'bool', 'value': True, 'default': True, 'title': "Use GPU if available"},
-        {'name': 'fft_thresh', 'type': 'float', 'value': 8.0, 'default': 8.0, 'title': "FFT-based noise peak threshold"},
-        {'name': 'fft_thresh_low', 'type': 'float', 'value': 0.0, 'default': 0.0, 'title': "FFT-based noise peak lower threshold (set to 0 to disable dual thresholding scheme)"},
-        {'name': 'nSites_whiten', 'type': 'int', 'value': 32, 'default': 32, 'title': "Number of adjacent channels to whiten"},
-        {'name': 'feature_type', 'type': 'str', 'value': 'gpca', 'default': 'gpca', 'title': "gpca, pca, vpp, vmin, vminmax, cov, energy, xcov"},
-        {'name': 'delta_cut', 'type': 'int', 'value': 1, 'default': 1, 'title': "Cluster detection threshold (delta-cutoff)"},
-        {'name': 'post_merge_mode', 'type': 'int', 'value': 1, 'default': 1, 'title': "post merge mode"},
-        {'name': 'sort_mode', 'type': 'int', 'value': 1, 'default': 1, 'title': "sort mode"},
-        {'name': 'filter', 'type': 'bool', 'value': True, 'default': True, 'title': "filter on/off"},
-        {'name': 'clip_pre', 'type': 'float', 'value': .25, 'default': .25, 'title': "pre-peak clip duration in ms"},
-        {'name': 'clip_post', 'type': 'float', 'value': .75, 'default': .75, 'title': "post-peak clip duration in ms"},
-        {'name': 'merge_thresh_cc', 'type': 'float', 'value': 1, 'default': 1, 'title': "cross-correlogram merging threshold, set to 1 to disable"},
-        {'name': 'nRepeat_merge', 'type': 'int', 'value': 3, 'default': 3, 'title': "number of repeats for merge"},
-        {'name': 'merge_overlap_thresh', 'type': 'float', 'value': .95, 'default': .95, 'title': "knn-overlap merge threshold"}
-    ]
-
-    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
-    for param in _extra_gui_params:
-        sorter_gui_params.append(param)
-
     installation_mesg = """\nTo use IronClust run:\n
         >>> git clone https://github.com/flatironinstitute/ironclust
     and provide the installation path by setting the IRONCLUST_PATH

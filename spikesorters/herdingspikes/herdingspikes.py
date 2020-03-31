@@ -25,44 +25,6 @@ class HerdingspikesSorter(BaseSorter):
     sorter_name = 'herdingspikes'
     installed = HAVE_HS
     requires_locations = True
-
-    _extra_gui_params = [
-        {'name': 'clustering_bandwidth', 'type': 'float', 'value': 5.0, 'default': 5.0,
-            'title': "Meanshift bandwidth"},
-        {'name': 'clustering_alpha', 'type': 'float', 'value': 6.0, 'default': 6.0,
-            'title': "Scalar for the PC components when clustering"},
-        {'name': 'clustering_n_jobs', 'type': 'int', 'value': -1, 'default': -1,
-            'title': "Number of cores. Default uses all cores."},
-        {'name': 'clustering_bin_seeding', 'type': 'bool', 'value': True,
-            'default': True, 'title': "Clustering bin seeding"},
-        {'name': 'clustering_min_bin_freq', 'type': 'int', 'value': 10, 'default': 10,
-            'title': "Minimum spikes per bin for bin seeding"},
-        {'name': 'clustering_subset', 'type': 'int', 'value': None, 'default': None,
-            'title': "Number of spikes used to build clusters. All by default."},
-        {'name': 'left_cutout_time', 'type': 'float', 'value': 0.2, 'default': 0.2,
-            'title': "Cutout size before peak (ms)"},
-        {'name': 'right_cutout_time', 'type': 'float', 'value': 0.8, 'default': 0.8,
-            'title': "Cutout size after peak (ms)"},
-        {'name': 'detection_threshold', 'type': 'int', 'value': 15, 'default': 15,
-            'title': "Detection threshold"},
-        {'name': 'probe_masked_channels', 'type': 'list', 'value': [], 'default': [],
-            'title': "Masked channels"},
-        {'name': 'freq_min', 'type': 'float', 'value': 300.0, 'default': 300.0,
-            'title': "Low-pass frequency"},
-        {'name': 'freq_max', 'type': 'float', 'value': 6000.0, 'default': 6000.0,
-            'title': "High-pass frequency"},
-        {'name': 'filter', 'type': 'bool', 'value': True, 'default': True,
-            'title': "Bandpass filters the recording if True"},
-        {'name': 'pre_scale', 'type': 'bool', 'value': True, 'default': True,
-            'title': "Scales recording traces to optimize HerdingSpikes performance"},
-        {'name': 'pre_scale_value', 'type': 'float', 'value': 20.0, 'default': 20.0,
-            'title': "Scale to apply in case of pre-scaling of traces"},
-    ]
-
-    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
-    for param in _extra_gui_params:
-        sorter_gui_params.append(param)
-
     _default_params = None  # later
 
     installation_mesg = """

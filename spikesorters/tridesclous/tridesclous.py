@@ -41,29 +41,6 @@ class TridesclousSorter(BaseSorter):
         'clean_catalogue_gui': False,
     }
 
-    _extra_gui_params = [
-        {'name': 'lowpass_freq', 'type': 'float', 'value': 400.0, 'default': 400.0, 'title': "Low-pass frequency"},
-        {'name': 'highpass_freq', 'type': 'float', 'value': 5000.0, 'default': 5000.0, 'title': "High-pass frequency"},
-        {'name': 'peak_sign', 'type': 'str', 'value': '-', 'default': '-', 'title': "Negative or positive peak sign"},
-        {'name': 'relative_threshold', 'type': 'float', 'value': 5.0, 'default': 5.0,
-         'title': "Relative threshold for detection"},
-        {'name': 'peak_span_ms', 'type': 'float', 'value': 0.3, 'default': 0.3,
-         'title': "Time span of peaks for detected events (ms)"},
-        {'name': 'wf_left_ms', 'type': 'float', 'value': -2.0, 'default': -2.0,
-         'title': "Waveform length before peak (ms)"},
-        {'name': 'wf_right_ms', 'type': 'float', 'value': 3.0, 'default': 3.0,
-         'title': "Waveform length after peak (ms)"},
-        {'name': 'feature_method', 'type': 'str', 'value': 'auto', 'default': 'auto',
-         'title': "Feature Extraction Method"},
-        {'name': 'cluster_method', 'type': 'str', 'value': 'auto', 'default': 'auto', 'title': "Clustering Method"},
-        {'name': 'clean_catalogue_gui', 'type': 'bool', 'value': False, 'default': False,
-         'title': "Clean catalogue with use interactive window"},
-    ]
-
-    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
-    for param in _extra_gui_params:
-        sorter_gui_params.append(param)
-
     installation_mesg = """
        >>> pip install https://github.com/tridesclous/tridesclous/archive/master.zip
 
