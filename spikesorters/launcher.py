@@ -19,13 +19,14 @@ def _run_one(arg_list):
     recording, sorter_name, output_folder, grouping_property, verbose, params = arg_list
 
     SorterClass = sorter_dict[sorter_name]
-    sorter = SorterClass(recording=recording, output_folder=output_folder, 
-                    grouping_property=grouping_property, parallel=False,
-                    verbose=verbose, delete_output_folder=False)
+    sorter = SorterClass(recording=recording, output_folder=output_folder,
+                         grouping_property=grouping_property, parallel=False,
+                         verbose=verbose, delete_output_folder=False)
     sorter.set_params(**params)
     sorter.run(raise_error=False)
 
-def run_sorters(sorter_list, recording_dict_or_list,  working_folder, sorter_params={}, grouping_property=None,
+
+def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_params={}, grouping_property=None,
                 mode='raise', engine=None, engine_kargs={}, verbose=False, with_output=True):
     """
     This run several sorter on several recording.
@@ -99,11 +100,11 @@ def run_sorters(sorter_list, recording_dict_or_list,  working_folder, sorter_par
 
     if isinstance(recording_dict_or_list, list):
         # in case of list
-        recording_dict = { 'recording_{}'.format(i): rec for i, rec in enumerate(recording_dict_or_list) }
+        recording_dict = {'recording_{}'.format(i): rec for i, rec in enumerate(recording_dict_or_list)}
     elif isinstance(recording_dict_or_list, dict):
         recording_dict = recording_dict_or_list
     else:
-        raise(ValueError('bad recording dict'))
+        raise (ValueError('bad recording dict'))
 
     # when  grouping_property is not None : split in subrecording
     # but the subrecording must have len=1 because otherwise it break
@@ -116,7 +117,6 @@ def run_sorters(sorter_list, recording_dict_or_list,  working_folder, sorter_par
             recording_dict[rec_name] = recording_list[0]
         grouping_property = None
 
-
     task_list = []
     for rec_name, recording in recording_dict.items():
         for sorter_name in sorter_list:
@@ -126,13 +126,13 @@ def run_sorters(sorter_list, recording_dict_or_list,  working_folder, sorter_par
             if is_log_ok(output_folder):
                 # check is output_folders exists
                 if mode == 'raise':
-                    raise(Exception('output folder already exists for {} {}'.format(rec_name, sorter_name)))
+                    raise (Exception('output folder already exists for {} {}'.format(rec_name, sorter_name)))
                 elif mode == 'overwrite':
                     shutil.rmtree(str(output_folder))
                 elif mode == 'keep':
                     continue
                 else:
-                    raise(ValueError('mode not in raise, overwrite, keep'))
+                    raise (ValueError('mode not in raise, overwrite, keep'))
             params = sorter_params.get(sorter_name, {})
             task_list.append((recording, sorter_name, output_folder, grouping_property, verbose, params))
 
