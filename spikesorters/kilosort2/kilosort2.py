@@ -51,33 +51,6 @@ class Kilosort2Sorter(BaseSorter):
         'NT': None
     }
 
-    _extra_gui_params = [
-        {'name': 'detect_threshold', 'type': 'float', 'value': 5.0, 'default': 5.0,
-         'title': "Relative detection threshold"},
-        {'name': 'projection_threshold', 'type': 'list of float', 'value': [10, 4], 'default': [10, 4],
-         'title': "Threshold on projections"},
-        {'name': 'preclust_threshold', 'type': 'float', 'value': 8, 'default': 8,
-         'title': "Threshold crossings for pre-clustering"},
-        {'name': 'car', 'type': 'bool', 'value': True, 'default': True, 'title': "car"},
-        {'name': 'minFR', 'type': 'float', 'value': 0.1, 'default': 0.1, 'title': "Minimum FR to keep templates"},
-        {'name': 'minfr_goodchannels', 'type': 'float', 'value': 0.1, 'default': 0.1, 'title': "Minimum FR to consider "
-                                                                                               "a channel 'good'"},
-        {'name': 'freq_min', 'type': 'float', 'value': 150.0, 'default': 150.0, 'title': "Low-pass frequency"},
-        {'name': 'sigmaMask', 'type': 'int', 'value': 30, 'default': 30, 'title': "Sigma mask"},
-        {'name': 'nPCs', 'type': 'int', 'value': 3, 'default': 3, 'title': "Number of principal components"},
-        {'name': 'ntbuff', 'type': 'int', 'value': 64, 'default': 64, 'title': "Samples of symmetrical buffer "
-                                                                               "for whitening and spike detection"},
-        {'name': 'nfilt_factor', 'type': 'int', 'value': 4, 'default': 4,
-         'title': "Max number of clusters per good channel (even temporary ones)"},
-        {'name': 'NT', 'type': 'int', 'value': None, 'default': None, 'title': "Batch size (try decreasing if "
-                                                                               "out of memory) for GPU should be "
-                                                                               "multiple of 32 + ntbuff	"},
-    ]
-
-    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
-    for param in _extra_gui_params:
-        sorter_gui_params.append(param)
-
     installation_mesg = """\nTo use Kilosort2 run:\n
         >>> git clone https://github.com/MouseLand/Kilosort2
     and provide the installation path by setting the KILOSORT2_PATH

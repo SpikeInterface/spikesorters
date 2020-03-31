@@ -35,7 +35,7 @@ class KilosortSorter(BaseSorter):
     kilosort_path: Union[str, None] = os.getenv('KILOSORT_PATH', None)
     installed = check_if_installed(kilosort_path)
     requires_locations = False
-
+    
     _default_params = {
         'detect_threshold': 6,
         'car': True,
@@ -46,27 +46,6 @@ class KilosortSorter(BaseSorter):
         'Nfilt': None,
         'NT': None
     }
-
-    _extra_gui_params = [
-        {'name': 'detect_threshold', 'type': 'float', 'value': 6.0, 'default': 6.0,
-         'title': "Relative detection threshold"},
-        {'name': 'car', 'type': 'bool', 'value': True, 'default': True, 'title': "car"},
-        {'name': 'useGPU', 'type': 'bool', 'value': True, 'default': True, 'title': "If True, will use GPU"},
-        {'name': 'freq_min', 'type': 'float', 'value': 300.0, 'default': 300.0, 'title': "Low-pass frequency"},
-        {'name': 'freq_max', 'type': 'float', 'value': 6000.0, 'default': 6000.0, 'title': "High-pass frequency"},
-        {'name': 'ntbuff', 'type': 'int', 'value': 64, 'default': 64, 'title': "Samples of symmetrical buffer "
-                                                                               "for whitening and spike detection"},
-        {'name': 'Nfilt', 'type': 'int', 'value': None, 'default': None, 'title': "Number of clusters to use "
-                                                                                  "(2-4 times more than Nchan, "
-                                                                                  "should be a multiple of 32)"},
-        {'name': 'NT', 'type': 'int', 'value': None, 'default': None, 'title': "Batch size (try decreasing if "
-                                                                               "out of memory) for GPU should be "
-                                                                               "multiple of 32 + ntbuff	"},
-    ]
-
-    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
-    for param in _extra_gui_params:
-        sorter_gui_params.append(param)
 
     installation_mesg = """\nTo use Kilosort run:\n
         >>> git clone https://github.com/cortex-lab/KiloSort

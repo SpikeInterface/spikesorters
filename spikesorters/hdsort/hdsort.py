@@ -31,7 +31,6 @@ class HDSortSorter(BaseSorter):
     hdsort_path: Union[str, None] = os.getenv('HDSORT_PATH', None)
     installed = check_if_installed(hdsort_path)
     requires_locations = False
-
     _default_params = {
         'detect_threshold': 4.2,
         'detect_sign': -1,  # -1 - 1
@@ -47,36 +46,6 @@ class HDSortSorter(BaseSorter):
         'chunk_size': 500000,
         'loop_mode': 'local_parfor',
     }
-
-    _extra_gui_params = [
-        {'name': 'detect_threshold', 'type': 'float', 'value': 4.2, 'default': 4.2,
-         'title': "Relative detection threshold"},
-        {'name': 'detect_sign', 'type': 'int', 'value': -1, 'default': -1,
-         'title': "Use -1, or 1, depending on the sign of the spikes in the recording"},
-        {'name': 'filter', 'type': 'bool', 'value': True, 'default': True,
-         'title': "If True, the recordings are filtered"},
-        {'name': 'parfor', 'type': 'bool', 'value': True, 'default': True, 'title': "Use parallel processing"},
-        {'name': 'hpf', 'type': 'float', 'value': 300, 'default': 300, 'title': "high-pass cutoff frequency"},
-        {'name': 'lpf', 'type': 'float', 'value': 7000, 'default': 7000, 'title': "low-pass cutoff frequency"},
-        {'name': 'max_el_per_group', 'type': 'int', 'value': 9, 'default': 9,
-         'title': "Maximum number of electrodes per local electrode group"},
-        {'name': 'min_el_per_group', 'type': 'int', 'value': 1, 'default': 1,
-         'title': "Minimum number of electrodes per local electrode group"},
-        {'name': 'add_if_nearer_than', 'type': 'float', 'value': 20, 'default': 20,
-         'title': "Add to electrode group if distance is closer than this value"},
-        {'name': 'max_distance_within_group', 'type': 'float', 'value': 52, 'default': 52,
-         'title': "Maximum distance within group"},
-        {'name': 'n_pc_dims', 'type': 'int', 'value': 6, 'default': 6,
-         'title': "Number of pc dimensions"},
-        {'name': 'chunk_size', 'type': 'int', 'value': 500000, 'default': 500000,
-         'title': "Chunk size in number of samples"},
-        {'name': 'loop_mode', 'type': 'str', 'value': 'local_parfor', 'default': 'local_parfor',
-         'title': "Loop mode for sorting ('local_parfor', 'loop', 'grid')"},
-    ]
-
-    _gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
-    for param in _extra_gui_params:
-        _gui_params.append(param)
 
     installation_mesg = """\nTo use HDSort run:\n
         >>> git clone https://git.bsse.ethz.ch/hima_public/HDsort.git

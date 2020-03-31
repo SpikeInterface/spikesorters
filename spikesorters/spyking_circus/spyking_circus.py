@@ -36,27 +36,6 @@ class SpykingcircusSorter(BaseSorter):
         'clustering_max_elts': 10000,  # I believe it relates to subsampling and affects compute time
         }
 
-    _extra_gui_params = [
-        {'name': 'detect_sign', 'type': 'int', 'value': -1, 'default': -1,
-         'title': "Use -1, 0, or 1, depending on the sign of the spikes in the recording"},
-        {'name': 'adjacency_radius', 'type': 'float', 'value': 100.0, 'default': 100.0,
-         'title': "Distance (in microns) of the adjacency radius"},
-        {'name': 'detect_threshold', 'type': 'float', 'value': 6.0, 'default': 6.0, 'title': "Threshold for detection"},
-        {'name': 'template_width_ms', 'type': 'float', 'value': 3.0, 'default': 3.0, 'title': "Width of templates (ms)"},
-        {'name': 'filter', 'type': 'bool', 'value': True, 'default': True,
-         'title': "If True, the recording will be filtered"},
-        {'name': 'merge_spikes', 'type': 'bool', 'value': True, 'default': True,
-         'title': "If True, spikes will be merged at the end."},
-        {'name': 'auto_merge', 'type': 'float', 'value': 0.75, 'default': 0.75, 'title': "Auto-merge value"},
-        {'name': 'num_workers', 'type': 'int', 'value': None, 'default': None, 'title': "Number of parallel workers"},
-        {'name': 'whitening_max_elts', 'type': 'int', 'value': 1000, 'default': 1000, 'title': "Related to subsampling"},
-        {'name': 'clustering_max_elts', 'type': 'int', 'value': 10000, 'default': 10000, 'title': "Related to subsampling"},
-    ]
-
-    sorter_gui_params = copy.deepcopy(BaseSorter.sorter_gui_params)
-    for param in _extra_gui_params:
-        sorter_gui_params.append(param)
-
     installation_mesg = """
         >>> pip install spyking-circus
 
