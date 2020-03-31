@@ -58,7 +58,7 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
     verbose: bool
         If True, output is verbose
     raise_error: bool
-        If True, an error is raised if spike sorting faisl (default). If False, the process continues and the error is
+        If True, an error is raised if spike sorting fails (default). If False, the process continues and the error is
         logged in the log file.
     **params: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params(sorter_name_or_class)'
@@ -151,6 +151,9 @@ def run_hdsort(*args, **kwargs):
             If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
         verbose: bool
             If True, output is verbose
+        raise_error: bool
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            is logged in the log file.
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('hdsort')
 
@@ -181,6 +184,9 @@ def run_klusta(*args, **kwargs):
             If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
         verbose: bool
             If True, output is verbose
+        raise_error: bool
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            is logged in the log file.
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('klusta')
 
@@ -211,6 +217,9 @@ def run_tridesclous(*args, **kwargs):
             If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
         verbose: bool
             If True, output is verbose
+        raise_error: bool
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            is logged in the log file.
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('tridesclous')
 
@@ -241,6 +250,9 @@ def run_mountainsort4(*args, **kwargs):
             If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
         verbose: bool
             If True, output is verbose
+        raise_error: bool
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            is logged in the log file.
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('mountainsort4')
 
@@ -271,6 +283,9 @@ def run_ironclust(*args, **kwargs):
             If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
         verbose: bool
             If True, output is verbose
+        raise_error: bool
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            is logged in the log file.
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('ironclust')
 
@@ -301,6 +316,9 @@ def run_kilosort(*args, **kwargs):
             If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
         verbose: bool
             If True, output is verbose
+        raise_error: bool
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            is logged in the log file.
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('kilosort')
 
@@ -331,6 +349,9 @@ def run_kilosort2(*args, **kwargs):
             If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
         verbose: bool
             If True, output is verbose
+        raise_error: bool
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            is logged in the log file.
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('kilosort2')
 
@@ -361,6 +382,9 @@ def run_spykingcircus(*args, **kwargs):
             If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
         verbose: bool
             If True, output is verbose
+        raise_error: bool
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            is logged in the log file.
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('spykingcircus')
 
@@ -391,6 +415,9 @@ def run_herdingspikes(*args, **kwargs):
             If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
         verbose: bool
             If True, output is verbose
+        raise_error: bool
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            is logged in the log file.
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('herdingspikes')
 
@@ -421,6 +448,9 @@ def run_waveclus(*args, **kwargs):
             If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
         verbose: bool
             If True, output is verbose
+        raise_error: bool
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            is logged in the log file.
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('waveclus')
 
