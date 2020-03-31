@@ -79,7 +79,7 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
     sorter = SorterClass(recording=recording, output_folder=output_folder, grouping_property=grouping_property,
                          parallel=parallel, verbose=verbose, delete_output_folder=delete_output_folder)
     sorter.set_params(**params)
-    sorter.run()
+    sorter.run(raise_error=raise_error)
     sortingextractor = sorter.get_result()
 
     return sortingextractor
