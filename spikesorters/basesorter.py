@@ -30,6 +30,7 @@ import traceback
 import numpy as np
 
 import spikeextractors as se
+from spikeextractors.baseextractor import _check_json
 
 
 class BaseSorter:
@@ -76,7 +77,7 @@ class BaseSorter:
             self.recording_list = recording.get_sub_extractors_by_property(grouping_property)
             n_group = len(self.recording_list)
             self.output_folders = [output_folder / str(i) for i in range(n_group)]
-            
+
         # make dummy location if no location because some sorter need it
         for recording in self.recording_list:
             if 'location' not in recording.get_shared_channel_property_names():
@@ -84,7 +85,7 @@ class BaseSorter:
                 channel_ids = recording.get_channel_ids()
                 locations = np.array([[0, i] for i in range(len(channel_ids))])
                 recording.set_channel_locations(channel_ids, locations)
-        
+
         # make folders
         for output_folder in self.output_folders:
             if not output_folder.is_dir():
@@ -103,32 +104,35 @@ class BaseSorter:
         if len(bad_params) > 0:
             raise AttributeError('Bad parameters: ' + str(bad_params))
         self.params.update(params)
-        
+
         # dump parameters inside the folder with json
         self._dump_params()
-    
+
     def _dump_params(self):
-        for output_folder in self.output_folders:
+        for output_folder, recording in zip(self.output_folders, self.recording_list):
             with open(str(output_folder / 'spikeinterface_params.json'), 'w', encoding='utf8') as f:
-                json.dump(_check_json(self.params), f, indent=4)
-    
+                params = dict()
+                params['sorter_params'] = self.params
+                params['recording'] = recording.make_serialized_dict()
+                json.dump(_check_json(params), f, indent=4)
+
     def run(self, raise_error=True):
         for i, recording in enumerate(self.recording_list):
             self._setup_recording(recording, self.output_folders[i])
-        
+
         # dump again params because some sorter do a folder reset (tdc)
         self._dump_params()
-        
+
         now = datetime.datetime.now()
-        
+
         log = {
-            'sorter_name' : str(self.sorter_name),
+            'sorter_name': str(self.sorter_name),
             'sorter_version': str(self.get_sorter_version()),
             'datetime': now,
         }
 
         t0 = time.perf_counter()
-        
+
         if raise_error:
             if not self.parallel:
                 for i, recording in enumerate(self.recording_list):
@@ -143,10 +147,10 @@ class BaseSorter:
                 for thread in threads:
                     thread.join()
             t1 = time.perf_counter()
-            run_time = float(t1-t0)
-            
+            run_time = float(t1 - t0)
+
             log['error'] = False
-            
+
         else:
             try:
                 if not self.parallel:
@@ -162,15 +166,15 @@ class BaseSorter:
                     for thread in threads:
                         thread.join()
                 t1 = time.perf_counter()
-                run_time = float(t1-t0)
+                run_time = float(t1 - t0)
 
             except Exception as err:
                 run_time = None
                 log['error'] = True
                 log['error_trace'] = traceback.format_exc()
-        
+
         log['run_time'] = run_time
-        
+
         # dump log inside folders
         for output_folder in self.output_folders:
             with open(str(output_folder / 'spikeinterface_log.json'), 'w', encoding='utf8') as f:
@@ -237,22 +241,3 @@ class BaseSorter:
                 shutil.rmtree(str(out), ignore_errors=True)
         sorting.set_sampling_frequency(self.recording_list[0].get_sampling_frequency())
         return sorting
-
-
-
-def _check_json(d):
-    # quick hack to ensure json writable
-    
-    for k, v in d.items():
-        if isinstance(v, Path):
-            d[k] = str(v)
-        elif isinstance(v, (np.int, np.int32, np.int64)):
-            d[k] = int(v)
-        elif isinstance(v,  (np.float, np.float32, np.float64)):
-            d[k] = float(v)
-        elif isinstance(v, datetime.datetime):
-            d[k] = v.isoformat()
-
-    return d
-    
-    
