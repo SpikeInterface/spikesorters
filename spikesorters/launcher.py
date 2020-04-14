@@ -16,18 +16,18 @@ from .sorterlist import sorter_dict, run_sorter
 
 def _run_one(arg_list):
     # the multiprocessing python module force to have one unique tuple argument
-    recording, sorter_name, output_folder, grouping_property, verbose, params = arg_list
+    recording, sorter_name, output_folder, grouping_property, verbose, params, raise_error = arg_list
 
     SorterClass = sorter_dict[sorter_name]
     sorter = SorterClass(recording=recording, output_folder=output_folder,
                          grouping_property=grouping_property, parallel=False,
                          verbose=verbose, delete_output_folder=False)
     sorter.set_params(**params)
-    sorter.run(raise_error=False)
+    sorter.run(raise_error=raise_error)
 
 
 def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_params={}, grouping_property=None,
-                mode='raise', engine=None, engine_kargs={}, verbose=False, with_output=True):
+                mode='raise', engine=None, engine_kargs={}, verbose=False, with_output=True, raise_error=False):
     """
     This run several sorter on several recording.
     Simple implementation are nested loops or with multiprocessing.
@@ -83,6 +83,9 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
 
     with_output: bool
         return the output.
+    
+    raise_error: False by default
+        Raise error or not when a sorter do run(...) or silently continue.
 
     Output
     ----------
@@ -134,7 +137,7 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
                 else:
                     raise (ValueError('mode not in raise, overwrite, keep'))
             params = sorter_params.get(sorter_name, {})
-            task_list.append((recording, sorter_name, output_folder, grouping_property, verbose, params))
+            task_list.append((recording, sorter_name, output_folder, grouping_property, verbose, params, raise_error))
 
     if engine is None or engine == 'loop':
         # simple loop in main process
