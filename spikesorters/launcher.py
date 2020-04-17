@@ -16,7 +16,11 @@ from .sorterlist import sorter_dict, run_sorter
 
 def _run_one(arg_list):
     # the multiprocessing python module force to have one unique tuple argument
-    recording, sorter_name, output_folder, grouping_property, verbose, params, raise_error = arg_list
+    rec, sorter_name, output_folder, grouping_property, verbose, params, raise_error = arg_list
+    if :
+        recording = se.load_extractor_from_dict(rec)
+    else:
+        recording = rec
 
     SorterClass = sorter_dict[sorter_name]
     sorter = SorterClass(recording=recording, output_folder=output_folder,
@@ -119,7 +123,9 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
             assert n_group == 1, 'run_sorters() work only if grouping_property=None or if it split into one subrecording'
             recording_dict[rec_name] = recording_list[0]
         grouping_property = None
-
+    
+    need_serialize = engine != 'loop'
+    
     task_list = []
     for rec_name, recording in recording_dict.items():
         for sorter_name in sorter_list:
@@ -137,7 +143,11 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
                 else:
                     raise (ValueError('mode not in raise, overwrite, keep'))
             params = sorter_params.get(sorter_name, {})
-            task_list.append((recording, sorter_name, output_folder, grouping_property, verbose, params, raise_error))
+            if need_serialize:
+                rec = recording.make_serialized_dict()
+            else:
+                rec = recording
+            task_list.append((rec, sorter_name, output_folder, grouping_property, verbose, params, raise_error))
 
     if engine is None or engine == 'loop':
         # simple loop in main process
@@ -150,6 +160,18 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
         processes = engine_kargs.get('processes', None)
         pool = multiprocessing.Pool(processes)
         pool.map(_run_one, task_list)
+    
+    elif engine == 'dask':
+        client = engine_kargs.get('dask_client', None)
+        assert client is not None, 'For dask engine you have to provide : client = dask.distributed.Client(...)'
+        
+        tasks = []
+        for arg_list in task_list:
+            task = client.submit(_run_one, arg_list)
+            tasks.append(task)
+        
+        for task in tasks:
+            task.result()
 
     if with_output:
         results = collect_sorting_outputs(working_folder)
