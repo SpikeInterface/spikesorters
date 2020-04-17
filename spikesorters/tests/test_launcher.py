@@ -89,10 +89,10 @@ def test_run_sorters_dask():
         recording_dict['rec_' + str(i)] = rec
 
     # sorter_list = ['mountainsort4', 'klusta', 'tridesclous']
-    sorter_list = ['tridesclous', 'klusta', ]
+    sorter_list = ['tridesclous', ]
     # ~ sorter_list = ['tridesclous', 'herdingspikes']
 
-    working_folder = 'test_run_sorters_mp'
+    working_folder = 'test_run_sorters_dask'
     if os.path.exists(working_folder):
         shutil.rmtree(working_folder)
 
