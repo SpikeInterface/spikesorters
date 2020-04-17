@@ -81,6 +81,7 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
         This contains kargs specific to the launcher engine:
             * 'loop' : no kargs
             * 'multiprocessing' : {'processes' : } number of processes
+            * dask : {'client':} the dask client for submiting task
             
     verbose: bool
         default True
@@ -162,7 +163,7 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
         pool.map(_run_one, task_list)
     
     elif engine == 'dask':
-        client = engine_kargs.get('dask_client', None)
+        client = engine_kargs.get('client', None)
         assert client is not None, 'For dask engine you have to provide : client = dask.distributed.Client(...)'
         
         tasks = []

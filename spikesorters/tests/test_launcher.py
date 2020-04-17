@@ -85,7 +85,7 @@ def test_run_sorters_dask():
     # create recording
     recording_dict = {}
     for i in range(8):
-        rec, _ = se.example_datasets.toy_example(num_channels=8, duration=30, seed=0)
+        rec, _ = se.example_datasets.create_dumpable_extractors('toy_{}'.format(i), num_channels=8, duration=30, seed=0)
         recording_dict['rec_' + str(i)] = rec
 
     # sorter_list = ['mountainsort4', 'klusta', 'tridesclous']
@@ -108,6 +108,7 @@ def test_collect_sorting_outputs():
     working_folder = 'test_run_sorters_dict'
     results = collect_sorting_outputs(working_folder)
     print(results)
+
 
 
 
