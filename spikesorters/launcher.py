@@ -17,7 +17,7 @@ from .sorterlist import sorter_dict, run_sorter
 def _run_one(arg_list):
     # the multiprocessing python module force to have one unique tuple argument
     rec, sorter_name, output_folder, grouping_property, verbose, params, raise_error = arg_list
-    if :
+    if isinstance(rec, dict):
         recording = se.load_extractor_from_dict(rec)
     else:
         recording = rec
