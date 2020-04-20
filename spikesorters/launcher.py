@@ -161,6 +161,7 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
         processes = engine_kargs.get('processes', None)
         pool = multiprocessing.Pool(processes)
         pool.map(_run_one, task_list)
+        pool.close()
     
     elif engine == 'dask':
         client = engine_kargs.get('client', None)
