@@ -54,7 +54,7 @@ def test_run_sorters_with_dict():
 def test_run_sorters_multiprocessing():
     recording_dict = {}
     for i in range(8):
-        rec, _ = se.example_datasets.toy_example(num_channels=8, duration=30, seed=0)
+        rec, _ = se.example_datasets.toy_example(num_channels=8, duration=30, seed=0, dumpable=True)
         recording_dict['rec_' + str(i)] = rec
 
     # sorter_list = ['mountainsort4', 'klusta', 'tridesclous']
@@ -85,7 +85,7 @@ def test_run_sorters_dask():
     # create recording
     recording_dict = {}
     for i in range(8):
-        rec, _ = se.example_datasets.create_dumpable_extractors('toy_{}'.format(i), num_channels=8, duration=30, seed=0)
+        rec, _ = se.example_datasets.toy_example('toy_{}'.format(i), num_channels=8, duration=30, seed=0, dumpable=True)
         recording_dict['rec_' + str(i)] = rec
 
     # sorter_list = ['mountainsort4', 'klusta', 'tridesclous']
@@ -118,8 +118,8 @@ if __name__ == '__main__':
 
     #~ test_run_sorters_with_dict()
 
-    #~ test_run_sorters_multiprocessing()
+    test_run_sorters_multiprocessing()
     
-    test_run_sorters_dask()
+    #~ test_run_sorters_dask()
 
     #~ test_collect_sorting_outputs()
