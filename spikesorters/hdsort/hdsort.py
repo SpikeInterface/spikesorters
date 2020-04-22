@@ -158,6 +158,10 @@ class HDSortSorter(BaseSorter):
         os.makedirs(str(tmpdir), exist_ok=True)
         samplerate = recording.get_sampling_frequency()
 
+        if recording.is_filtered and self.params['filter']:
+            print("Warning! The recording is already filtered, but HDsort filter is enabled. You can disable "
+                  "filters by setting 'filter' parameter to False")
+
         if "win" in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
                         cd {tmpdir}

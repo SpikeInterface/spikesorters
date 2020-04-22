@@ -66,6 +66,10 @@ class HerdingspikesSorter(BaseSorter):
     def _run(self, recording, output_folder):
         p = self.params
 
+        if recording.is_filtered and p['filter']:
+            print("Warning! The recording is already filtered, but Herding Spikes filter is enabled. You can disable "
+                  "filters by setting 'filter' parameter to False")
+
         self.H = hs.HSDetection(
             self.Probe, file_directory_name=str(output_folder),
             left_cutout_time=p['left_cutout_time'],

@@ -107,6 +107,10 @@ class SpykingcircusSorter(BaseSorter):
             p['num_workers'] = np.maximum(1, int(os.cpu_count()/2))
 
     def _run(self,  recording, output_folder):
+        if recording.is_filtered and self.params['filter']:
+            print("Warning! The recording is already filtered, but Spyking-Circus filter is enabled. You can disable "
+                  "filters by setting 'filter' parameter to False")
+
         num_workers = self.params['num_workers']
         if 'win' in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
