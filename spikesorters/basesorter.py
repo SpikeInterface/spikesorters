@@ -58,7 +58,7 @@ class BaseSorter:
         self.params = self.default_params()
 
         if output_folder is None:
-            output_folder = 'tmp_' + self.sorter_name
+            output_folder = self.sorter_name + '_output'
         output_folder = Path(output_folder).absolute()
 
         if grouping_property is None:
