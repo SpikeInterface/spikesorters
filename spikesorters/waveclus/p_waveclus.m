@@ -1,5 +1,5 @@
 function p_waveclus(vcDir_temp, vcFile_raw, vcFile_mda, sRateHz, detect_sign, feature_type, scales, detect_threshold, ...
-                    min_clus, maxtemp, template_sdnum)
+                    min_clus, maxtemp, template_sdnum,detect_order,detect_fmin,detect_fmax,sort_order,sort_fmin,sort_fmax)
     % Arguments
     % -----
     % sRateHz: sampling rate
@@ -17,6 +17,12 @@ function p_waveclus(vcDir_temp, vcFile_raw, vcFile_mda, sRateHz, detect_sign, fe
     S_par.min_clus = min_clus;
     S_par.maxtemp = maxtemp;
     S_par.template_sdnum = template_sdnum;
+	S_par.detect_fmin = detect_fmin;
+	S_par.detect_fmax = detect_fmax;
+	S_par.detect_order = detect_order;
+	S_par.sort_fmin = sort_fmin;
+	S_par.sort_fmax = sort_fmax;
+	S_par.sort_order = sort_order;
 
     [nChans, ~] = size(all_data);
     cd(vcDir_temp);
