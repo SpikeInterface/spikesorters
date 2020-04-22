@@ -98,7 +98,7 @@ class WaveClusSorter(BaseSorter):
         p = self.params
 
         if recording.is_filtered and (p['enable_detect_filter'] or p['enable_sort_filter']):
-            print("Warning! The recording is already filtered, but wave-clus filters are enabled. You can disable "
+            print("Warning! The recording is already filtered, but Wave-Clus filters are enabled. You can disable "
                   "filters by setting 'enable_detect_filter' and 'enable_sort_filter' parameters to False")
 
         if p['detect_sign'] < 0:
