@@ -84,7 +84,7 @@ class BaseSorter:
                 print('WARNING! No channel location given. Add dummy location.')
                 channel_ids = recording.get_channel_ids()
                 locations = np.array([[0, i] for i in range(len(channel_ids))])
-                recording.set_channel_locations(channel_ids, locations)
+                recording.set_channel_locations(locations)
 
         # make folders
         for output_folder in self.output_folders:
