@@ -41,8 +41,8 @@ class WaveClusSorter(BaseSorter):
         'min_clus': 20,
         'maxtemp': 0.251,
         'template_sdnum': 3,
-        'enable_detect_filter': False,
-        'enable_sort_filter': False,
+        'enable_detect_filter': True,
+        'enable_sort_filter': True,
         'detect_filter_fmin': 300,
         'detect_filter_fmax': 3000,
         'detect_filter_order': 4,
@@ -96,6 +96,10 @@ class WaveClusSorter(BaseSorter):
         dataset_dir = output_folder / 'waveclus_dataset'
         source_dir = Path(__file__).parent
         p = self.params
+
+        if recording.is_filtered and (p['enable_detect_filter'] or p['enable_sort_filter']):
+            print("Warning! The recording is already filtered, but wave-clus filters are enabled. You can disable "
+                  "filters by setting 'enable_detect_filter' and 'enable_sort_filter' parameters to False")
 
         if p['detect_sign'] < 0:
             detect_sign = 'neg'

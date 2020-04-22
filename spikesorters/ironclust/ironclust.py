@@ -115,6 +115,10 @@ class IronClustSorter(BaseSorter):
 
         samplerate = recording.get_sampling_frequency()
 
+        if recording.is_filtered and self.params['filter']:
+            print("Warning! The recording is already filtered, but Ironclust filter is enabled. You can disable "
+                  "filters by setting 'filter' parameter to False")
+
         num_channels = recording.get_num_channels()
         num_timepoints = recording.get_num_frames()
         duration_minutes = num_timepoints / samplerate / 60
