@@ -103,6 +103,9 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
         assert not os.path.exists(working_folder), 'working_folder already exists, please remove it'
     working_folder = Path(working_folder)
 
+    if engine is None:
+        engine = 'loop'
+
     for sorter_name in sorter_list:
         assert sorter_name in sorter_dict, '{} is not in sorter list'.format(sorter_name)
 
@@ -145,13 +148,14 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
                     raise (ValueError('mode not in raise, overwrite, keep'))
             params = sorter_params.get(sorter_name, {})
             if need_serialize:
+                print(engine)
                 assert recording.is_dumpable, 'run_sorters(engine=... ) if engine is not "loop" then recording have to be dumpable'
                 rec = recording.make_serialized_dict()
             else:
                 rec = recording
             task_list.append((rec, sorter_name, output_folder, grouping_property, verbose, params, raise_error))
 
-    if engine is None or engine == 'loop':
+    if engine == 'loop':
         # simple loop in main process
         for arg_list in task_list:
             # print(arg_list)
