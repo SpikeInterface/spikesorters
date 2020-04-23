@@ -148,9 +148,8 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
                     raise (ValueError('mode not in raise, overwrite, keep'))
             params = sorter_params.get(sorter_name, {})
             if need_serialize:
-                print(engine)
-                assert recording.is_dumpable, 'run_sorters(engine=... ) if engine is not "loop" then recording have to be dumpable'
-                rec = recording.make_serialized_dict()
+                assert recording.check_if_dumpable(), 'run_sorters(engine=... ) if engine is not "loop" then recording have to be dumpable'
+                rec = recording.dump_to_dict()
             else:
                 rec = recording
             task_list.append((rec, sorter_name, output_folder, grouping_property, verbose, params, raise_error))
