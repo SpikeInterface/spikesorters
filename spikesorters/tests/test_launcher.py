@@ -98,7 +98,9 @@ def test_run_sorters_dask():
 
     # dask
     t0 = time.perf_counter()
-    run_sorters(sorter_list, recording_dict, working_folder, engine='dask', engine_kargs={'client': client})
+    results = run_sorters(sorter_list, recording_dict, working_folder, engine='dask', engine_kargs={'client': client}, with_output=True)
+    # dask do not return results always None
+    assert results is None
     t1 = time.perf_counter()
     print(t1 - t0)
     
@@ -118,8 +120,8 @@ if __name__ == '__main__':
 
     #~ test_run_sorters_with_dict()
 
-    test_run_sorters_multiprocessing()
+    #~ test_run_sorters_multiprocessing()
     
-    #~ test_run_sorters_dask()
+    test_run_sorters_dask()
 
     #~ test_collect_sorting_outputs()

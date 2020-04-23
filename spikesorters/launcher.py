@@ -167,16 +167,22 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
     elif engine == 'dask':
         client = engine_kargs.get('client', None)
         assert client is not None, 'For dask engine you have to provide : client = dask.distributed.Client(...)'
-        
+            
         tasks = []
         for arg_list in task_list:
             task = client.submit(_run_one, arg_list)
             tasks.append(task)
-        
+
         for task in tasks:
             task.result()
-
+    
     if with_output:
+        if engine == 'dask':
+            print('Warning!! With engine="dask" you cannot have directly output results\n'\
+                        'Use : run_sorters(..., with_output=False)\n'\
+                        'And then: results = collect_sorting_outputs(output_folders)')
+            return
+        
         results = collect_sorting_outputs(working_folder)
         return results
 
