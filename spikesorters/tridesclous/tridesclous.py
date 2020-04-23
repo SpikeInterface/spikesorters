@@ -137,8 +137,8 @@ class TridesclousSorter(BaseSorter):
             if self.verbose:
                 print(cc)
             
-            if distutils.version.LooseVersion(tridesclous.__version__) < '1.6.0':
-                print('You should upgrade tridesclou')
+            if distutils.version.LooseVersion(tdc.__version__) < '1.6.0':
+                print('You should upgrade tridesclous')
                 t0 = time.perf_counter()
                 cc.make_catalogue_for_peeler()
                 if self.verbose:
