@@ -41,6 +41,14 @@ class WaveClusSorter(BaseSorter):
         'min_clus': 20,
         'maxtemp': 0.251,
         'template_sdnum': 3,
+        'enable_detect_filter': True,
+        'enable_sort_filter': True,
+        'detect_filter_fmin': 300,
+        'detect_filter_fmax': 3000,
+        'detect_filter_order': 4,
+        'sort_filter_fmin': 300,
+        'sort_filter_fmax': 3000,
+        'sort_filter_order': 2,
     }
 
     installation_mesg = """\nTo use WaveClus run:\n
@@ -89,12 +97,25 @@ class WaveClusSorter(BaseSorter):
         source_dir = Path(__file__).parent
         p = self.params
 
+        if recording.is_filtered and (p['enable_detect_filter'] or p['enable_sort_filter']):
+            print("Warning! The recording is already filtered, but Wave-Clus filters are enabled. You can disable "
+                  "filters by setting 'enable_detect_filter' and 'enable_sort_filter' parameters to False")
+
         if p['detect_sign'] < 0:
             detect_sign = 'neg'
         elif p['detect_sign'] > 0:
             detect_sign = 'pos'
         else:
             detect_sign = 'both'
+
+        if p['enable_detect_filter']:
+            detect_filter_order = p['detect_filter_order']
+        else:
+            detect_filter_order = 0
+        if p['enable_sort_filter']:
+            sort_filter_order = p['sort_filter_order']
+        else:
+            sort_filter_order = 0
 
         samplerate = recording.get_sampling_frequency()
 
@@ -118,7 +139,8 @@ class WaveClusSorter(BaseSorter):
             try
                 p_waveclus('{tmpdir}', '{dataset_dir}/raw.mda', '{tmpdir}/firings.mda', {samplerate}, ...
                 '{detect_sign}', '{feature_type}', {scales}, {detect_threshold}, {min_clus}, {maxtemp}, ...
-                 {template_sdnum});
+                 {template_sdnum},{detect_filter_order},{detect_filter_fmin},{detect_filter_fmax}, ...
+                 {sort_filter_order},{sort_filter_fmin},{sort_filter_fmax});
             catch
                 fprintf('----------------------------------------');
                 fprintf(lasterr());
@@ -129,7 +151,10 @@ class WaveClusSorter(BaseSorter):
         cmd = cmd.format(waveclus_path=WaveClusSorter.waveclus_path, utils_path=utils_path, dataset_dir=dataset_dir,
                          source_path=source_dir, samplerate=samplerate, detect_sign=detect_sign, tmpdir=tmpdir,
                          feature_type=p['feature_type'], scales=p['scales'], detect_threshold=p['detect_threshold'],
-                         min_clus=p['min_clus'], maxtemp=p['maxtemp'], template_sdnum=p['template_sdnum'])
+                         min_clus=p['min_clus'], maxtemp=p['maxtemp'], template_sdnum=p['template_sdnum'],
+                         detect_filter_order=detect_filter_order, detect_filter_fmin=p['detect_filter_fmin'],
+                         detect_filter_fmax=p['detect_filter_fmax'], sort_filter_order=sort_filter_order,
+                         sort_filter_fmin=p['sort_filter_fmin'], sort_filter_fmax=p['sort_filter_fmax'])
 
         matlab_cmd = ShellScript(cmd, script_path=str(tmpdir / 'run_waveclus.m'), keep_temp_files=True)
         matlab_cmd.write()

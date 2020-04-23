@@ -28,7 +28,7 @@ class Mountainsort4Sorter(BaseSorter):
         'adjacency_radius': -1,  # Use -1 to include all channels in every neighborhood
         'freq_min': 300,  # Use None for no bandpass filtering
         'freq_max': 6000,
-        'filter': False,
+        'filter': True,
         'whiten': True,  # Whether to do channel whitening as part of preprocessing
         'curation': False,
         'num_workers': None,
@@ -63,11 +63,16 @@ class Mountainsort4Sorter(BaseSorter):
         # alias to params
         p = self.params
 
+        if recording.is_filtered and p['filter']:
+            print("Warning! The recording is already filtered, but Mountainsort4 filter is enabled. You can disable "
+                  "filters by setting 'filter' parameter to False")
+
         samplerate = recording.get_sampling_frequency()
 
         # Bandpass filter
         if p['filter'] and p['freq_min'] is not None and p['freq_max'] is not None:
             recording = bandpass_filter(recording=recording, freq_min=p['freq_min'], freq_max=p['freq_max'])
+
         # Whiten
         if p['whiten']:
             recording = whiten(recording=recording)
