@@ -180,7 +180,7 @@ class KilosortSorter(BaseSorter):
                         cd "{tmpdir}"
                         matlab -nosplash -nodisplay -r kilosort_master
                     '''.format(tmpdir=output_folder)
-        shell_script = ShellScript(shell_cmd, script_path=str(output_folder / self.sorter_name))
+        shell_script = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}')
         shell_script.start()
 
         retcode = shell_script.wait()

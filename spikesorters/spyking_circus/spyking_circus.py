@@ -122,7 +122,7 @@ class SpykingcircusSorter(BaseSorter):
                         spyking-circus {recording} -c {num_workers}
                     '''.format(recording=output_folder / 'recording.npy', num_workers=num_workers)
 
-        shell_script = ShellScript(shell_cmd, script_path=str(output_folder / self.sorter_name))
+        shell_script = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}')
         shell_script.start()
 
         retcode = shell_script.wait()
