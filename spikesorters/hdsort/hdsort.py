@@ -174,7 +174,7 @@ class HDSortSorter(BaseSorter):
                         matlab -nosplash -nodisplay -r hdsort_master
                     '''.format(tmpdir=output_folder)
 
-        shell_script = ShellScript(shell_cmd, script_path=str(output_folder / self.sorter_name))
+        shell_script = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}')
         shell_script.start()
 
         retcode = shell_script.wait()
