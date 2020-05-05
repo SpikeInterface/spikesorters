@@ -118,12 +118,6 @@ class TridesclousSorter(BaseSorter):
                 print('peeler_params')
                 pprint(peeler_params)
 
-            # check params and OpenCL when many channels
-            use_sparse_template = False
-            use_opencl_with_sparse = False
-            if nb_chan > 64 and not peeler_params['use_sparse_template']:
-                print('OpenCL is not available processing will be slow, try install it')
-
             cc = tdc.CatalogueConstructor(dataio=tdc_dataio, chan_grp=chan_grp)
             tdc.apply_all_catalogue_steps(cc, catalogue_nested_params, verbose=self.verbose)
 
