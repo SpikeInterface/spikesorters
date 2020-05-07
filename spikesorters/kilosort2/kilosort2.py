@@ -187,7 +187,7 @@ class Kilosort2Sorter(BaseSorter):
     @staticmethod
     def get_result_from_folder(output_folder):
         output_folder = Path(output_folder)
-        with (output_folder / 'spikeinterface_params.json', 'r') as f:
+        with (output_folder / 'spikeinterface_params.json').open('r') as f:
             sorter_params = json.load(f)['sorter_params']
         sorting = se.KiloSortSortingExtractor(folder_path=output_folder, keep_good_only=sorter_params['keep_good_only'])
         return sorting
