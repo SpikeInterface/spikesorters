@@ -4,7 +4,7 @@ import sys
 import numpy as np
 from typing import Union
 import shutil
-import copy
+import json
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
@@ -48,7 +48,8 @@ class Kilosort2Sorter(BaseSorter):
         'nPCs': 3,
         'ntbuff': 64,
         'nfilt_factor': 4,
-        'NT': None
+        'NT': None,
+        'keep_good_only': False
     }
 
     installation_mesg = """\nTo use Kilosort2 run:\n
@@ -185,5 +186,8 @@ class Kilosort2Sorter(BaseSorter):
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        sorting = se.KiloSortSortingExtractor(folder_path=output_folder)
+        output_folder = Path(output_folder)
+        with (output_folder / 'spikeinterface_params.json').open('r') as f:
+            sorter_params = json.load(f)['sorter_params']
+        sorting = se.KiloSortSortingExtractor(folder_path=output_folder, keep_good_only=sorter_params['keep_good_only'])
         return sorting
