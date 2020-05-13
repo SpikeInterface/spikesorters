@@ -69,6 +69,7 @@ class KilosortSorter(BaseSorter):
 
     @staticmethod
     def set_kilosort_path(kilosort_path: str):
+        kilosort_path = str(Path(kilosort_path).absolute())
         KilosortSorter.kilosort_path = kilosort_path
         KilosortSorter.installed = check_if_installed(KilosortSorter.kilosort_path)
         try:
