@@ -81,7 +81,7 @@ class IronClustSorter(BaseSorter):
     @staticmethod
     def get_sorter_version():
         version_filename = os.path.join(os.environ["IRONCLUST_PATH"], 'matlab', 'version.txt')
-        if  os.path.exists(version_filename):
+        if os.path.exists(version_filename):
             with open(version_filename, mode='r', encoding='utf8') as f:
                 line = f.readline()
                 d = {}
@@ -92,6 +92,7 @@ class IronClustSorter(BaseSorter):
 
     @staticmethod
     def set_ironclust_path(ironclust_path: str):
+        ironclust_path = str(Path(ironclust_path).absolute())
         IronClustSorter.ironclust_path = ironclust_path
         IronClustSorter.installed = check_if_installed(IronClustSorter.ironclust_path)
         try:

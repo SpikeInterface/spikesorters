@@ -75,6 +75,7 @@ class WaveClusSorter(BaseSorter):
 
     @staticmethod
     def set_waveclus_path(waveclus_path: str):
+        waveclus_path = str(Path(waveclus_path).absolute())
         WaveClusSorter.waveclus_path = waveclus_path
         WaveClusSorter.installed = check_if_installed(WaveClusSorter.waveclus_path)
         try:
