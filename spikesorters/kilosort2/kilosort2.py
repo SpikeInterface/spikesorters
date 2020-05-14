@@ -98,7 +98,7 @@ class Kilosort2Sorter(BaseSorter):
             raise RuntimeError("3D 'location' are not supported. Set 2D locations instead")
 
         # save binary file
-        input_file_path = output_folder / 'recording'
+        input_file_path = output_folder / 'recording.dat'
         recording.write_to_binary_dat_format(input_file_path, dtype='int16', chunk_mb=500)
 
         if p['car']:
