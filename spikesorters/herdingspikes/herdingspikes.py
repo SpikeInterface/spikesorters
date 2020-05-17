@@ -50,7 +50,7 @@ class HerdingspikesSorter(BaseSorter):
 
         if p['pre_scale']:
             recording = st.preprocessing.normalize_by_quantile(
-                recording=recording, scale=p['pre_scale_value'],
+                recording = recording, scale=p['pre_scale_value'],
                 median=0.0, q1=0.05, q2=0.95
             )
 
@@ -104,6 +104,12 @@ class HerdingspikesSorter(BaseSorter):
         else:
             self.C = hs.HSClustering(self.H)
 
+        if p['filter_duplicates']:
+            uids = self.C.spikes.cl.unique()
+            for u in uids:
+                s = self.C.spikes[self.C.spikes.cl==u].t.diff()<p['spk_evaluation_time']/1000*self.Probe.fps
+                self.C.spikes = self.C.spikes.drop(s.index[s])
+            
         print('Saving to', sorted_file)
         self.C.SaveHDF5(sorted_file, sampling=self.Probe.fps)
 
@@ -114,15 +120,15 @@ class HerdingspikesSorter(BaseSorter):
 
 HerdingspikesSorter._default_params = {
     # core params
-    'clustering_bandwidth': 5.0,
-    'clustering_alpha': 6.0,
+    'clustering_bandwidth': 5.5, #5.0,
+    'clustering_alpha': 5.5, #5.0,
     'clustering_n_jobs': -1,
     'clustering_bin_seeding': True,
-    'clustering_min_bin_freq': 10,
+    'clustering_min_bin_freq': 16, #10,
     'clustering_subset': None,
-    'left_cutout_time': 0.2,
-    'right_cutout_time': 0.8,
-    'detection_threshold': 15,
+    'left_cutout_time': 0.3, #0.2,
+    'right_cutout_time': 1.8, #0.8,
+    'detection_threshold': 20, #24, #15,
 
     # extra probe params
     'probe_masked_channels': [],
@@ -138,7 +144,7 @@ HerdingspikesSorter._default_params = {
     'out_file_name': "HS2_detected",
     'decay_filtering': False,
     'save_all': False,
-    'amp_evaluation_time': 0.14,
+    'amp_evaluation_time': 0.4, #0.14,
     'spk_evaluation_time': 1.0,
 
     # extra pca params
@@ -152,6 +158,8 @@ HerdingspikesSorter._default_params = {
 
     # rescale traces
     'pre_scale': True,
-    'pre_scale_value': 20.0
-
+    'pre_scale_value': 20.0,
+    
+    # remove duplicates (based on spk_evaluation_time)
+    'filter_duplicates': True
 }
