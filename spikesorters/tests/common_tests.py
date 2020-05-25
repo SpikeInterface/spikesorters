@@ -40,8 +40,13 @@ class SorterCommonTestSuite:
             recording.set_channel_property(ch_id, 'group', 1)
 
         params = self.SorterClass.default_params()
-
-        for parallel in [False, True]:
+        
+        if self.SorterClass.compatile_with_parallel_thread:
+            parallel_cases = [False, True]
+        else:
+            parallel_cases = [False, ]
+        
+        for parallel in parallel_cases:
             sorter = self.SorterClass(recording=recording, output_folder=None,
                                       grouping_property='group', parallel=parallel, verbose=False)
             sorter.set_params(**params)
