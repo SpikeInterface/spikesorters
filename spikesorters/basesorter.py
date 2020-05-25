@@ -59,7 +59,7 @@ class BaseSorter:
         self.params = self.default_params()
 
         if self.parallel:
-            assert self.have_parallel_thread, 'this sorter do not accept parallel=True for groups'
+            assert self.compatile_with_parallel_thread, 'this sorter do not accept parallel=True for groups'
 
         if output_folder is None:
             output_folder = self.sorter_name + '_output'
