@@ -25,6 +25,7 @@ class HerdingspikesSorter(BaseSorter):
     sorter_name = 'herdingspikes'
     installed = HAVE_HS
     requires_locations = True
+    compatile_with_parallel_thread = False
     _default_params = None  # later
 
     installation_mesg = """

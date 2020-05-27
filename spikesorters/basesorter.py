@@ -40,6 +40,7 @@ class BaseSorter:
     requires_locations = False
     _default_params = {}
     installation_mesg = ""  # error message when not installed
+    compatile_with_parallel_thread = True
 
     def __init__(self, recording=None, output_folder=None, verbose=False,
                  grouping_property=None, parallel=False, delete_output_folder=False):
@@ -56,6 +57,9 @@ class BaseSorter:
         self.grouping_property = grouping_property
         self.parallel = parallel
         self.params = self.default_params()
+
+        if self.parallel:
+            assert self.compatile_with_parallel_thread, 'This sorter does not accept parallel=True for groups (grouping_property="...")'
 
         if output_folder is None:
             output_folder = self.sorter_name + '_output'
