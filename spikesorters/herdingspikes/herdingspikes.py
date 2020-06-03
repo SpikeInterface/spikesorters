@@ -5,6 +5,7 @@ import spikeextractors as se
 import spiketoolkit as st
 
 from ..basesorter import BaseSorter
+from ..sorter_tools import recover_recording
 
 try:
     import herdingspikes as hs
@@ -25,7 +26,6 @@ class HerdingspikesSorter(BaseSorter):
     sorter_name = 'herdingspikes'
     installed = HAVE_HS
     requires_locations = True
-    compatile_with_parallel_thread = False
     _default_params = None  # later
 
     installation_mesg = """
@@ -65,6 +65,7 @@ class HerdingspikesSorter(BaseSorter):
             peak_jitter=p['probe_peak_jitter'])
 
     def _run(self, recording, output_folder):
+        recording = recover_recording(recording)
         p = self.params
 
         if recording.is_filtered and p['filter']:

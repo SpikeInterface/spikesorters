@@ -9,7 +9,7 @@ import json
 import spikeextractors as se
 from ..basesorter import BaseSorter
 from ..utils.shellscript import ShellScript
-from ..sorter_tools import get_git_commit
+from ..sorter_tools import get_git_commit, recover_recording
 
 
 def check_if_installed(kilosort2_path: Union[str, None]):
@@ -166,6 +166,7 @@ class Kilosort2Sorter(BaseSorter):
         shutil.copy(str(source_dir.parent / 'utils' / 'constructNPYheader.m'), str(output_folder))
 
     def _run(self, recording, output_folder):
+        recording = recover_recording(recording)
         if 'win' in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
                         cd {tmpdir}

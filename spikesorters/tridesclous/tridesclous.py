@@ -10,6 +10,7 @@ import distutils.version
 
 from ..basesorter import BaseSorter
 import spikeextractors as se
+from ..sorter_tools import recover_recording
 
 try:
     import tridesclous as tdc
@@ -29,7 +30,6 @@ class TridesclousSorter(BaseSorter):
     sorter_name = 'tridesclous'
     installed = HAVE_TDC
     requires_locations = False
-    compatile_with_parallel_thread = False
 
     _default_params = {
         'highpass_freq': 400.,
@@ -98,7 +98,7 @@ class TridesclousSorter(BaseSorter):
             print(tdc_dataio)
 
     def _run(self, recording, output_folder):
-        nb_chan = recording.get_num_channels()
+        recording = recover_recording(recording)
         tdc_dataio = tdc.DataIO(dirname=str(output_folder))
 
         params = dict(self.params)

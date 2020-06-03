@@ -6,7 +6,7 @@ import spikeextractors as se
 
 from ..basesorter import BaseSorter
 from ..utils.shellscript import ShellScript
-from ..sorter_tools import _call_command
+from ..sorter_tools import recover_recording
 
 try:
     import klusta
@@ -106,6 +106,7 @@ class KlustaSorter(BaseSorter):
             f.writelines(klusta_config)
 
     def _run(self, recording, output_folder):
+        recording = recover_recording(recording)
         if 'win' in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
                         klusta --overwrite {klusta_config}

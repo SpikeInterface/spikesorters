@@ -20,12 +20,12 @@ a way to adapt params with datasets.
 import time
 import copy
 from pathlib import Path
-import threading
 import shutil
 import os
 import datetime
 import json
 import traceback
+from joblib import Parallel, delayed
 
 import numpy as np
 
@@ -40,7 +40,6 @@ class BaseSorter:
     requires_locations = False
     _default_params = {}
     installation_mesg = ""  # error message when not installed
-    compatile_with_parallel_thread = True
 
     def __init__(self, recording=None, output_folder=None, verbose=False,
                  grouping_property=None, parallel=False, delete_output_folder=False):
@@ -57,9 +56,6 @@ class BaseSorter:
         self.grouping_property = grouping_property
         self.parallel = parallel
         self.params = self.default_params()
-
-        if self.parallel:
-            assert self.compatile_with_parallel_thread, 'This sorter does not accept parallel=True for groups (grouping_property="...")'
 
         if output_folder is None:
             output_folder = self.sorter_name + '_output'
@@ -120,7 +116,7 @@ class BaseSorter:
                 params['recording'] = recording.make_serialized_dict()
                 json.dump(_check_json(params), f, indent=4)
 
-    def run(self, raise_error=True):
+    def run(self, raise_error=True, joblib_backend=None):
         for i, recording in enumerate(self.recording_list):
             self._setup_recording(recording, self.output_folders[i])
 
@@ -137,19 +133,27 @@ class BaseSorter:
 
         t0 = time.perf_counter()
 
+        if self.parallel and len(self.recording_list) > 1:
+            if not np.all([recording.check_if_dumpable() for recording in self.recording_list]):
+                    self.parallel = False
+                    print("RecordingExtractor objcts are not dumpable and can't be processed in parallel")
+
         if raise_error:
             if not self.parallel:
                 for i, recording in enumerate(self.recording_list):
                     self._run(recording, self.output_folders[i])
             else:
-                # run in threads
-                threads = []
-                for i, recording in enumerate(self.recording_list):
-                    thread = threading.Thread(target=self._run, args=(recording, self.output_folders[i]))
-                    threads.append(thread)
-                    thread.start()
-                for thread in threads:
-                    thread.join()
+                _ = Parallel(n_jobs=len(self.recording_list), backend=joblib_backend)(
+                    delayed(self._run)(rec.dump_to_dict(), output_folder)
+                    for (rec, output_folder) in zip(self.recording_list, self.output_folders))
+                # # run in threads
+                # threads = []
+                # for i, recording in enumerate(self.recording_list):
+                #     thread = threading.Thread(target=self._run, args=(recording, self.output_folders[i]))
+                #     threads.append(thread)
+                #     thread.start()
+                # for thread in threads:
+                #     thread.join()
             t1 = time.perf_counter()
             run_time = float(t1 - t0)
 
@@ -161,14 +165,20 @@ class BaseSorter:
                     for i, recording in enumerate(self.recording_list):
                         self._run(recording, self.output_folders[i])
                 else:
-                    # run in threads
-                    threads = []
-                    for i, recording in enumerate(self.recording_list):
-                        thread = threading.Thread(target=self._run, args=(recording, self.output_folders[i]))
-                        threads.append(thread)
-                        thread.start()
-                    for thread in threads:
-                        thread.join()
+                    _ = Parallel(n_jobs=len(self.recording_list), backend=joblib_backend)(
+                        delayed(self._run)(rec.dump_to_dict(), output_folder)
+                        for (rec, output_folder) in zip(self.recording_list, self.output_folders))
+                    # # run in threads
+                    # threads = []
+                    # for i, recording in enumerate(self.recording_list):
+                    #     thread = threading.Thread(target=self._run, args=(recording, self.output_folders[i]))
+                    #     threads.append(thread)
+                    #     thread.start()
+                    # for thread in threads:
+                    #     thread.join()
+
+
+
                 t1 = time.perf_counter()
                 run_time = float(t1 - t0)
 

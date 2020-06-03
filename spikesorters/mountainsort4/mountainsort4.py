@@ -5,6 +5,7 @@ import spikeextractors as se
 from spiketoolkit.preprocessing import bandpass_filter, whiten
 
 from ..basesorter import BaseSorter
+from ..sorter_tools import recover_recording
 
 try:
     import ml_ms4alg
@@ -22,7 +23,6 @@ class Mountainsort4Sorter(BaseSorter):
     sorter_name = 'mountainsort4'
     installed = HAVE_MS4
     requires_locations = False
-    compatile_with_parallel_thread = False
 
     _default_params = {
         'detect_sign': -1,  # Use -1, 0, or 1, depending on the sign of the spikes in the recording
@@ -59,7 +59,7 @@ class Mountainsort4Sorter(BaseSorter):
         pass
 
     def _run(self, recording, output_folder):
-        
+        recording = recover_recording(recording)
         # Sort
         # alias to params
         p = self.params

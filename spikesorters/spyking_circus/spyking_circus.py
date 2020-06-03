@@ -7,6 +7,7 @@ import sys
 import spikeextractors as se
 from ..basesorter import BaseSorter
 from ..utils.shellscript import ShellScript
+from ..sorter_tools import recover_recording
 
 try:
     import circus
@@ -107,6 +108,7 @@ class SpykingcircusSorter(BaseSorter):
             p['num_workers'] = np.maximum(1, int(os.cpu_count()/2))
 
     def _run(self,  recording, output_folder):
+        recording = recover_recording(recording)
         if recording.is_filtered and self.params['filter']:
             print("Warning! The recording is already filtered, but Spyking-Circus filter is enabled. You can disable "
                   "filters by setting 'filter' parameter to False")

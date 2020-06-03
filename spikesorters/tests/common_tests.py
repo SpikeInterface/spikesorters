@@ -41,10 +41,7 @@ class SorterCommonTestSuite:
 
         params = self.SorterClass.default_params()
         
-        if self.SorterClass.compatile_with_parallel_thread:
-            parallel_cases = [False, True]
-        else:
-            parallel_cases = [False, ]
+        parallel_cases = [False, True]
         
         for parallel in parallel_cases:
             sorter = self.SorterClass(recording=recording, output_folder=None,

@@ -4,7 +4,7 @@ Some utils function to run command.
 from subprocess import Popen, PIPE, CalledProcessError, call, check_output
 import shlex
 import sys
-
+import spikeextractors as se
 
 def _run_command_and_print_output(command):
     command_list = shlex.split(command, posix="win" not in sys.platform)
@@ -51,6 +51,7 @@ def _call_command_split(command_list):
     except CalledProcessError as e:
         raise Exception(e.output)
 
+
 def get_git_commit(git_folder, shorten=True):
     if git_folder is None:
         return None
@@ -62,4 +63,10 @@ def get_git_commit(git_folder, shorten=True):
         commit = None
     return commit
 
-    
+
+def recover_recording(rec_arg):
+    if isinstance(rec_arg, dict):
+        recording = se.load_extractor_from_dict(rec_arg)
+    else:
+        recording = rec_arg
+    return recording
