@@ -70,3 +70,7 @@ def recover_recording(rec_arg):
     else:
         recording = rec_arg
     return recording
+
+
+class SpikeSortingError(RuntimeError):
+    """Raised whenever spike sorting fails"""
