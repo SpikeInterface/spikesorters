@@ -30,6 +30,7 @@ class TridesclousSorter(BaseSorter):
     sorter_name = 'tridesclous'
     installed = HAVE_TDC
     requires_locations = False
+    compatible_with_parallel = {'loky': True, 'multiprocessing': False, 'threading': False}
 
     _default_params = {
         'highpass_freq': 400.,

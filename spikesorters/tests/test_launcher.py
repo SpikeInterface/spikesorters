@@ -113,12 +113,12 @@ def test_collect_sorting_outputs():
 
 
 if __name__ == '__main__':
-    # test_run_sorters_with_list()
-    #
-    # test_run_sorters_with_dict()
+    test_run_sorters_with_list()
+
+    test_run_sorters_with_dict()
 
     # test_run_sorters_multiprocessing()
     
-    test_run_sorters_dask()
+    # test_run_sorters_dask()
 
     #~ test_collect_sorting_outputs()

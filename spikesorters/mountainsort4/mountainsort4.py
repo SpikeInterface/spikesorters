@@ -23,6 +23,7 @@ class Mountainsort4Sorter(BaseSorter):
     sorter_name = 'mountainsort4'
     installed = HAVE_MS4
     requires_locations = False
+    compatible_with_parallel = {'loky': True, 'multiprocessing': False, 'threading': False}
 
     _default_params = {
         'detect_sign': -1,  # Use -1, 0, or 1, depending on the sign of the spikes in the recording

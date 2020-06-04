@@ -27,6 +27,7 @@ class HerdingspikesSorter(BaseSorter):
     installed = HAVE_HS
     requires_locations = True
     _default_params = None  # later
+    compatible_with_parallel = {'loky': True, 'multiprocessing': True, 'threading': False}
 
     installation_mesg = """
     More information on HerdingSpikes at:

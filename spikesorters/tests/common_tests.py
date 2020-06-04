@@ -31,7 +31,8 @@ class SorterCommonTestSuite:
     def test_several_groups(self):
 
         # run sorter with several groups in paralel or not
-        recording, sorting_gt = se.example_datasets.toy_example(num_channels=8, duration=30, seed=1)
+        recording, sorting_gt = se.example_datasets.toy_example(num_channels=8, duration=30, seed=1, dumpable=True,
+                                                                dump_folder='test_groups')
 
         # make 2 artificial groups
         for ch_id in range(0, 4):
@@ -55,6 +56,7 @@ class SorterCommonTestSuite:
                     for unit_id in sorting.get_unit_ids():
                         print('unit #', unit_id, 'nb', len(sorting.get_unit_spike_train(unit_id)))
                     del sorting
+
 
     def test_with_BinDatRecordingExtractor(self):
         # some sorter (TDC, KS, KS2, ...) work by default with the raw binary

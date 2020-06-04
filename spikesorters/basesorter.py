@@ -139,15 +139,15 @@ class BaseSorter:
 
         if parallel and len(self.recording_list) > 1:
             if not np.all([recording.check_if_dumpable() for recording in self.recording_list]):
-                parallel = False
-                print("RecordingExtractor objects are not dumpable and can't be processed in parallel")
+                raise RuntimeError("RecordingExtractor objects are not dumpable and can't be processed in parallel. "
+                                   "Use parallel=False")
 
         try:
             if not parallel:
                 for i, recording in enumerate(self.recording_list):
                     self._run(recording, self.output_folders[i])
             else:
-                _ = Parallel(n_jobs=n_jobs, backend=joblib_backend)(
+                Parallel(n_jobs=n_jobs, backend=joblib_backend)(
                     delayed(self._run)(rec.dump_to_dict(), output_folder)
                     for (rec, output_folder) in zip(self.recording_list, self.output_folders))
 
