@@ -28,7 +28,8 @@ installed_sorter_list = [s for s in sorter_full_list if s.installed]
 
 # generic laucnher via function approach
 def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_output_folder=False,
-               grouping_property=None, parallel=False, verbose=False, raise_error=True, **params):
+               grouping_property=None, parallel=False, verbose=False, raise_error=True, n_jobs=-1, joblib_backend='loky',
+               **params):
     """
     Generic function to run a sorter via function approach.
 
@@ -59,6 +60,10 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
     raise_error: bool
         If True, an error is raised if spike sorting fails (default). If False, the process continues and the error is
         logged in the log file.
+    n_jobs: int
+        Number of jobs when parallel=True (default=-1)
+    joblib_backend: str
+        joblib backend when parallel=True (default='loky')
     **params: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params(sorter_name_or_class)'
 
@@ -76,9 +81,9 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
         raise (ValueError('Unknown sorter'))
 
     sorter = SorterClass(recording=recording, output_folder=output_folder, grouping_property=grouping_property,
-                         parallel=parallel, verbose=verbose, delete_output_folder=delete_output_folder)
+                         verbose=verbose, delete_output_folder=delete_output_folder)
     sorter.set_params(**params)
-    sorter.run(raise_error=raise_error)
+    sorter.run(raise_error=raise_error, parallel=parallel, n_jobs=n_jobs, joblib_backend=joblib_backend)
     sortingextractor = sorter.get_result()
 
     return sortingextractor
@@ -152,7 +157,11 @@ def run_hdsort(*args, **kwargs):
             If True, output is verbose
         raise_error: bool
             If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
-            is logged in the log file.
+            is logged in the log file
+        n_jobs: int
+            Number of jobs when parallel=True (default=-1)
+        joblib_backend: str
+            joblib backend when parallel=True (default='loky')
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('hdsort')
 
@@ -185,7 +194,11 @@ def run_klusta(*args, **kwargs):
             If True, output is verbose
         raise_error: bool
             If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
-            is logged in the log file.
+            is logged in the log file
+        n_jobs: int
+            Number of jobs when parallel=True (default=-1)
+        joblib_backend: str
+            joblib backend when parallel=True (default='loky')
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('klusta')
 
@@ -218,7 +231,11 @@ def run_tridesclous(*args, **kwargs):
             If True, output is verbose
         raise_error: bool
             If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
-            is logged in the log file.
+            is logged in the log file
+        n_jobs: int
+            Number of jobs when parallel=True (default=-1)
+        joblib_backend: str
+            joblib backend when parallel=True (default='loky')
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('tridesclous')
 
@@ -251,7 +268,11 @@ def run_mountainsort4(*args, **kwargs):
             If True, output is verbose
         raise_error: bool
             If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
-            is logged in the log file.
+            is logged in the log file
+        n_jobs: int
+            Number of jobs when parallel=True (default=-1)
+        joblib_backend: str
+            joblib backend when parallel=True (default='loky')
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('mountainsort4')
 
@@ -283,8 +304,12 @@ def run_ironclust(*args, **kwargs):
         verbose: bool
             If True, output is verbose
         raise_error: bool
-            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
-            is logged in the log file.
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error
+            is logged in the log file
+        n_jobs: int
+            Number of jobs when parallel=True (default=-1)
+        joblib_backend: str
+            joblib backend when parallel=True (default='loky')
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('ironclust')
 
@@ -317,7 +342,11 @@ def run_kilosort(*args, **kwargs):
             If True, output is verbose
         raise_error: bool
             If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
-            is logged in the log file.
+            is logged in the log file
+        n_jobs: int
+            Number of jobs when parallel=True (default=-1)
+        joblib_backend: str
+            joblib backend when parallel=True (default='loky')
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('kilosort')
 
@@ -350,7 +379,11 @@ def run_kilosort2(*args, **kwargs):
             If True, output is verbose
         raise_error: bool
             If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
-            is logged in the log file.
+            is logged in the log file
+        n_jobs: int
+            Number of jobs when parallel=True (default=-1)
+        joblib_backend: str
+            joblib backend when parallel=True (default='loky')
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('kilosort2')
 
@@ -383,7 +416,11 @@ def run_spykingcircus(*args, **kwargs):
             If True, output is verbose
         raise_error: bool
             If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
-            is logged in the log file.
+            is logged in the log file
+        n_jobs: int
+            Number of jobs when parallel=True (default=-1)
+        joblib_backend: str
+            joblib backend when parallel=True (default='loky')
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('spykingcircus')
 
@@ -416,7 +453,11 @@ def run_herdingspikes(*args, **kwargs):
             If True, output is verbose
         raise_error: bool
             If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
-            is logged in the log file.
+            is logged in the log file
+        n_jobs: int
+            Number of jobs when parallel=True (default=-1)
+        joblib_backend: str
+            joblib backend when parallel=True (default='loky')
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('herdingspikes')
 
@@ -449,7 +490,11 @@ def run_waveclus(*args, **kwargs):
             If True, output is verbose
         raise_error: bool
             If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
-            is logged in the log file.
+            is logged in the log file
+        n_jobs: int
+            Number of jobs when parallel=True (default=-1)
+        joblib_backend: str
+            joblib backend when parallel=True (default='loky')
     **kwargs: keyword args
         Spike sorter specific arguments (they can be retrieved with 'get_default_params('waveclus')
 

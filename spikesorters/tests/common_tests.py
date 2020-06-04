@@ -19,9 +19,9 @@ class SorterCommonTestSuite:
         params = self.SorterClass.default_params()
 
         sorter = self.SorterClass(recording=recording, output_folder=None,
-                                  grouping_property=None, parallel=False, verbose=False)
+                                  grouping_property=None, verbose=False)
         sorter.set_params(**params)
-        sorter.run()
+        sorter.run(parallel=False)
         sorting = sorter.get_result()
 
         for unit_id in sorting.get_unit_ids():
@@ -42,16 +42,19 @@ class SorterCommonTestSuite:
         params = self.SorterClass.default_params()
         
         parallel_cases = [False, True]
+        joblib_backends = ['loky', 'multiprocessing', 'threading']
         
         for parallel in parallel_cases:
-            sorter = self.SorterClass(recording=recording, output_folder=None,
-                                      grouping_property='group', parallel=parallel, verbose=False)
-            sorter.set_params(**params)
-            sorter.run()
-            sorting = sorter.get_result()
-            for unit_id in sorting.get_unit_ids():
-                print('unit #', unit_id, 'nb', len(sorting.get_unit_spike_train(unit_id)))
-            del sorting
+            for backend in joblib_backends:
+                sorter = self.SorterClass(recording=recording, output_folder=None,
+                                          grouping_property='group', verbose=False)
+                if sorter.compatible_with_parallel[backend]:
+                    sorter.set_params(**params)
+                    sorter.run(parallel=parallel, joblib_backend=backend)
+                    sorting = sorter.get_result()
+                    for unit_id in sorting.get_unit_ids():
+                        print('unit #', unit_id, 'nb', len(sorting.get_unit_spike_train(unit_id)))
+                    del sorting
 
     def test_with_BinDatRecordingExtractor(self):
         # some sorter (TDC, KS, KS2, ...) work by default with the raw binary

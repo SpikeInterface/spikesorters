@@ -13,8 +13,8 @@ pyqt5==5.13
 hdbscan
 tridesclous==1.6
 
-# ms4 : fail on travis
-# ml_ms4alg==0.3.2
+# ms4
+ml_ms4alg==0.3.2
 
 # herdingspikes
 herdingspikes==0.3.7
