@@ -8,6 +8,7 @@ import spikeextractors as se
 
 from ..utils.shellscript import ShellScript
 from ..basesorter import BaseSorter
+from ..sorter_tools import recover_recording
 
 
 def check_if_installed(ironclust_path: Union[str, None]):
@@ -111,6 +112,7 @@ class IronClustSorter(BaseSorter):
         se.MdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir))
 
     def _run(self, recording: se.RecordingExtractor, output_folder: Path):
+        recording = recover_recording(recording)
         dataset_dir = output_folder / 'ironclust_dataset'
         source_dir = Path(__file__).parent
 

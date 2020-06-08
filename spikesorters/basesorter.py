@@ -20,30 +20,30 @@ a way to adapt params with datasets.
 import time
 import copy
 from pathlib import Path
-import threading
 import shutil
 import os
 import datetime
 import json
 import traceback
+from joblib import Parallel, delayed
 
 import numpy as np
 
 import spikeextractors as se
 from spikeextractors.baseextractor import _check_json
-
+from .sorter_tools import SpikeSortingError
 
 class BaseSorter:
     sorter_name = ''  # convinience for reporting
     installed = False  # check at class level if isntalled or not
     SortingExtractor_Class = None  # convinience to get the extractor
     requires_locations = False
+    compatible_with_parallel = {'loky': True, 'multiprocessing': True, 'threading': True}
     _default_params = {}
     installation_mesg = ""  # error message when not installed
-    compatile_with_parallel_thread = True
 
     def __init__(self, recording=None, output_folder=None, verbose=False,
-                 grouping_property=None, parallel=False, delete_output_folder=False):
+                 grouping_property=None, delete_output_folder=False):
 
         assert self.installed, """This sorter {} is not installed.
         Please install it with:  \n{} """.format(self.sorter_name, self.installation_mesg)
@@ -55,11 +55,7 @@ class BaseSorter:
 
         self.verbose = verbose
         self.grouping_property = grouping_property
-        self.parallel = parallel
         self.params = self.default_params()
-
-        if self.parallel:
-            assert self.compatile_with_parallel_thread, 'This sorter does not accept parallel=True for groups (grouping_property="...")'
 
         if output_folder is None:
             output_folder = self.sorter_name + '_output'
@@ -120,7 +116,7 @@ class BaseSorter:
                 params['recording'] = recording.make_serialized_dict()
                 json.dump(_check_json(params), f, indent=4)
 
-    def run(self, raise_error=True):
+    def run(self, raise_error=True, parallel=False, n_jobs=-1, joblib_backend='loky'):
         for i, recording in enumerate(self.recording_list):
             self._setup_recording(recording, self.output_folders[i])
 
@@ -137,42 +133,31 @@ class BaseSorter:
 
         t0 = time.perf_counter()
 
-        if raise_error:
-            if not self.parallel:
+        if parallel:
+            assert self.compatible_with_parallel[joblib_backend], f"{self.sorter_name} is not compatible with " \
+                                                                  f"joblib {joblib_backend} backend"
+
+        if parallel and len(self.recording_list) > 1:
+            if not np.all([recording.check_if_dumpable() for recording in self.recording_list]):
+                raise RuntimeError("RecordingExtractor objects are not dumpable and can't be processed in parallel. "
+                                   "Use parallel=False")
+
+        try:
+            if not parallel:
                 for i, recording in enumerate(self.recording_list):
                     self._run(recording, self.output_folders[i])
             else:
-                # run in threads
-                threads = []
-                for i, recording in enumerate(self.recording_list):
-                    thread = threading.Thread(target=self._run, args=(recording, self.output_folders[i]))
-                    threads.append(thread)
-                    thread.start()
-                for thread in threads:
-                    thread.join()
+                Parallel(n_jobs=n_jobs, backend=joblib_backend)(
+                    delayed(self._run)(rec.dump_to_dict(), output_folder)
+                    for (rec, output_folder) in zip(self.recording_list, self.output_folders))
+
             t1 = time.perf_counter()
             run_time = float(t1 - t0)
 
-            log['error'] = False
-
-        else:
-            try:
-                if not self.parallel:
-                    for i, recording in enumerate(self.recording_list):
-                        self._run(recording, self.output_folders[i])
-                else:
-                    # run in threads
-                    threads = []
-                    for i, recording in enumerate(self.recording_list):
-                        thread = threading.Thread(target=self._run, args=(recording, self.output_folders[i]))
-                        threads.append(thread)
-                        thread.start()
-                    for thread in threads:
-                        thread.join()
-                t1 = time.perf_counter()
-                run_time = float(t1 - t0)
-
-            except Exception as err:
+        except Exception as err:
+            if raise_error:
+                raise SpikeSortingError(f"Spike sorting failed: {err}")
+            else:
                 run_time = None
                 log['error'] = True
                 log['error_trace'] = traceback.format_exc()

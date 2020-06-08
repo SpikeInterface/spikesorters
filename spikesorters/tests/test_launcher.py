@@ -67,7 +67,7 @@ def test_run_sorters_multiprocessing():
 
     # multiprocessing
     t0 = time.perf_counter()
-    run_sorters(sorter_list, recording_dict, working_folder, engine='multiprocessing', engine_kargs={'processes': 4})
+    run_sorters(sorter_list, recording_dict, working_folder, engine='multiprocessing', engine_kwargs={'processes': 4})
     t1 = time.perf_counter()
     print(t1 - t0)
 
@@ -98,12 +98,12 @@ def test_run_sorters_dask():
 
     # dask
     t0 = time.perf_counter()
-    results = run_sorters(sorter_list, recording_dict, working_folder, engine='dask', engine_kargs={'client': client}, with_output=True)
+    results = run_sorters(sorter_list, recording_dict, working_folder, engine='dask',
+                          engine_kwargs={'client': client}, with_output=True)
     # dask do not return results always None
     assert results is None
     t1 = time.perf_counter()
     print(t1 - t0)
-    
 
 
 def test_collect_sorting_outputs():
@@ -112,16 +112,13 @@ def test_collect_sorting_outputs():
     print(results)
 
 
-
-
-
 if __name__ == '__main__':
     test_run_sorters_with_list()
 
-    #~ test_run_sorters_with_dict()
+    test_run_sorters_with_dict()
 
-    #~ test_run_sorters_multiprocessing()
+    # test_run_sorters_multiprocessing()
     
-    #~ test_run_sorters_dask()
+    # test_run_sorters_dask()
 
     #~ test_collect_sorting_outputs()

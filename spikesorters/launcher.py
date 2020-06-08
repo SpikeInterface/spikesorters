@@ -16,7 +16,7 @@ from .sorterlist import sorter_dict, run_sorter
 
 def _run_one(arg_list):
     # the multiprocessing python module force to have one unique tuple argument
-    rec, sorter_name, output_folder, grouping_property, verbose, params, raise_error = arg_list
+    rec, sorter_name, output_folder, grouping_property, verbose, params, run_sorter_kwargs = arg_list
     if isinstance(rec, dict):
         recording = se.load_extractor_from_dict(rec)
     else:
@@ -24,14 +24,13 @@ def _run_one(arg_list):
 
     SorterClass = sorter_dict[sorter_name]
     sorter = SorterClass(recording=recording, output_folder=output_folder,
-                         grouping_property=grouping_property, parallel=False,
-                         verbose=verbose, delete_output_folder=False)
+                         grouping_property=grouping_property, verbose=verbose, delete_output_folder=False)
     sorter.set_params(**params)
-    sorter.run(raise_error=raise_error)
+    sorter.run(**run_sorter_kwargs)
 
 
 def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_params={}, grouping_property=None,
-                mode='raise', engine=None, engine_kargs={}, verbose=False, with_output=True, raise_error=False):
+                mode='raise', engine=None, engine_kwargs={}, verbose=False, with_output=True, run_sorter_kwargs={}):
     """
     This run several sorter on several recording.
     Simple implementation are nested loops or with multiprocessing.
@@ -75,24 +74,28 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
             * 'keep' : do not compute again if f=subfolder exists and log is OK
 
     engine: str
-        'loop' or 'multiprocessing'
+        'loop', 'multiprocessing', or 'dask'
 
-    engine_kargs: dict
-        This contains kargs specific to the launcher engine:
+    engine_kwargs: dict
+        This contains kwargs specific to the launcher engine:
             * 'loop' : no kargs
             * 'multiprocessing' : {'processes' : } number of processes
-            * dask : {'client':} the dask client for submiting task
+            * 'dask' : {'client':} the dask client for submiting task
             
     verbose: bool
         default True
 
     with_output: bool
         return the output.
-    
-    raise_error: False by default
-        Raise error or not when a sorter do run(...) or silently continue.
 
-    Output
+    run_sorter_kwargs: dict
+        This contains kwargs specific to run_sorter function:\
+            * 'raise_error' :  bool
+            * 'parallel' : bool
+            * 'n_jobs' : int
+            * 'joblib_backend' : 'loky' / 'multiprocessing' / 'threading'
+
+    Returns
     ----------
 
     results : dict
@@ -124,12 +127,12 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
         for rec_name, recording in recording_dict.items():
             recording_list = recording.get_sub_extractors_by_property(grouping_property)
             n_group = len(recording_list)
-            assert n_group == 1, 'run_sorters() work only if grouping_property=None or if it split into one subrecording'
+            assert n_group == 1, 'run_sorters() works only if grouping_property=None or if it split into one subrecording'
             recording_dict[rec_name] = recording_list[0]
         grouping_property = None
-    
+
     need_serialize = engine != 'loop'
-    
+
     task_list = []
     for rec_name, recording in recording_dict.items():
         for sorter_name in sorter_list:
@@ -152,25 +155,24 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
                 rec = recording.dump_to_dict()
             else:
                 rec = recording
-            task_list.append((rec, sorter_name, output_folder, grouping_property, verbose, params, raise_error))
+            task_list.append((rec, sorter_name, output_folder, grouping_property, verbose, params, run_sorter_kwargs))
 
     if engine == 'loop':
         # simple loop in main process
         for arg_list in task_list:
-            # print(arg_list)
             _run_one(arg_list)
 
     elif engine == 'multiprocessing':
         # use mp.Pool
-        processes = engine_kargs.get('processes', None)
+        processes = engine_kwargs.get('processes', None)
         pool = multiprocessing.Pool(processes)
         pool.map(_run_one, task_list)
         pool.close()
-    
+
     elif engine == 'dask':
-        client = engine_kargs.get('client', None)
+        client = engine_kwargs.get('client', None)
         assert client is not None, 'For dask engine you have to provide : client = dask.distributed.Client(...)'
-            
+
         tasks = []
         for arg_list in task_list:
             task = client.submit(_run_one, arg_list)
@@ -178,14 +180,14 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
 
         for task in tasks:
             task.result()
-    
+
     if with_output:
         if engine == 'dask':
-            print('Warning!! With engine="dask" you cannot have directly output results\n'\
-                        'Use : run_sorters(..., with_output=False)\n'\
-                        'And then: results = collect_sorting_outputs(output_folders)')
+            print('Warning!! With engine="dask" you cannot have directly output results\n' \
+                  'Use : run_sorters(..., with_output=False)\n' \
+                  'And then: results = collect_sorting_outputs(output_folders)')
             return
-        
+
         results = collect_sorting_outputs(working_folder)
         return results
 

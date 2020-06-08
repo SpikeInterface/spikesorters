@@ -7,6 +7,7 @@ import copy
 import spikeextractors as se
 from ..basesorter import BaseSorter
 from ..utils.shellscript import ShellScript
+from ..sorter_tools import recover_recording
 
 
 def check_if_installed(hdsort_path: Union[str, None]):
@@ -154,6 +155,7 @@ class HDSortSorter(BaseSorter):
                 f.write(txt)
 
     def _run(self, recording, output_folder):
+        recording = recover_recording(recording)
         tmpdir = output_folder
         os.makedirs(str(tmpdir), exist_ok=True)
         samplerate = recording.get_sampling_frequency()
