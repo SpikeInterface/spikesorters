@@ -1,24 +1,12 @@
-function p_waveclus(vcDir_temp, nChans, detect_sign, feature_type, scales, detect_threshold, ...
-                    min_clus, maxtemp, template_sdnum,detect_order,detect_fmin,detect_fmax,sort_order,sort_fmin,sort_fmax)
+function p_waveclus(vcDir_temp, nChans, par_input)
     % Arguments
     % -----
     % nChans: number of channels, if more than 1 the polytrode
+    % par_input: wave_clus parameters defined by the user
     % version of wave_clus will be applied
 
     S_par = set_parameters_ss();
-    S_par.detection = string(detect_sign);
-    S_par.features = string(feature_type);
-    S_par.scales = scales;
-    S_par.stdmin = detect_threshold;
-    S_par.min_clus = min_clus;
-    S_par.maxtemp = maxtemp;
-    S_par.template_sdnum = template_sdnum;
-	S_par.detect_fmin = detect_fmin;
-	S_par.detect_fmax = detect_fmax;
-	S_par.detect_order = detect_order;
-	S_par.sort_fmin = sort_fmin;
-	S_par.sort_fmax = sort_fmax;
-	S_par.sort_order = sort_order;
+    S_par = update_parameters(S_par,par_input,'relevant');
 
     cd(vcDir_temp);
 

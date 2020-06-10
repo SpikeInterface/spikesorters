@@ -50,7 +50,14 @@ class WaveClusSorter(BaseSorter):
         'sort_filter_fmin': 300,
         'sort_filter_fmax': 3000,
         'sort_filter_order': 2,
-    }
+        'mintemp': 0,
+        'max_clus': 200,
+        'w_pre': 20,
+        'w_post': 44,
+        'alignment_window': 10,
+        'stdmax': 50,
+        'max_spk': 40000
+        }
 
     installation_mesg = """\nTo use WaveClus run:\n
         >>> git clone https://github.com/csn-le/wave_clus
@@ -99,56 +106,70 @@ class WaveClusSorter(BaseSorter):
         recording = recover_recording(recording)
 
         source_dir = Path(__file__).parent
-        p = self.params
+        p = self._default_params.copy()
 
         if recording.is_filtered and (p['enable_detect_filter'] or p['enable_sort_filter']):
             print("Warning! The recording is already filtered, but Wave-Clus filters are enabled. You can disable "
                   "filters by setting 'enable_detect_filter' and 'enable_sort_filter' parameters to False")
 
         if p['detect_sign'] < 0:
-            detect_sign = 'neg'
+            p['detect_sign'] = 'neg'
         elif p['detect_sign'] > 0:
-            detect_sign = 'pos'
+            p['detect_sign'] = 'pos'
         else:
-            detect_sign = 'both'
+            p['detect_sign'] = 'both'
 
         if p['enable_detect_filter']:
-            detect_filter_order = p['detect_filter_order']
             if recording.is_filtered:
                 print('Wave_clus will filter the signal again to detect the spikes')
         else:
-            detect_filter_order = 0
+            p['detect_filter_order'] = 0
+        del p['enable_detect_filter']
+
         if p['enable_sort_filter']:
-            sort_filter_order = p['sort_filter_order']
             if recording.is_filtered:
                 print('Wave_clus will filter the signal again before feature extraction')
         else:
-            sort_filter_order = 0
+            p['sort_filter_order'] = 0
+        del p['enable_sort_filter']
+
+        # rename keys to waveclus equivalents (if the uses uses the waveclus names, they have priority)
+        si2wc_par = (('detect_sign', 'detection'), ('feature_type', 'features'), ('detect_threshold', 'stdmin'))
+        for si, wc in si2wc_par:
+            if wc not in p:
+                p[wc] = p.pop(si)
+            else:
+                del p[si]
 
         samplerate = recording.get_sampling_frequency()
+        p['sr'] = samplerate
 
         num_channels = recording.get_num_channels()
-        num_timepoints = recording.get_num_frames()
-        duration_minutes = num_timepoints / samplerate / 60
-
         tmpdir = output_folder
         os.makedirs(str(tmpdir), exist_ok=True)
 
         if self.verbose:
+            num_timepoints = recording.get_num_frames()
+            duration_minutes = num_timepoints / samplerate / 60
             print('Num. channels = {}, Num. timepoints = {}, duration = {} minutes'.format(
                 num_channels, num_timepoints, duration_minutes))
 
         # new method
-        utils_path = source_dir.parent / 'utils'
+        par_str = ''
+        for key, value in p.items():
+            if type(value) == str:
+                value = '\'{}\''.format(value)
+            elif type(value) == bool:
+                value = '{}'.format(value).lower()
+            par_str += 'par.{} = {};'.format(key, value)
+
         if self.verbose:
             print('Running waveclus in {tmpdir}...'.format(tmpdir=tmpdir))
         cmd = '''
             addpath(genpath('{waveclus_path}'), '{source_path}');
+            {parameters}
             try
-                p_waveclus('{tmpdir}', {nChans}, '{detect_sign}', '{feature_type}', ...
-                 {scales}, {detect_threshold}, {min_clus}, {maxtemp}, ...
-                 {template_sdnum},{detect_filter_order},{detect_filter_fmin},{detect_filter_fmax}, ...
-                 {sort_filter_order},{sort_filter_fmin},{sort_filter_fmax});
+                p_waveclus('{tmpdir}', {nChans}, par);
             catch
                 fprintf('----------------------------------------');
                 fprintf(lasterr());
@@ -156,13 +177,8 @@ class WaveClusSorter(BaseSorter):
             end
             quit(0);
         '''
-        cmd = cmd.format(waveclus_path=WaveClusSorter.waveclus_path, utils_path=utils_path,
-                         source_path=source_dir, detect_sign=detect_sign, tmpdir=tmpdir, nChans = recording.get_num_channels(),
-                         feature_type=p['feature_type'], scales=p['scales'], detect_threshold=p['detect_threshold'],
-                         min_clus=p['min_clus'], maxtemp=p['maxtemp'], template_sdnum=p['template_sdnum'],
-                         detect_filter_order=detect_filter_order, detect_filter_fmin=p['detect_filter_fmin'],
-                         detect_filter_fmax=p['detect_filter_fmax'], sort_filter_order=sort_filter_order,
-                         sort_filter_fmin=p['sort_filter_fmin'], sort_filter_fmax=p['sort_filter_fmax'])
+        cmd = cmd.format(waveclus_path=WaveClusSorter.waveclus_path,source_path=source_dir,
+                        tmpdir=tmpdir, nChans=num_channels, parameters=par_str)
 
         matlab_cmd = ShellScript(cmd, script_path=str(tmpdir / 'run_waveclus.m'), keep_temp_files=True)
         matlab_cmd.write()
