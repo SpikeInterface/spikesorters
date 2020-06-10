@@ -3,6 +3,7 @@ import os
 from typing import Union
 import sys
 import copy
+from scipy.io import savemat
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
@@ -88,14 +89,15 @@ class WaveClusSorter(BaseSorter):
         if not check_if_installed(WaveClusSorter.waveclus_path):
             raise Exception(WaveClusSorter.installation_mesg)
         assert isinstance(WaveClusSorter.waveclus_path, str)
-
-        dataset_dir = output_folder / 'waveclus_dataset'
-        # Generate three files in the dataset directory: raw.mda, geom.csv, params.json
-        se.MdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir))
+        os.makedirs(str(output_folder), exist_ok=True)
+        # Generate mat files in the dataset directory
+        for nch in range(recording.get_num_channels()):
+            vcFile_mat = str(output_folder / ('raw' +str(nch+1) + '.mat'))
+            savemat(vcFile_mat, {'data':recording.get_traces(channel_ids=[nch]), 'sr':recording.get_sampling_frequency()})
 
     def _run(self, recording, output_folder):
         recording = recover_recording(recording)
-        dataset_dir = output_folder / 'waveclus_dataset'
+
         source_dir = Path(__file__).parent
         p = self.params
 
@@ -112,10 +114,14 @@ class WaveClusSorter(BaseSorter):
 
         if p['enable_detect_filter']:
             detect_filter_order = p['detect_filter_order']
+            if recording.is_filtered:
+                print('Wave_clus will filter the signal again to detect the spikes')
         else:
             detect_filter_order = 0
         if p['enable_sort_filter']:
             sort_filter_order = p['sort_filter_order']
+            if recording.is_filtered:
+                print('Wave_clus will filter the signal again before feature extraction')
         else:
             sort_filter_order = 0
 
@@ -125,7 +131,7 @@ class WaveClusSorter(BaseSorter):
         num_timepoints = recording.get_num_frames()
         duration_minutes = num_timepoints / samplerate / 60
 
-        tmpdir = output_folder / 'tmp'
+        tmpdir = output_folder
         os.makedirs(str(tmpdir), exist_ok=True)
 
         if self.verbose:
@@ -137,10 +143,10 @@ class WaveClusSorter(BaseSorter):
         if self.verbose:
             print('Running waveclus in {tmpdir}...'.format(tmpdir=tmpdir))
         cmd = '''
-            addpath(genpath('{waveclus_path}'), '{source_path}', '{utils_path}/mdaio');
+            addpath(genpath('{waveclus_path}'), '{source_path}');
             try
-                p_waveclus('{tmpdir}', '{dataset_dir}/raw.mda', '{tmpdir}/firings.mda', {samplerate}, ...
-                '{detect_sign}', '{feature_type}', {scales}, {detect_threshold}, {min_clus}, {maxtemp}, ...
+                p_waveclus('{tmpdir}', {nChans}, '{detect_sign}', '{feature_type}', ...
+                 {scales}, {detect_threshold}, {min_clus}, {maxtemp}, ...
                  {template_sdnum},{detect_filter_order},{detect_filter_fmin},{detect_filter_fmax}, ...
                  {sort_filter_order},{sort_filter_fmin},{sort_filter_fmax});
             catch
@@ -150,8 +156,8 @@ class WaveClusSorter(BaseSorter):
             end
             quit(0);
         '''
-        cmd = cmd.format(waveclus_path=WaveClusSorter.waveclus_path, utils_path=utils_path, dataset_dir=dataset_dir,
-                         source_path=source_dir, samplerate=samplerate, detect_sign=detect_sign, tmpdir=tmpdir,
+        cmd = cmd.format(waveclus_path=WaveClusSorter.waveclus_path, utils_path=utils_path,
+                         source_path=source_dir, detect_sign=detect_sign, tmpdir=tmpdir, nChans = recording.get_num_channels(),
                          feature_type=p['feature_type'], scales=p['scales'], detect_threshold=p['detect_threshold'],
                          min_clus=p['min_clus'], maxtemp=p['maxtemp'], template_sdnum=p['template_sdnum'],
                          detect_filter_order=detect_filter_order, detect_filter_fmin=p['detect_filter_fmin'],
@@ -180,24 +186,15 @@ class WaveClusSorter(BaseSorter):
         if retcode != 0:
             raise Exception('waveclus returned a non-zero exit code')
 
-        result_fname = str(tmpdir / 'firings.mda')
+        result_fname = str(tmpdir / 'times_results.mat')
         if not os.path.exists(result_fname):
             raise Exception('Result file does not exist: ' + result_fname)
 
-        samplerate_fname = str(tmpdir / 'samplerate.txt')
-        with open(samplerate_fname, 'w') as f:
-            f.write('{}'.format(samplerate))
 
     @staticmethod
     def get_result_from_folder(output_folder):
+
         output_folder = Path(output_folder)
-        tmpdir = output_folder / 'tmp'
-
-        result_fname = str(tmpdir / 'firings.mda')
-        samplerate_fname = str(tmpdir / 'samplerate.txt')
-        with open(samplerate_fname, 'r') as f:
-            samplerate = float(f.read())
-
-        sorting = se.MdaSortingExtractor(file_path=result_fname, sampling_frequency=samplerate)
-
+        result_fname = str(output_folder / 'times_results.mat')
+        sorting = se.WaveClusSortingExtractor(file_path=result_fname)
         return sorting
