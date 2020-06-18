@@ -53,18 +53,24 @@ class ShellScript():
                     script_path = script_path.parent / (script_path.name + '.bat')
                 else:
                     script_path = script_path.parent / (script_path.name + '.sh')
+                script_log_path = script_path.parent / ('spikesorter_log.txt')
         else:
             tempdir = Path(tempfile.mkdtemp(prefix='tmp_shellscript'))
             if 'win' in sys.platform and sys.platform != 'darwin':
                 script_path = tempdir / 'script.bat'
             else:
                 script_path = tempdir / 'script.sh'
+            script_log_path = tempdir / ('spikesorter_log.txt')
             self._dirs_to_remove.append(tempdir)
         self.write(script_path)
         cmd = str(script_path)
         print('RUNNING SHELL SCRIPT: ' + cmd)
         self._start_time = time.time()
-        self._process = subprocess.Popen(cmd)
+        self._process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,  bufsize = 1, universal_newlines=True)
+        with open(script_log_path, 'w+') as script_log_file:
+            for line in self._process.stdout:
+                script_log_file.write(line)
+                print(line)
 
     def wait(self, timeout=None) -> Optional[int]:
         if not self.isRunning():

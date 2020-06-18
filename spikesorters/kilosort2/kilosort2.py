@@ -22,6 +22,7 @@ def check_if_installed(kilosort2_path: Union[str, None]):
     kilosort2_path = str(Path(kilosort2_path).absolute())
 
     if (Path(kilosort2_path) / 'master_kilosort.m').is_file():
+    if (Path(kilosort2_path) / 'main_kilosort.m').is_file():
         return True
     else:
         return False
@@ -170,13 +171,13 @@ class Kilosort2Sorter(BaseSorter):
         if 'win' in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
                         cd {tmpdir}
-                        matlab -nosplash -nodisplay -wait -r kilosort2_master
+                        matlab -nosplash -wait -log -r kilosort2_master
                     '''.format(tmpdir=output_folder)
         else:
             shell_cmd = '''
                         #!/bin/bash
                         cd "{tmpdir}"
-                        matlab -nosplash -nodisplay -r kilosort2_master
+                        matlab -nosplash -nodisplay -log -r kilosort2_master
                     '''.format(tmpdir=output_folder)
         shell_script = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}')
         shell_script.start()
