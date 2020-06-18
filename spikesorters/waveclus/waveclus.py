@@ -121,17 +121,11 @@ class WaveClusSorter(BaseSorter):
         else:
             p['detect_sign'] = 'both'
 
-        if p['enable_detect_filter']:
-            if recording.is_filtered:
-                print('Wave_clus will filter the signal again to detect the spikes')
-        else:
+        if not p['enable_detect_filter']:
             p['detect_filter_order'] = 0
         del p['enable_detect_filter']
 
-        if p['enable_sort_filter']:
-            if recording.is_filtered:
-                print('Wave_clus will filter the signal again before feature extraction')
-        else:
+        if not p['enable_sort_filter']:
             p['sort_filter_order'] = 0
         del p['enable_sort_filter']
 
@@ -153,7 +147,6 @@ class WaveClusSorter(BaseSorter):
             print('Num. channels = {}, Num. timepoints = {}, duration = {} minutes'.format(
                 num_channels, num_timepoints, duration_minutes))
 
-        # new method
         par_str = ''
         for key, value in p.items():
             if type(value) == str:
@@ -185,7 +178,7 @@ class WaveClusSorter(BaseSorter):
         if 'win' in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
                 cd {tmpdir}
-                matlab -nosplash -nodisplay -wait -r run_waveclus
+                matlab -nosplash -wait -r run_waveclus
             '''.format(tmpdir=tmpdir)
         else:
             shell_cmd = '''
