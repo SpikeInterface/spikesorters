@@ -56,7 +56,9 @@ class WaveClusSorter(BaseSorter):
         'w_post': 44,
         'alignment_window': 10,
         'stdmax': 50,
-        'max_spk': 40000
+        'max_spk': 40000,
+        'ref_ms': 1.5,
+        'interpolation' : True
         }
 
     installation_mesg = """\nTo use WaveClus run:\n
@@ -106,7 +108,7 @@ class WaveClusSorter(BaseSorter):
         recording = recover_recording(recording)
 
         source_dir = Path(__file__).parent
-        p = self._default_params.copy()
+        p = self.params.copy()
 
         if recording.is_filtered and (p['enable_detect_filter'] or p['enable_sort_filter']):
             print("Warning! The recording is already filtered, but Wave-Clus filters are enabled. You can disable "
@@ -133,13 +135,10 @@ class WaveClusSorter(BaseSorter):
             p['sort_filter_order'] = 0
         del p['enable_sort_filter']
 
-        # rename keys to waveclus equivalents (if the uses uses the waveclus names, they have priority)
-        si2wc_par = (('detect_sign', 'detection'), ('feature_type', 'features'), ('detect_threshold', 'stdmin'))
-        for si, wc in si2wc_par:
-            if wc not in p:
-                p[wc] = p.pop(si)
-            else:
-                del p[si]
+        if p['interpolation']:
+            p['interpolation']='y'
+        else:
+            p['interpolation']='n'
 
         samplerate = recording.get_sampling_frequency()
         p['sr'] = samplerate
