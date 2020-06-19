@@ -170,7 +170,7 @@ class Kilosort2Sorter(BaseSorter):
         if 'win' in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
                         cd {tmpdir}
-                        matlab -nosplash -nodisplay -wait -r kilosort2_master
+                        matlab -nosplash -wait -r kilosort2_master
                     '''.format(tmpdir=output_folder)
         else:
             shell_cmd = '''
