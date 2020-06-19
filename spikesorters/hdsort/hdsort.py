@@ -167,7 +167,7 @@ class HDSortSorter(BaseSorter):
         if "win" in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
                         cd {tmpdir}
-                        matlab -nosplash -nodisplay -wait -r hdsort_master
+                        matlab -nosplash -wait -r hdsort_master
                     '''.format(tmpdir=output_folder)
         else:
             shell_cmd = '''
