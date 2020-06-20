@@ -21,7 +21,7 @@ def check_if_installed(kilosort2_path: Union[str, None]):
         kilosort2_path = kilosort2_path[1:-1]
     kilosort2_path = str(Path(kilosort2_path).absolute())
 
-    if (Path(kilosort2_path) / 'main_kilosort.m').is_file():
+    if (Path(kilosort2_path) / 'master_kilosort.m').is_file() or (Path(kilosort2_path) / 'main_kilosort.m').is_file():
         return True
     else:
         return False

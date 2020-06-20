@@ -60,7 +60,7 @@ class ShellScript():
                 script_path = tempdir / 'script.bat'
             else:
                 script_path = tempdir / 'script.sh'
-            script_log_path = tempdir / ('spikesorter_log.txt')
+            script_log_path = tempdir / ('spikesorters_log.txt')
             self._dirs_to_remove.append(tempdir)
         self.write(script_path)
         cmd = str(script_path)
