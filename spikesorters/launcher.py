@@ -61,7 +61,7 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
         The working directory.
         This must not exist before calling this function.
 
-    grouping_property: str
+    grouping_property: str or None
         The property of grouping given to sorters.
 
     sorter_params: dict of dict with sorter_name as key

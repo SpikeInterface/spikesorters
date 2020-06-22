@@ -156,7 +156,7 @@ def run_hdsort(*args, **kwargs):
         verbose: bool
             If True, output is verbose
         raise_error: bool
-            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error
             is logged in the log file
         n_jobs: int
             Number of jobs when parallel=True (default=-1)

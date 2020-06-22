@@ -2,7 +2,6 @@ from pathlib import Path
 import os
 from typing import Union
 import sys
-import copy
 
 import spikeextractors as se
 from ..basesorter import BaseSorter
@@ -117,7 +116,6 @@ class HDSortSorter(BaseSorter):
             hdsort_path=str(
                 Path(HDSortSorter.hdsort_path).absolute()),
             utils_path=str(utils_path.absolute()),
-            output_folder=str(output_folder),
             config_path=str((output_folder / 'hdsort_config.m').absolute()),
             file_name=p['file_name'],
             file_format=p['file_format'],
@@ -191,12 +189,7 @@ class HDSortSorter(BaseSorter):
     @staticmethod
     def get_result_from_folder(output_folder):
         output_folder = Path(output_folder)
-
-        result_fname = str(output_folder / 'firings.mda')
-        samplerate_fname = str(output_folder / 'samplerate.txt')
-        with open(samplerate_fname, 'r') as f:
-            samplerate = float(f.read())
-
-        sorting = se.MdaSortingExtractor(file_path=result_fname, sampling_frequency=samplerate)
+        sorting = se.HDSortSortingExtractor(file_path=str(output_folder / 'hdsort_output' /
+                                                          'hdsort_output_results.mat'))
 
         return sorting

@@ -1,11 +1,10 @@
 try
     % prepare for kilosort execution
-    addpath(genpath('{hdsort_path}'), '{utils_path}/mdaio');
+    addpath(genpath('{hdsort_path}'));
 
     %% Add 'External' functions to path:
     setup()
 
-    outputFolder = '{output_folder}';
     mainFolder = '.';
     run(fullfile('{config_path}'));
     rawFile = '{file_name}';
@@ -57,28 +56,7 @@ try
     [sortedPopulation, sortedPopulation_discarded] = HDSorting.createSortedPopulation(mainFolder);
 
     %% When the sorting has already been run before, open the results from a file with:
-    sortedPopulation = hdsort.results.Population(HDSorting.files.results);
-
-    % save to mda
-    nSpikes = 0;
-    for i = 1:length(sortedPopulation.unitIDs)
-        nSpikes = nSpikes + length(sortedPopulation.Units(i).spikeTrain);
-    end
-    spikeTimes = zeros(nSpikes, 1);
-    spikeClusters = zeros(nSpikes, 1);
-    firstColumn = zeros(nSpikes, 1);
-    iSpike = 1;
-    for i = 1:length(sortedPopulation.unitIDs)
-        spikeTrain = sortedPopulation.Units(i).spikeTrain;
-        nSpikesUnit = length(spikeTrain);
-        spikeTimes(iSpike:iSpike+nSpikesUnit-1) = spikeTrain;
-        spikeClusters(iSpike:iSpike+nSpikesUnit-1) = ...
-            repelem(sortedPopulation.Units(i).ID, nSpikesUnit);
-        iSpike = iSpike + nSpikesUnit;
-    end
-    mr_mda = [firstColumn, spikeTimes, spikeClusters];
-    output_mda = fullfile(outputFolder, 'firings.mda');
-    writemda(mr_mda', 'firings.mda', 'float64');
+    % sortedPopulation = hdsort.results.Population(HDSorting.files.results);
 catch
     fprintf('----------------------------------------');
     fprintf(lasterr());
