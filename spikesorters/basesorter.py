@@ -65,6 +65,7 @@ class BaseSorter:
             # only one groups
             self.recording_list = [recording]
             self.output_folders = [output_folder]
+            self.runtime_trace = [[]]
             if 'group' in recording.get_shared_channel_property_names():
                 groups = recording.get_channel_groups()
                 if len(groups) != len(np.unique(groups)) > 1:
@@ -77,6 +78,7 @@ class BaseSorter:
             self.recording_list = recording.get_sub_extractors_by_property(grouping_property)
             n_group = len(self.recording_list)
             self.output_folders = [output_folder / str(i) for i in range(n_group)]
+            self.runtime_trace = [[] for i in range(n_group)]
 
         # make dummy location if no location because some sorter need it
         for recording in self.recording_list:
@@ -129,6 +131,7 @@ class BaseSorter:
             'sorter_name': str(self.sorter_name),
             'sorter_version': str(self.get_sorter_version()),
             'datetime': now,
+            'runtime_trace':[]
         }
 
         t0 = time.perf_counter()
@@ -165,7 +168,9 @@ class BaseSorter:
         log['run_time'] = run_time
 
         # dump log inside folders
-        for output_folder in self.output_folders:
+        for i in range(len(self.output_folders)):
+            log['runtime_trace'] = self.runtime_trace[i]
+            output_folder = self.output_folders[i]
             with open(str(output_folder / 'spikeinterface_log.json'), 'w', encoding='utf8') as f:
                 json.dump(_check_json(log), f, indent=4)
 
@@ -230,3 +235,11 @@ class BaseSorter:
                 shutil.rmtree(str(out), ignore_errors=True)
         sorting.set_sampling_frequency(self.recording_list[0].get_sampling_frequency())
         return sorting
+
+    def get_first_empty_recording_trace_id(self) -> int:
+        first_empty_idx = 0
+        for i in range(len(self.runtime_trace)):
+            if len(self.runtime_trace[i]) == 0:
+                first_empty_idx = i
+                break
+        return first_empty_idx

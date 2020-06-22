@@ -10,7 +10,7 @@ from typing import Optional, List, Any
 
 
 class ShellScript():
-    def __init__(self, script: str, script_path: Optional[str]=None, keep_temp_files: bool=False):
+    def __init__(self, script: str, script_path: Optional[str]=None, keep_temp_files: bool=False, verbose: bool=False):
         lines = script.splitlines()
         lines = self._remove_initial_blank_lines(lines)
         if len(lines) > 0:
@@ -29,6 +29,8 @@ class ShellScript():
         self._files_to_remove: List[str] = []
         self._dirs_to_remove: List[str] = []
         self._start_time: Optional[float] = None
+        self._console_log = []
+        self._verbose = verbose
 
     def __del__(self):
         self.cleanup()
@@ -53,7 +55,6 @@ class ShellScript():
                     script_path = script_path.parent / (script_path.name + '.bat')
                 else:
                     script_path = script_path.parent / (script_path.name + '.sh')
-                script_log_path = script_path.parent / ('spikesorter_log.txt')
         else:
             tempdir = Path(tempfile.mkdtemp(prefix='tmp_shellscript'))
             if 'win' in sys.platform and sys.platform != 'darwin':
@@ -67,9 +68,9 @@ class ShellScript():
         print('RUNNING SHELL SCRIPT: ' + cmd)
         self._start_time = time.time()
         self._process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,  bufsize = 1, universal_newlines=True)
-        with open(script_log_path, 'w+') as script_log_file:
-            for line in self._process.stdout:
-                script_log_file.write(line)
+        for line in self._process.stdout:
+            self._append_to_console_log(line)
+            if self._verbose: #Print onto console depending on the verbose property passed on from the sorter class
                 print(line)
 
     def wait(self, timeout=None) -> Optional[int]:
@@ -154,6 +155,12 @@ class ShellScript():
 
     def scriptPath(self) -> Optional[str]:
         return self._script_path
+
+    def get_console_log(self) -> Optional[list]:
+        return self._console_log
+
+    def _append_to_console_log(self, line):
+        self._console_log.append(line.strip())
 
     def _remove_initial_blank_lines(self, lines: List[str]) -> List[str]:
         ii = 0

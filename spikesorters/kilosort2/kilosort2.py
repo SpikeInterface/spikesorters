@@ -178,10 +178,10 @@ class Kilosort2Sorter(BaseSorter):
                         cd "{tmpdir}"
                         matlab -nosplash -nodisplay -log -r kilosort2_master
                     '''.format(tmpdir=output_folder)
-        shell_script = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}')
+        shell_script = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}', verbose = self.verbose)
         shell_script.start()
-
         retcode = shell_script.wait()
+        self.runtime_trace[self.get_first_empty_recording_trace_id()] = shell_script.get_console_log()
 
         if retcode != 0:
             raise Exception('kilosort2 returned a non-zero exit code')
