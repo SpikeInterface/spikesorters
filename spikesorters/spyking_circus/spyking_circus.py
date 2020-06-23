@@ -128,7 +128,6 @@ class SpykingcircusSorter(BaseSorter):
         shell_script.start()
 
         retcode = shell_script.wait()
-        self.runtime_trace[self.get_first_empty_recording_trace_id()] = shell_script.get_console_log()
 
         if retcode != 0:
             raise Exception('spykingcircus returned a non-zero exit code')

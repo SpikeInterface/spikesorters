@@ -29,7 +29,6 @@ class ShellScript():
         self._files_to_remove: List[str] = []
         self._dirs_to_remove: List[str] = []
         self._start_time: Optional[float] = None
-        self._console_log = []
         self._verbose = verbose
 
     def __del__(self):
@@ -55,6 +54,7 @@ class ShellScript():
                     script_path = script_path.parent / (script_path.name + '.bat')
                 else:
                     script_path = script_path.parent / (script_path.name + '.sh')
+                script_log_path = script_path.parent / ('spikesorters_log.txt')
         else:
             tempdir = Path(tempfile.mkdtemp(prefix='tmp_shellscript'))
             if 'win' in sys.platform and sys.platform != 'darwin':
@@ -68,10 +68,11 @@ class ShellScript():
         print('RUNNING SHELL SCRIPT: ' + cmd)
         self._start_time = time.time()
         self._process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,  bufsize = 1, universal_newlines=True)
-        for line in self._process.stdout:
-            self._append_to_console_log(line)
-            if self._verbose: #Print onto console depending on the verbose property passed on from the sorter class
-                print(line)
+        with open(script_log_path, 'w+') as script_log_file:
+            for line in self._process.stdout:
+                script_log_file.write(line)
+                if self._verbose: #Print onto console depending on the verbose property passed on from the sorter class
+                    print(line)
 
     def wait(self, timeout=None) -> Optional[int]:
         if not self.isRunning():
@@ -156,12 +157,6 @@ class ShellScript():
     def scriptPath(self) -> Optional[str]:
         return self._script_path
 
-    def get_console_log(self) -> Optional[list]:
-        return self._console_log
-
-    def _append_to_console_log(self, line):
-        self._console_log.append(line.strip())
-
     def _remove_initial_blank_lines(self, lines: List[str]) -> List[str]:
         ii = 0
         while ii < len(lines) and len(lines[ii].strip()) == 0:
@@ -173,7 +168,6 @@ class ShellScript():
         while ii < len(line) and line[ii] == ' ':
             ii = ii + 1
         return ii
-
 
 def _rmdir_with_retries(dirname, num_retries, delay_between_tries=1):
     for retry_num in range(1, num_retries + 1):
