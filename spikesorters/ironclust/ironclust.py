@@ -163,16 +163,17 @@ class IronClustSorter(BaseSorter):
         if 'win' in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
                 cd {tmpdir}
-                matlab -nosplash -wait -r run_ironclust
+                matlab -nosplash -wait -log -r run_ironclust
             '''.format(tmpdir=tmpdir)
         else:
             shell_cmd = '''
                 #!/bin/bash
                 cd "{tmpdir}"
-                matlab -nosplash -nodisplay -r run_ironclust
+                matlab -nosplash -nodisplay -log -r run_ironclust
             '''.format(tmpdir=tmpdir)
 
-        shell_script = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}')
+        shell_script = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}',
+                                   log_path=output_folder / 'spikesorters_log.txt', verbose=self.verbose)
         shell_script.start()
 
         retcode = shell_script.wait()

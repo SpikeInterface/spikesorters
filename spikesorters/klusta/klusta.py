@@ -117,7 +117,8 @@ class KlustaSorter(BaseSorter):
                         klusta {klusta_config} --overwrite
                     '''.format(klusta_config=output_folder / 'config.prm')
 
-        shell_script = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}')
+        shell_script = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}',
+                                   log_path=output_folder / 'spikesorters_log.txt', verbose=self.verbose)
         shell_script.start()
 
         retcode = shell_script.wait()

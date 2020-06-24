@@ -133,6 +133,7 @@ class BaseSorter:
             'sorter_name': str(self.sorter_name),
             'sorter_version': str(self.get_sorter_version()),
             'datetime': now,
+            'runtime_trace':[]
         }
 
         t0 = time.perf_counter()
@@ -160,7 +161,8 @@ class BaseSorter:
 
         except Exception as err:
             if raise_error:
-                raise SpikeSortingError(f"Spike sorting failed: {err}")
+                raise SpikeSortingError(f"Spike sorting failed: {err}. You can inspect the runtime trace in "
+                                        f"the 'spikesorters_log.txt' of the output folder.'")
             else:
                 run_time = None
                 log['error'] = True
@@ -169,7 +171,17 @@ class BaseSorter:
         log['run_time'] = run_time
 
         # dump log inside folders
-        for output_folder in self.output_folders:
+        for i in range(len(self.output_folders)):
+            output_folder = self.output_folders[i]
+            runtime_trace_path = output_folder / 'spikesorters_log.txt'
+            runtime_trace = []
+            if runtime_trace_path.is_file():
+                with open(runtime_trace_path, 'r') as fp:
+                    line = fp.readline()
+                    while line:
+                        runtime_trace.append(line.strip())
+                        line = fp.readline()
+            log['runtime_trace'] = runtime_trace
             with open(str(output_folder / 'spikeinterface_log.json'), 'w', encoding='utf8') as f:
                 json.dump(_check_json(log), f, indent=4)
 
@@ -183,18 +195,18 @@ class BaseSorter:
 
     @staticmethod
     def get_sorter_version():
-        # need be iplemented in subclass
+        # need be implemented in subclass
         raise NotImplementedError
 
     def _setup_recording(self, recording, output_folder):
-        # need be iplemented in subclass
+        # need be implemented in subclass
         # this setup ONE recording (or SubExtractor)
         # this must copy (or not) the trace in the appropirate format
         # this must take care of geometry file (ORB, CSV, ...)
         raise NotImplementedError
 
     def _run(self, recording, output_folder):
-        # need be iplemented in subclass
+        # need be implemented in subclass
         # this run the sorter on ONE recording (or SubExtractor)
         # this must run or generate the command line to run the sorter for one recording
         raise NotImplementedError
