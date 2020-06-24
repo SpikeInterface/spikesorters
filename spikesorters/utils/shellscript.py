@@ -6,11 +6,14 @@ import os
 from pathlib import Path
 import time
 import sys
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Union
+
+PathType = Union[str, Path]
 
 
 class ShellScript():
-    def __init__(self, script: str, script_path: Optional[str]=None, keep_temp_files: bool=False, verbose: bool=False):
+    def __init__(self, script: str, script_path: Optional[PathType] = None, log_path: Optional[PathType] = None,
+                 keep_temp_files: bool = False, verbose: bool = False):
         lines = script.splitlines()
         lines = self._remove_initial_blank_lines(lines)
         if len(lines) > 0:
@@ -24,6 +27,7 @@ class ShellScript():
                     lines[ii] = lines[ii][num_initial_spaces:]
         self._script = '\n'.join(lines)
         self._script_path = script_path
+        self._log_path = log_path
         self._keep_temp_files = keep_temp_files
         self._process: Optional[subprocess.Popen] = None
         self._files_to_remove: List[str] = []
@@ -37,7 +41,7 @@ class ShellScript():
     def substitute(self, old: str, new: Any) -> None:
         self._script = self._script.replace(old, '{}'.format(new))
 
-    def write(self, script_path: Optional[str]=None) -> None:
+    def write(self, script_path: Optional[str] = None) -> None:
         if script_path is None:
             script_path = self._script_path
         if script_path is None:
@@ -54,24 +58,31 @@ class ShellScript():
                     script_path = script_path.parent / (script_path.name + '.bat')
                 else:
                     script_path = script_path.parent / (script_path.name + '.sh')
-                script_log_path = script_path.parent / ('spikesorters_log.txt')
         else:
             tempdir = Path(tempfile.mkdtemp(prefix='tmp_shellscript'))
             if 'win' in sys.platform and sys.platform != 'darwin':
                 script_path = tempdir / 'script.bat'
             else:
                 script_path = tempdir / 'script.sh'
-            script_log_path = tempdir / ('spikesorters_log.txt')
             self._dirs_to_remove.append(tempdir)
+
+        if self._log_path is None:
+            script_log_path = script_path.parent / 'spikesorters_log.txt'
+        else:
+            script_log_path = Path(self._log_path)
+            if script_path.suffix == '':
+                script_log_path = script_log_path.parent / (script_log_path.name + '.txt')
+
         self.write(script_path)
         cmd = str(script_path)
         print('RUNNING SHELL SCRIPT: ' + cmd)
         self._start_time = time.time()
-        self._process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,  bufsize = 1, universal_newlines=True)
+        self._process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1,
+                                         universal_newlines=True)
         with open(script_log_path, 'w+') as script_log_file:
             for line in self._process.stdout:
                 script_log_file.write(line)
-                if self._verbose: #Print onto console depending on the verbose property passed on from the sorter class
+                if self._verbose:  # Print onto console depending on the verbose property passed on from the sorter class
                     print(line)
 
     def wait(self, timeout=None) -> Optional[int]:
@@ -108,7 +119,7 @@ class ShellScript():
     def kill(self) -> None:
         if not self.isRunning():
             return
-        
+
         assert self._process is not None, "Unexpected self._process is None even though it is running."
         self._process.send_signal(signal.SIGKILL)
         try:
@@ -120,7 +131,7 @@ class ShellScript():
     def stopWithSignal(self, sig, timeout) -> bool:
         if not self.isRunning():
             return True
-        
+
         assert self._process is not None, "Unexpected self._process is None even though it is running."
         self._process.send_signal(sig)
         try:
@@ -132,7 +143,7 @@ class ShellScript():
     def elapsedTimeSinceStart(self) -> Optional[float]:
         if self._start_time is None:
             return None
-        
+
         return time.time() - self._start_time
 
     def isRunning(self) -> bool:
@@ -168,6 +179,7 @@ class ShellScript():
         while ii < len(line) and line[ii] == ' ':
             ii = ii + 1
         return ii
+
 
 def _rmdir_with_retries(dirname, num_retries, delay_between_tries=1):
     for retry_num in range(1, num_retries + 1):

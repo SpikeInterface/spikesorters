@@ -172,7 +172,8 @@ class IronClustSorter(BaseSorter):
                 matlab -nosplash -nodisplay -r run_ironclust
             '''.format(tmpdir=tmpdir)
 
-        shell_script = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}', verbose = self.verbose)
+        shell_script = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}',
+                                   log_path=output_folder / 'spikesorters_log.txt', verbose=self.verbose)
         shell_script.start()
 
         retcode = shell_script.wait()
