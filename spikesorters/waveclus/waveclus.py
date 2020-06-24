@@ -187,7 +187,7 @@ class WaveClusSorter(BaseSorter):
                 matlab -nosplash -nodisplay -log -r run_waveclus
             '''.format(tmpdir=tmpdir)
         shell_cmd = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}',
-                                log_path=output_folder / 'spikesorters_log.txt', verbose=self.verbose)
+                                log_path=output_folder / f'{self.sorter_name}.log', verbose=self.verbose)
         shell_cmd.start()
 
         retcode = shell_cmd.wait()
