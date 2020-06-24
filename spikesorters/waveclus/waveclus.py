@@ -178,13 +178,13 @@ class WaveClusSorter(BaseSorter):
         if 'win' in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
                 cd {tmpdir}
-                matlab -nosplash -wait -r run_waveclus
+                matlab -nosplash -wait -log -r run_waveclus
             '''.format(tmpdir=tmpdir)
         else:
             shell_cmd = '''
                 #!/bin/bash
                 cd "{tmpdir}"
-                matlab -nosplash -nodisplay -r run_waveclus
+                matlab -nosplash -nodisplay -log -r run_waveclus
             '''.format(tmpdir=tmpdir)
         shell_cmd = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}',
                                 log_path=output_folder / 'spikesorters_log.txt', verbose=self.verbose)
