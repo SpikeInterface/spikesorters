@@ -183,7 +183,7 @@ class KilosortSorter(BaseSorter):
                         matlab -nosplash -nodisplay -log -r kilosort_master
                     '''.format(tmpdir=output_folder)
         shell_script = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}',
-                                   log_path=output_folder / 'spikesorters_log.txt', verbose=self.verbose)
+                                   log_path=output_folder / f'{self.sorter_name}.log', verbose=self.verbose)
         shell_script.start()
 
         retcode = shell_script.wait()

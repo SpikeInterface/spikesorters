@@ -162,7 +162,7 @@ class BaseSorter:
         except Exception as err:
             if raise_error:
                 raise SpikeSortingError(f"Spike sorting failed: {err}. You can inspect the runtime trace in "
-                                        f"the 'spikesorters_log.txt' of the output folder.'")
+                                        f"the {self.sorter_name}.log of the output folder.'")
             else:
                 run_time = None
                 log['error'] = True
@@ -173,7 +173,7 @@ class BaseSorter:
         # dump log inside folders
         for i in range(len(self.output_folders)):
             output_folder = self.output_folders[i]
-            runtime_trace_path = output_folder / 'spikesorters_log.txt'
+            runtime_trace_path = output_folder / f'{self.sorter_name}.log'
             runtime_trace = []
             if runtime_trace_path.is_file():
                 with open(runtime_trace_path, 'r') as fp:
