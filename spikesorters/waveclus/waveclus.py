@@ -61,6 +61,38 @@ class WaveClusSorter(BaseSorter):
         'interpolation' : True
         }
 
+    _params_description = {
+        'detect_threshold': "Threshold for spike detection",
+        'detect_sign': "Use -1 (negative), 1 (positive), or 0 (both) depending "
+                       "on the sign of the spikes in the recording",
+        'feature_type': "wav (for wavelets) or pca, type of feature extraction applied to the spikes",
+        'scales': "Levels of the wavelet decomposition used as features",
+        'min_clus': "Minimum increase of cluster sizes used by the peak selection on the temperature map",
+        'maxtemp': "Maximum temperature calculated by the SPC method",
+        'template_sdnum': "Maximum distance (in total variance of the cluster) from the mean waveform to force a spike into a cluster",
+        'enable_detect_filter': "Enable or disable filter on detection",
+        'enable_sort_filter': "Enable or disable filter on sorting",
+        'detect_filter_fmin': "High-pass filter cutoff frequency for detection",
+        'detect_filter_fmax': "Low-pass filter cutoff frequency for detection",
+        'detect_filter_order': "Order of the detection filter",
+        'sort_filter_fmin': "High-pass filter cutoff frequency for sorting",
+        'sort_filter_fmax': "Low-pass filter cutoff frequency for sorting",
+        'sort_filter_order': "Order of the sorting filter",
+        'mintemp': "Minimum temperature calculated by the SPC algorithm",
+        'max_clus': "Maximum number of possible clusters",
+        'w_pre': "Number of samples from the beginning of the spike waveform up to (including) the peak",
+        'w_post': "Number of samples from the peak (excluding it) to the end of the waveform",
+        'alignment_window': "Number of samples between peaks of different channels",
+        'stdmax': "The events with a value over this number of noise standard deviations will be discarded",
+        'max_spk': "Maximum number of spikes used by the SPC algorithm",
+        'ref_ms': "Refractory time in milliseconds, all the threshold crossing inside this period are detected as the same spike",
+        'interpolation': "Enable or disable interpolation to improve the alignments of the spikes"
+    }
+
+    sorter_description = """Wave Clus combines a wavelet-based feature extraction and paramagnetic clustering with a 
+    template-matching approach. It is mainly designed for monotrodes and low-channel count probes. 
+    For more information see https://doi.org/10.1152/jn.00339.2018"""
+
     installation_mesg = """\nTo use WaveClus run:\n
         >>> git clone https://github.com/csn-le/wave_clus
     and provide the installation path by setting the WAVECLUS_PATH
