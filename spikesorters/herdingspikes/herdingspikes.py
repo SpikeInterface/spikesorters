@@ -15,21 +15,109 @@ except ImportError:
 
 
 class HerdingspikesSorter(BaseSorter):
-    """
-    HerdingSpikes is a sorter based on estimated spike location, developed by
-    researchers at the University of Edinburgh. It's a fast and scalable choice.
-
-    See: HILGEN, Gerrit, et al. Unsupervised spike sorting for large-scale,
-    high-density multielectrode arrays. Cell reports, 2017, 18.10: 2521-2532.
-    """
 
     sorter_name = 'herdingspikes'
     installed = HAVE_HS
     requires_locations = True
-    _default_params = None  # later
     compatible_with_parallel = {'loky': True, 'multiprocessing': True, 'threading': False}
+    _default_params = {
+        # core params
+        'clustering_bandwidth': 5.5,  # 5.0,
+        'clustering_alpha': 5.5,  # 5.0,
+        'clustering_n_jobs': -1,
+        'clustering_bin_seeding': True,
+        'clustering_min_bin_freq': 16,  # 10,
+        'clustering_subset': None,
+        'left_cutout_time': 0.3,  # 0.2,
+        'right_cutout_time': 1.8,  # 0.8,
+        'detect_threshold': 20,  # 24, #15,
 
-    installation_mesg = """
+        # extra probe params
+        'probe_masked_channels': [],
+        'probe_inner_radius': 70,
+        'probe_neighbor_radius': 90,
+        'probe_event_length': 0.26,
+        'probe_peak_jitter': 0.2,
+
+        # extra detection params
+        'num_com_centers': 1,
+        'maa': 12,
+        'ahpthr': 11,
+        'out_file_name': "HS2_detected",
+        'decay_filtering': False,
+        'save_all': False,
+        'amp_evaluation_time': 0.4,  # 0.14,
+        'spk_evaluation_time': 1.0,
+
+        # extra pca params
+        'pca_ncomponents': 2,
+        'pca_whiten': True,
+
+        # bandpass filter
+        'freq_min': 300.0,
+        'freq_max': 6000.0,
+        'filter': True,
+
+        # rescale traces
+        'pre_scale': True,
+        'pre_scale_value': 20.0,
+
+        # remove duplicates (based on spk_evaluation_time)
+        'filter_duplicates': True
+    }
+
+    _params_description = {
+        # core params
+        'clustering_bandwidth': "",
+        'clustering_alpha': "",
+        'clustering_n_jobs': "",
+        'clustering_bin_seeding': "",
+        'clustering_min_bin_freq': "",
+        'clustering_subset': "",
+        'left_cutout_time': "",
+        'right_cutout_time': "",
+        'detect_threshold': "",
+
+        # extra probe params
+        'probe_masked_channels': "",
+        'probe_inner_radius': "",
+        'probe_neighbor_radius': "",
+        'probe_event_length': "",
+        'probe_peak_jitter': "",
+
+        # extra detection params
+        'num_com_centers': "",
+        'maa': "",
+        'ahpthr': "",
+        'out_file_name': "",
+        'decay_filtering': "",
+        'save_all': "",
+        'amp_evaluation_time': "",
+        'spk_evaluation_time': "",
+
+        # extra pca params
+        'pca_ncomponents': "",
+        'pca_whiten': "",
+
+        # bandpass filter
+        'freq_min': "High-pass filter cutoff frequency",
+        'freq_max': "Low-pass filter cutoff frequency",
+        'filter': "Enable or disable filter",
+
+        # rescale traces
+        'pre_scale': "",
+        'pre_scale_value': "",
+
+        # remove duplicates (based on spk_evaluation_time)
+        'filter_duplicates': ""
+    }
+
+    sorter_description = """Herding Spikes is a density-based spike sorter designed for high-density retinal recordings.
+    It uses both PCA features and an estimate of the spike location to cluster different units. 
+    For more information see https://doi.org/10.1016/j.jneumeth.2016.06.006"""
+
+    installation_mesg = """\nTo use HerdingSpikes run:\n
+       >>> pip install herdingspikes
     More information on HerdingSpikes at:
       * https://github.com/mhhennig/hs2
     """
@@ -77,7 +165,7 @@ class HerdingspikesSorter(BaseSorter):
             self.Probe, file_directory_name=str(output_folder),
             left_cutout_time=p['left_cutout_time'],
             right_cutout_time=p['right_cutout_time'],
-            threshold=p['detection_threshold'],
+            threshold=p['detect_threshold'],
             to_localize=True,
             num_com_centers=p['num_com_centers'],
             maa=p['maa'],
@@ -119,50 +207,3 @@ class HerdingspikesSorter(BaseSorter):
     @staticmethod
     def get_result_from_folder(output_folder):
         return se.HS2SortingExtractor(file_path=Path(output_folder) / 'HS2_sorted.hdf5', load_unit_info=True)
-
-
-HerdingspikesSorter._default_params = {
-    # core params
-    'clustering_bandwidth': 5.5, #5.0,
-    'clustering_alpha': 5.5, #5.0,
-    'clustering_n_jobs': -1,
-    'clustering_bin_seeding': True,
-    'clustering_min_bin_freq': 16, #10,
-    'clustering_subset': None,
-    'left_cutout_time': 0.3, #0.2,
-    'right_cutout_time': 1.8, #0.8,
-    'detection_threshold': 20, #24, #15,
-
-    # extra probe params
-    'probe_masked_channels': [],
-    'probe_inner_radius': 70,
-    'probe_neighbor_radius': 90,
-    'probe_event_length': 0.26,
-    'probe_peak_jitter': 0.2,
-
-    # extra detection params
-    'num_com_centers': 1,
-    'maa': 12,
-    'ahpthr': 11,
-    'out_file_name': "HS2_detected",
-    'decay_filtering': False,
-    'save_all': False,
-    'amp_evaluation_time': 0.4, #0.14,
-    'spk_evaluation_time': 1.0,
-
-    # extra pca params
-    'pca_ncomponents': 2,
-    'pca_whiten': True,
-
-    # bandpass filter
-    'freq_min': 300.0,
-    'freq_max': 6000.0,
-    'filter': True,
-
-    # rescale traces
-    'pre_scale': True,
-    'pre_scale_value': 20.0,
-    
-    # remove duplicates (based on spk_evaluation_time)
-    'filter_duplicates': True
-}

@@ -102,6 +102,7 @@ def installed_sorters():
     '''
     return sorted(list([s.sorter_name for s in installed_sorter_list]))
 
+
 def print_sorter_versions():
     txt = ''
     for name in installed_sorters():
@@ -134,6 +135,56 @@ def get_default_params(sorter_name_or_class):
         raise (ValueError('Unknown sorter'))
 
     return SorterClass.default_params()
+
+
+def get_params_description(sorter_name_or_class):
+    '''
+    Returns a description of the parameters for the specified sorter.
+
+    Parameters
+    ----------
+    sorter_name_or_class: str or SorterClass
+        The sorter to retrieve parameters description from
+
+    Returns
+    -------
+    params_description: dict
+        Dictionary with parameter description
+
+    '''
+    if isinstance(sorter_name_or_class, str):
+        SorterClass = sorter_dict[sorter_name_or_class]
+    elif sorter_name_or_class in sorter_full_list:
+        SorterClass = sorter_name_or_class
+    else:
+        raise (ValueError('Unknown sorter'))
+
+    return SorterClass.params_description()
+
+
+def get_sorter_description(sorter_name_or_class):
+    '''
+    Returns a brief description of the of the specified sorter.
+
+    Parameters
+    ----------
+    sorter_name_or_class: str or SorterClass
+        The sorter to retrieve description from
+
+    Returns
+    -------
+    params_description: dict
+        Dictionary with parameter description
+
+    '''
+    if isinstance(sorter_name_or_class, str):
+        SorterClass = sorter_dict[sorter_name_or_class]
+    elif sorter_name_or_class in sorter_full_list:
+        SorterClass = sorter_name_or_class
+    else:
+        raise (ValueError('Unknown sorter'))
+
+    return SorterClass.sorter_description
 
 
 def run_hdsort(*args, **kwargs):

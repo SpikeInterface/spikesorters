@@ -61,6 +61,38 @@ class WaveClusSorter(BaseSorter):
         'interpolation' : True
         }
 
+    _params_description = {
+        'detect_threshold': "Threshold for spike detection",
+        'detect_sign': "Use -1 (negative), 1 (positive), or 0 (both) depending "
+                       "on the sign of the spikes in the recording",
+        'feature_type': 'wav',
+        'scales': "",
+        'min_clus': "",
+        'maxtemp': "",
+        'template_sdnum': "",
+        'enable_detect_filter': "Enable or disable filter on detection",
+        'enable_sort_filter': "Enable or disable filter on sorting",
+        'detect_filter_fmin': "High-pass filter cutoff frequency for detection",
+        'detect_filter_fmax': "Low-pass filter cutoff frequency for detection",
+        'detect_filter_order': "Order of the detection filter",
+        'sort_filter_fmin': "High-pass filter cutoff frequency for sorting",
+        'sort_filter_fmax': "Low-pass filter cutoff frequency for sorting",
+        'sort_filter_order': "Order of the sorting filter",
+        'mintemp': "",
+        'max_clus': "",
+        'w_pre': "",
+        'w_post': "",
+        'alignment_window': "",
+        'stdmax': "",
+        'max_spk': "",
+        'ref_ms': "",
+        'interpolation': ""
+    }
+
+    sorter_description = """Wave Clus combines a wavelet-based feature extraction and paramagnetic clustering with a 
+    template-matching approach. It is mainly designed for monotrodes and low-channel count probes. 
+    For more information see https://doi.org/10.1152/jn.00339.2018"""
+
     installation_mesg = """\nTo use WaveClus run:\n
         >>> git clone https://github.com/csn-le/wave_clus
     and provide the installation path by setting the WAVECLUS_PATH

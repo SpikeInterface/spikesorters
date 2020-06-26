@@ -36,8 +36,8 @@ class HDSortSorter(BaseSorter):
         'detect_sign': -1,  # -1 - 1
         'filter': True,
         'parfor': True,
-        'hpf': 300,
-        'lpf': 7000,
+        'freq_min': 300,
+        'freq_max': 7000,
         'max_el_per_group': 9,
         'min_el_per_group': 1,
         'add_if_nearer_than': 20,
@@ -46,6 +46,26 @@ class HDSortSorter(BaseSorter):
         'chunk_size': 500000,
         'loop_mode': 'local_parfor',
     }
+
+    _params_description = {
+        'detect_threshold': "Threshold for spike detection",
+        'detect_sign': "Use -1 (negative) or 1 (positive) depending "
+                       "on the sign of the spikes in the recording",
+        'filter': "Enable or disable filter",
+        'parfor': "If True, the Matlab parfor is used",
+        'freq_min': "High-pass filter cutoff frequency",
+        'freq_max': "Low-pass filter cutoff frequency",
+        'max_el_per_group': "Maximum number of channels per electrode group",
+        'min_el_per_group': "Minimum number of channels per electrode group",
+        'add_if_nearer_than': "Minimum distance to add electrode to an electrode group",
+        'max_distance_within_group': "Maximum distance within an electrode group",
+        'n_pc_dims': "Number of principal components dimensions to perform initial clustering",
+        'chunk_size': "Chunk size in number of frames for template-matching",
+        'loop_mode': "Loop mode: 'loop', 'local_parfor', 'grid' (requires a grid architecture)",
+    }
+
+    sorter_description = """HDSort is a template-matching spike sorter designed for high density micro-electrode arrays. 
+    For more information see https://doi.org/10.1152/jn.00803.2017"""
 
     installation_mesg = """\nTo use HDSort run:\n
         >>> git clone https://git.bsse.ethz.ch/hima_public/HDsort.git
@@ -137,8 +157,8 @@ class HDSortSorter(BaseSorter):
         hdsort_config_txt = hdsort_config_txt.format(
             filter=p['filter'],
             parfor=p['parfor'],
-            hpf=p['hpf'],
-            lpf=p['lpf'],
+            hpf=p['freq_min'],
+            lpf=p['freq_max'],
             max_el_per_group=p['max_el_per_group'],
             min_el_per_group=p['min_el_per_group'],
             add_if_nearer_than=p['add_if_nearer_than'],
