@@ -120,15 +120,6 @@ class TridesclousSorter(BaseSorter):
         tdc_dataio = tdc.DataIO(dirname=str(output_folder))
 
         params = dict(self.params)
-        # parse params to tdc names
-        params['highpass_freq'] = params['freq_min']
-        params['lowpass_freq'] = params['freq_max']
-        params['relative_threshold'] = params['detect_threshold']
-        if params['detect_sign'] == -1:
-            params['peak_sign'] = '-'
-        elif params['detect_sign'] == 1:
-            params['peak_sign'] = '+'
-        del params['freq_min'], params['freq_max'], params['detect_sign'], params['detect_threshold']
 
         clean_catalogue_gui = params.pop('clean_catalogue_gui')
         # make catalogue
@@ -186,10 +177,10 @@ class TridesclousSorter(BaseSorter):
 
 
 def make_nested_tdc_params(tdc_dataio, chan_grp,
-                           highpass_freq=400.,
-                           lowpass_freq=5000.,
-                           peak_sign='-',
-                           relative_threshold=5,
+                           freq_min=400.,
+                           freq_max=5000.,
+                           detect_sign='-',
+                           detect_threshold=5,
                            peak_span_ms=0.7,
                            wf_left_ms=-2.0,
                            wf_right_ms=3.0,
@@ -197,11 +188,15 @@ def make_nested_tdc_params(tdc_dataio, chan_grp,
                            cluster_method='auto'):
     params = tdc.get_auto_params_for_catalogue(tdc_dataio, chan_grp=chan_grp)
 
-    params['preprocessor']['highpass_freq'] = highpass_freq
-    params['preprocessor']['lowpass_freq'] = lowpass_freq
+    params['preprocessor']['highpass_freq'] = freq_min
+    params['preprocessor']['lowpass_freq'] = freq_max
 
-    params['peak_detector']['peak_sign'] = peak_sign
-    params['peak_detector']['relative_threshold'] = relative_threshold
+    if detect_sign == -1:
+        params['peak_detector']['peak_sign'] = '-'
+    elif detect_sign == 1:
+        params['peak_detector']['peak_sign'] = '+'
+
+    params['peak_detector']['relative_threshold'] = detect_threshold
     params['peak_detector']['peak_span_ms'] = peak_span_ms
 
     params['extract_waveforms']['wf_left_ms'] = wf_left_ms
