@@ -68,36 +68,36 @@ class HerdingspikesSorter(BaseSorter):
 
     _params_description = {
         # core params
-        'clustering_bandwidth': "",
-        'clustering_alpha': "",
-        'clustering_n_jobs': "",
-        'clustering_bin_seeding': "",
-        'clustering_min_bin_freq': "",
-        'clustering_subset': "",
-        'left_cutout_time': "",
-        'right_cutout_time': "",
-        'detect_threshold': "",
+        'clustering_bandwidth': "Meanshift bandwidth, average spatiel extent of spike clusters (um)",
+        'clustering_alpha': "Scalar for the waveform PC features when clustering.",
+        'clustering_n_jobs': "Number of cores to use for clustering.",
+        'clustering_bin_seeding': "Enable clustering bin seeding.",
+        'clustering_min_bin_freq': "Minimum spikes per bin for bin seeding.",
+        'clustering_subset': "Number of spikes used to build clusters. All by default.",
+        'left_cutout_time': "Cutout size before peak (ms).",
+        'right_cutout_time': "Cutout size after peak (ms).",
+        'detect_threshold': "Detection threshold",
 
         # extra probe params
-        'probe_masked_channels': "",
-        'probe_inner_radius': "",
-        'probe_neighbor_radius': "",
-        'probe_event_length': "",
-        'probe_peak_jitter': "",
+        'probe_masked_channels': "Masked channels",
+        'probe_inner_radius': "Radius of area around probe channel for localization",
+        'probe_neighbor_radius': "Radius of area around probe channel for neighbor classification.",
+        'probe_event_length': "Duration of a spike event (ms)",
+        'probe_peak_jitter': "Maxmimum peak misalignment for synchronous spike (ms)",
 
         # extra detection params
-        'num_com_centers': "",
-        'maa': "",
-        'ahpthr': "",
-        'out_file_name': "",
-        'decay_filtering': "",
-        'save_all': "",
-        'amp_evaluation_time': "",
-        'spk_evaluation_time': "",
+        'num_com_centers': "Number of centroids to average when localizing.",
+        'maa': "Minimum summed spike amplitude for spike acceptance.",
+        'ahpthr': "Requires magnitude of spike rebound for acceptance",
+        'out_file_name': "File name for storage of unclustered detected spikes",
+        'decay_filtering': "Experimental: Set to True at your risk",
+        'save_all': "Save all working files after sorting (slow)",
+        'amp_evaluation_time': "Amplitude evaluation time (ms)",
+        'spk_evaluation_time': "Spike evaluation time (ms)",
 
         # extra pca params
-        'pca_ncomponents': "",
-        'pca_whiten': "",
+        'pca_ncomponents': "Number of principal components to use when clustering",
+        'pca_whiten': "If true, whiten data for pca",
 
         # bandpass filter
         'freq_min': "High-pass filter cutoff frequency",
@@ -105,11 +105,11 @@ class HerdingspikesSorter(BaseSorter):
         'filter': "Enable or disable filter",
 
         # rescale traces
-        'pre_scale': "",
-        'pre_scale_value': "",
+        'pre_scale': "Scales recording traces to optimize HerdingSpikes performance",
+        'pre_scale_value': "Scale to apply in case of pre-scaling of traces",
 
         # remove duplicates (based on spk_evaluation_time)
-        'filter_duplicates': ""
+        'filter_duplicates': "Remove spike duplicates (based on spk_evaluation_time)"
     }
 
     sorter_description = """Herding Spikes is a density-based spike sorter designed for high-density retinal recordings.
