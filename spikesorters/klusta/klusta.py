@@ -37,7 +37,23 @@ class KlustaSorter(BaseSorter):
         'num_starting_clusters': 50,
     }
 
-    installation_mesg = """
+    _params_description = {
+        'adjacency_radius': "Radius in um to build channel neighborhood ",
+        'threshold_strong_std_factor': "Strong threshold for spike detection",
+        'threshold_weak_std_factor': "Weak threshold for spike detection",
+        'detect_sign': "Use -1 (negative), 1 (positive) or 0 (both) depending "
+                       "on the sign of the spikes in the recording",
+        'extract_s_before': "Number of samples to cut out before the peak",
+        'extract_s_after': "Number of samples to cut out after the peak",
+        'n_features_per_channel': "Number of PCA features per channel",
+        'pca_n_waveforms_max': "Maximum number of waveforms for PCA",
+        'num_starting_clusters': "Number of initial clusters",
+    }
+
+    sorter_description = """Klusta is a density-based spike sorter that uses a masked EM approach for clustering.
+    For more information see https://doi.org/10.1038/nn.4268"""
+
+    installation_mesg = """\nTo use Klusta run:\n
        >>> pip install Cython h5py tqdm
        >>> pip install click klusta klustakwik2
 

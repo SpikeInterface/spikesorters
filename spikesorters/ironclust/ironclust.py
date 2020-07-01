@@ -35,40 +35,80 @@ class IronClustSorter(BaseSorter):
     installed = check_if_installed(ironclust_path)
     requires_locations = True
 
-    _default_params = dict(
-        detect_sign=-1,  # Use -1, 0, or 1, depending on the sign of the spikes in the recording
-        adjacency_radius=50,  # Use -1 to include all channels in every neighborhood
-        adjacency_radius_out=100,  # Use -1 to include all channels in every neighborhood
-        detect_threshold=3.5,  # detection threshold
-        prm_template_name='',  # .prm template file name
-        freq_min=300,
-        freq_max=8000,
-        merge_thresh=0.985,  # Threshold for automated merging
-        pc_per_chan=9,  # Number of principal components per channel
-        whiten=False,  # Whether to do channel whitening as part of preprocessing
-        filter_type='bandpass',  # none, bandpass, wiener, fftdiff, ndiff
-        filter_detect_type='none',  # none, bandpass, wiener, fftdiff, ndiff
-        common_ref_type='trimmean',  # none, mean, median
-        batch_sec_drift=300,  # batch duration in seconds. clustering time duration
-        step_sec_drift=20,  # compute anatomical similarity every n sec
-        knn=30,  # K nearest neighbors
-        min_count=30,  # Minimum cluster size
-        fGpu=True,  # Use GPU if available
-        fft_thresh=8,  # FFT-based noise peak threshold
-        fft_thresh_low=0,  # FFT-based noise peak lower threshold (set to 0 to disable dual thresholding scheme)
-        nSites_whiten=16,  # Number of adjacent channels to whiten
-        feature_type='gpca',  # gpca, pca, vpp, vmin, vminmax, cov, energy, xcov
-        delta_cut=1,  # Cluster detection threshold (delta-cutoff)
-        post_merge_mode=1,  # post merge mode
-        sort_mode=1,  # sort mode
-        fParfor=False, #parfor loop
-        filter=True, # Enable or disable filter
-        clip_pre=0.25, # pre-peak clip duration in ms
-        clip_post=0.75, # post-peak clip duration in ms
-        merge_thresh_cc=1, #cross-correlogram merging threshold, set to 1 to disable
-        nRepeat_merge=3, #number of repeats for merge
-        merge_overlap_thresh=0.95   #knn-overlap merge threshold
-    )
+    _default_params = {
+        'detect_sign': -1,  # Use -1, 0, or 1, depending on the sign of the spikes in the recording
+        'adjacency_radius': 50,  # Use -1 to include all channels in every neighborhood
+        'adjacency_radius_out': 100,  # Use -1 to include all channels in every neighborhood
+        'detect_threshold': 3.5,  # detection threshold
+        'prm_template_name': '',  # .prm template file name
+        'freq_min': 300,
+        'freq_max': 8000,
+        'merge_thresh': 0.985,  # Threshold for automated merging
+        'pc_per_chan': 9,  # Number of principal components per channel
+        'whiten': False,  # Whether to do channel whitening as part of preprocessing
+        'filter_type': 'bandpass',  # none, bandpass, wiener, fftdiff, ndiff
+        'filter_detect_type': 'none',  # none, bandpass, wiener, fftdiff, ndiff
+        'common_ref_type': 'trimmean',  # none, mean, median
+        'batch_sec_drift': 300,  # batch duration in seconds. clustering time duration
+        'step_sec_drift': 20,  # compute anatomical similarity every n sec
+        'knn': 30,  # K nearest neighbors
+        'min_count': 30,  # Minimum cluster size
+        'fGpu': True,  # Use GPU if available
+        'fft_thresh': 8,  # FFT-based noise peak threshold
+        'fft_thresh_low': 0,  # FFT-based noise peak lower threshold (set to 0 to disable dual thresholding scheme)
+        'nSites_whiten': 16,  # Number of adjacent channels to whiten
+        'feature_type': 'gpca',  # gpca, pca, vpp, vmin, vminmax, cov, energy, xcov
+        'delta_cut': 1,  # Cluster detection threshold (delta-cutoff)
+        'post_merge_mode': 1,  # post merge mode
+        'sort_mode': 1,  # sort mode
+        'fParfor': False, #parfor loop
+        'filter': True, # Enable or disable filter
+        'clip_pre': 0.25, # pre-peak clip duration in ms
+        'clip_post': 0.75, # post-peak clip duration in ms
+        'merge_thresh_cc': 1, #cross-correlogram merging threshold, set to 1 to disable
+        'nRepeat_merge': 3, #number of repeats for merge
+        'merge_overlap_thresh': 0.95   #knn-overlap merge threshold
+    }
+
+    _params_description = {
+        'detect_sign': "Use -1 (negative), 1 (positive) or 0 (both) depending "
+                       "on the sign of the spikes in the recording",
+        'adjacency_radius': "Use -1 to include all channels in every neighborhood",
+        'adjacency_radius_out': "Use -1 to include all channels in every neighborhood",
+        'detect_threshold': "detection threshold",
+        'prm_template_name': ".prm template file name",
+        'freq_min': "High-pass filter cutoff frequency",
+        'freq_max': "Low-pass filter cutoff frequency",
+        'merge_thresh': "Threshold for automated merging",
+        'pc_per_chan': "Number of principal components per channel",
+        'whiten': "Whether to do channel whitening as part of preprocessing",
+        'filter_type': "Filter type: none, bandpass, wiener, fftdiff, ndiff",
+        'filter_detect_type': "Filter type for detection: none, bandpass, wiener, fftdiff, ndiff",
+        'common_ref_type': "Common reference type: none, mean, median, trimmean",
+        'batch_sec_drift': "Batch duration in seconds. clustering time duration",
+        'step_sec_drift': "Compute anatomical similarity every n sec",
+        'knn': "K nearest neighbors",
+        'min_count': "Minimum cluster size",
+        'fGpu': "Use GPU if True",
+        'fft_thresh': "FFT-based noise peak threshold",
+        'fft_thresh_low': "FFT-based noise peak lower threshold (set to 0 to disable dual thresholding scheme)",
+        'nSites_whiten': "Number of adjacent channels to whiten",
+        'feature_type': "gpca, pca, vpp, vmin, vminmax, cov, energy, xcov",
+        'delta_cut': "Cluster detection threshold (delta-cutoff)",
+        'post_merge_mode': "Post merge mode",
+        'sort_mode': "Sort mode",
+        'fParfor': "Parfor loop",
+        'filter': "Enable or disable filter",
+        'clip_pre': "Pre-peak clip duration in ms",
+        'clip_post': "Post-peak clip duration in ms",
+        'merge_thresh_cc': "Cross-correlogram merging threshold, set to 1 to disable",
+        'nRepeat_merge': "Number of repeats for merge",
+        'merge_overlap_thresh': "Knn-overlap merge threshold",
+    }
+
+    sorter_descrpition = """Ironclust is a density-based spike sorter designed for high-density probes 
+    (e.g. Neuropixels). It uses features and spike location estimates for clustering, and it performs a drift 
+    correction. For more information see https://doi.org/10.1101/101030"""
 
     installation_mesg = """\nTo use IronClust run:\n
         >>> git clone https://github.com/flatironinstitute/ironclust

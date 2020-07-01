@@ -33,10 +33,10 @@ class TridesclousSorter(BaseSorter):
     compatible_with_parallel = {'loky': True, 'multiprocessing': False, 'threading': False}
 
     _default_params = {
-        'highpass_freq': 400.,
-        'lowpass_freq': 5000.,
-        'peak_sign': '-',
-        'relative_threshold': 5,
+        'freq_min': 400.,
+        'freq_max': 5000.,
+        'detect_sign': -1,
+        'detect_threshold': 5,
         'peak_span_ms': 0.7,
         'wf_left_ms': -2.0,
         'wf_right_ms': 3.0,
@@ -45,8 +45,25 @@ class TridesclousSorter(BaseSorter):
         'clean_catalogue_gui': False,
     }
 
-    installation_mesg = """
-       >>> pip install https://github.com/tridesclous/tridesclous/archive/master.zip
+    _params_description = {
+        'freq_min': "High-pass filter cutoff frequency",
+        'freq_max': "Low-pass filter cutoff frequency",
+        'detect_threshold': "Threshold for spike detection",
+        'detect_sign': "Use -1 (negative) or 1 (positive) depending "
+                       "on the sign of the spikes in the recording",
+        'peak_span_ms': "Span of the peak in ms",
+        'wf_left_ms': "Cut out before peak in ms",
+        'wf_right_ms': " Cut out after peak in ms",
+        'feature_method': "Feature method to use",  # peak_max/global_pca/by_channel_pca
+        'cluster_method': "Feature method to use",  # pruningshears/dbscan/kmeans
+        'clean_catalogue_gui': "Enable or disable interactive GUI for cleaning templates before peeler",
+    }
+
+    sorter_description = """Tridesclous is a template-matching spike sorter with a real-time engine. 
+    For more information see https://tridesclous.readthedocs.io"""
+
+    installation_mesg = """\nTo use Tridesclous run:\n
+       >>> pip install tridesclous
 
     More information on tridesclous at:
       * https://github.com/tridesclous/tridesclous
@@ -103,6 +120,7 @@ class TridesclousSorter(BaseSorter):
         tdc_dataio = tdc.DataIO(dirname=str(output_folder))
 
         params = dict(self.params)
+
         clean_catalogue_gui = params.pop('clean_catalogue_gui')
         # make catalogue
         chan_grps = list(tdc_dataio.channel_groups.keys())
@@ -159,10 +177,10 @@ class TridesclousSorter(BaseSorter):
 
 
 def make_nested_tdc_params(tdc_dataio, chan_grp,
-                           highpass_freq=400.,
-                           lowpass_freq=5000.,
-                           peak_sign='-',
-                           relative_threshold=5,
+                           freq_min=400.,
+                           freq_max=5000.,
+                           detect_sign='-',
+                           detect_threshold=5,
                            peak_span_ms=0.7,
                            wf_left_ms=-2.0,
                            wf_right_ms=3.0,
@@ -170,11 +188,15 @@ def make_nested_tdc_params(tdc_dataio, chan_grp,
                            cluster_method='auto'):
     params = tdc.get_auto_params_for_catalogue(tdc_dataio, chan_grp=chan_grp)
 
-    params['preprocessor']['highpass_freq'] = highpass_freq
-    params['preprocessor']['lowpass_freq'] = lowpass_freq
+    params['preprocessor']['highpass_freq'] = freq_min
+    params['preprocessor']['lowpass_freq'] = freq_max
 
-    params['peak_detector']['peak_sign'] = peak_sign
-    params['peak_detector']['relative_threshold'] = relative_threshold
+    if detect_sign == -1:
+        params['peak_detector']['peak_sign'] = '-'
+    elif detect_sign == 1:
+        params['peak_detector']['peak_sign'] = '+'
+
+    params['peak_detector']['relative_threshold'] = detect_threshold
     params['peak_detector']['peak_span_ms'] = peak_span_ms
 
     params['extract_waveforms']['wf_left_ms'] = wf_left_ms

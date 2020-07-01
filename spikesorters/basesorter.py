@@ -41,6 +41,8 @@ class BaseSorter:
     requires_locations = False
     compatible_with_parallel = {'loky': True, 'multiprocessing': True, 'threading': True}
     _default_params = {}
+    _params_description = {}
+    sorter_description = ""
     installation_mesg = ""  # error message when not installed
 
     def __init__(self, recording=None, output_folder=None, verbose=False,
@@ -97,8 +99,12 @@ class BaseSorter:
         self.delete_folders = delete_output_folder
 
     @classmethod
-    def default_params(self):
-        return copy.deepcopy(self._default_params)
+    def default_params(cls):
+        return copy.deepcopy(cls._default_params)
+
+    @classmethod
+    def params_description(cls):
+        return copy.deepcopy(cls._params_description)
 
     def set_params(self, **params):
         bad_params = []

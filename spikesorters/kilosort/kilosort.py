@@ -47,6 +47,20 @@ class KilosortSorter(BaseSorter):
         'NT': None
     }
 
+    _params_description = {
+        'detect_threshold': "Threshold for spike detection",
+        'car': "Enable or disable common reference",
+        'useGPU': "Enable or disable GPU usage",
+        'freq_min': "High-pass filter cutoff frequency",
+        'freq_max': "Low-pass filter cutoff frequency",
+        'ntbuff': "Samples of symmetrical buffer for whitening and spike detection",
+        'Nfilt': "Number of clusters to use (if None it is automatically computed)",
+        'NT': "Batch size (if None it is automatically computed)"
+    }
+
+    sorter_description = """Kilosort is a GPU-accelerated and efficient template-matching spike sorter. 
+    For more information see https://papers.nips.cc/paper/6326-fast-and-accurate-spike-sorting-of-high-channel-count-probes-with-kilosort"""
+
     installation_mesg = """\nTo use Kilosort run:\n
         >>> git clone https://github.com/cortex-lab/KiloSort
     and provide the installation path by setting the KILOSORT_PATH

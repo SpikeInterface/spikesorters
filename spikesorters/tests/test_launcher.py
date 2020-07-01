@@ -36,8 +36,8 @@ def test_run_sorters_with_dict():
         shutil.rmtree(working_folder)
 
     sorter_params = {
-        'tridesclous': dict(relative_threshold=5.6),
-        'herdingspikes': dict(detection_threshold=20.1),
+        'tridesclous': dict(detect_threshold=5.6),
+        'herdingspikes': dict(detect_threshold=20.1),
     }
 
     # simple loop

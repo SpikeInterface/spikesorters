@@ -52,6 +52,29 @@ class Kilosort2Sorter(BaseSorter):
         'keep_good_only': False
     }
 
+    _params_description = {
+        'detect_threshold': "Threshold for spike detection",
+        'car': "Enable or disable common reference",
+        'useGPU': "Enable or disable GPU usage",
+        'freq_min': "High-pass filter cutoff frequency",
+        'freq_max': "Low-pass filter cutoff frequency",
+        'ntbuff': "Samples of symmetrical buffer for whitening and spike detection",
+        'Nfilt': "Number of clusters to use (if None it is automatically computed)",
+        'NT': "Batch size (if None it is automatically computed)",
+        'projection_threshold': "Threshold on projections",
+        'preclust_threshold': "Threshold crossings for pre-clustering (in PCA projection space)",
+        'minFR': "Minimum spike rate (Hz), if a cluster falls below this for too long it gets removed",
+        'minfr_goodchannels': "Minimum firing rate on a 'good' channel",
+        'sigmaMask': "Spatial constant in um for computing residual variance of spike",
+        'nPCs': "Number of PCA dimensions",
+        'nfilt_factor': "Max number of clusters per good channel (even temporary ones) 4",
+        'keep_good_only': "If True only 'good' units are returned"
+    }
+
+    sorter_description = """Kilosort2 is a GPU-accelerated and efficient template-matching spike sorter. On top of its 
+    predecessor Kilosort, it implements a drift-correction strategy.
+    For more information see https://github.com/MouseLand/Kilosort2"""
+
     installation_mesg = """\nTo use Kilosort2 run:\n
         >>> git clone https://github.com/MouseLand/Kilosort2
     and provide the installation path by setting the KILOSORT2_PATH
