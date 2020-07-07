@@ -69,8 +69,7 @@ class WaveClusSorter(BaseSorter):
         'scales': "Levels of the wavelet decomposition used as features",
         'min_clus': "Minimum increase of cluster sizes used by the peak selection on the temperature map",
         'maxtemp': "Maximum temperature calculated by the SPC method",
-        'template_sdnum': "Maximum distance (in total variance of the cluster) from the mean waveform to force a spike "
-                          "into a cluster",
+        'template_sdnum': "Maximum distance (in total variance of the cluster) from the mean waveform to force a spike into a cluster",
         'enable_detect_filter': "Enable or disable filter on detection",
         'enable_sort_filter': "Enable or disable filter on sorting",
         'detect_filter_fmin': "High-pass filter cutoff frequency for detection",
@@ -86,8 +85,7 @@ class WaveClusSorter(BaseSorter):
         'alignment_window': "Number of samples between peaks of different channels",
         'stdmax': "The events with a value over this number of noise standard deviations will be discarded",
         'max_spk': "Maximum number of spikes used by the SPC algorithm",
-        'ref_ms': "Refractory time in milliseconds, all the threshold crossing inside this period are detected as the "
-                  "same spike",
+        'ref_ms': "Refractory time in milliseconds, all the threshold crossing inside this period are detected as the same spike",
         'interpolation': "Enable or disable interpolation to improve the alignments of the spikes"
     }
 
