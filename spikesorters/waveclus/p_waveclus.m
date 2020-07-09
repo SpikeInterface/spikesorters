@@ -17,7 +17,7 @@ function p_waveclus(vcDir_temp, nChans, par_input)
         % Run waveclus batch mode. supply parameter file (set sampling rate)
         Get_spikes(vcFile_mat{1}, 'par', S_par);
         vcFile_spikes = strrep(vcFile_mat{1}, '.mat', '_spikes.mat');
-        Do_clustering(vcFile_spikes, 'make_plots', false);
+        Do_clustering(vcFile_spikes, 'make_plots', false,'save_spikes',false);
         [vcDir_, vcFile_, vcExt_] = fileparts(vcFile_mat{1});
         vcFile_cluster = fullfile(vcDir_, ['times_', vcFile_, vcExt_]);
     else
@@ -30,7 +30,7 @@ function p_waveclus(vcDir_temp, nChans, par_input)
         fclose(pol_file);
         Get_spikes_pol(elec_group, 'par', S_par);
         vcFile_spikes = strrep(pol_fname, '.txt', '_spikes.mat');
-        Do_clustering(vcFile_spikes, 'make_plots', false);
+        Do_clustering(vcFile_spikes, 'make_plots', false,'save_spikes',false);
         [vcDir_, ~, vcExt_] = fileparts(vcFile_mat{1});
         vcFile_cluster = fullfile(vcDir_, ['times_', pol_name, vcExt_]);
     end
