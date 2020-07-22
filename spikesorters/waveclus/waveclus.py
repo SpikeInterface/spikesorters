@@ -130,9 +130,9 @@ class WaveClusSorter(BaseSorter):
         assert isinstance(WaveClusSorter.waveclus_path, str)
         os.makedirs(str(output_folder), exist_ok=True)
         # Generate mat files in the dataset directory
-        for nch in range(recording.get_num_channels()):
+        for nch,id in enumerate(recording.get_channel_ids()):
             vcFile_mat = str(output_folder / ('raw' +str(nch+1) + '.mat'))
-            savemat(vcFile_mat, {'data':recording.get_traces(channel_ids=[nch]), 'sr':recording.get_sampling_frequency()})
+            savemat(vcFile_mat, {'data':recording.get_traces(channel_ids=[id]), 'sr':recording.get_sampling_frequency()})
 
     def _run(self, recording, output_folder):
         recording = recover_recording(recording)
