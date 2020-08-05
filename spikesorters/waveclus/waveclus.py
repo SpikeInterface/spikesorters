@@ -10,6 +10,7 @@ from ..basesorter import BaseSorter
 from ..utils.shellscript import ShellScript
 from ..sorter_tools import recover_recording
 
+
 def check_if_installed(waveclus_path: Union[str, None]):
     if waveclus_path is None:
         return False
@@ -57,8 +58,8 @@ class WaveClusSorter(BaseSorter):
         'stdmax': 50,
         'max_spk': 40000,
         'ref_ms': 1.5,
-        'interpolation' : True
-        }
+        'interpolation': True
+    }
 
     _params_description = {
         'detect_threshold': "Threshold for spike detection",
@@ -68,7 +69,8 @@ class WaveClusSorter(BaseSorter):
         'scales': "Levels of the wavelet decomposition used as features",
         'min_clus': "Minimum increase of cluster sizes used by the peak selection on the temperature map",
         'maxtemp': "Maximum temperature calculated by the SPC method",
-        'template_sdnum': "Maximum distance (in total variance of the cluster) from the mean waveform to force a spike into a cluster",
+        'template_sdnum': "Maximum distance (in total variance of the cluster) from the mean waveform to force a "
+                          "spike into a cluster",
         'enable_detect_filter': "Enable or disable filter on detection",
         'enable_sort_filter': "Enable or disable filter on sorting",
         'detect_filter_fmin': "High-pass filter cutoff frequency for detection",
@@ -83,7 +85,8 @@ class WaveClusSorter(BaseSorter):
         'alignment_window': "Number of samples between peaks of different channels",
         'stdmax': "The events with a value over this number of noise standard deviations will be discarded",
         'max_spk': "Maximum number of spikes used by the SPC algorithm",
-        'ref_ms': "Refractory time in milliseconds, all the threshold crossing inside this period are detected as the same spike",
+        'ref_ms': "Refractory time in milliseconds, all the threshold crossing inside this period are detected as the "
+                  "same spike",
         'interpolation': "Enable or disable interpolation to improve the alignments of the spikes"
     }
 
@@ -130,9 +133,10 @@ class WaveClusSorter(BaseSorter):
         assert isinstance(WaveClusSorter.waveclus_path, str)
         os.makedirs(str(output_folder), exist_ok=True)
         # Generate mat files in the dataset directory
-        for nch,id in enumerate(recording.get_channel_ids()):
-            vcFile_mat = str(output_folder / ('raw' +str(nch+1) + '.mat'))
-            savemat(vcFile_mat, {'data':recording.get_traces(channel_ids=[id]), 'sr':recording.get_sampling_frequency()})
+        for nch, id in enumerate(recording.get_channel_ids()):
+            vcFile_mat = str(output_folder / ('raw' + str(nch + 1) + '.mat'))
+            savemat(vcFile_mat,
+                    {'data': recording.get_traces(channel_ids=[id]), 'sr': recording.get_sampling_frequency()})
 
     def _run(self, recording, output_folder):
         recording = recover_recording(recording)
@@ -160,9 +164,9 @@ class WaveClusSorter(BaseSorter):
         del p['enable_sort_filter']
 
         if p['interpolation']:
-            p['interpolation']='y'
+            p['interpolation'] = 'y'
         else:
-            p['interpolation']='n'
+            p['interpolation'] = 'n'
 
         samplerate = recording.get_sampling_frequency()
         p['sr'] = samplerate
@@ -199,8 +203,8 @@ class WaveClusSorter(BaseSorter):
             end
             quit(0);
         '''
-        cmd = cmd.format(waveclus_path=WaveClusSorter.waveclus_path,source_path=source_dir,
-                        tmpdir=tmpdir, nChans=num_channels, parameters=par_str)
+        cmd = cmd.format(waveclus_path=WaveClusSorter.waveclus_path, source_path=source_dir,
+                         tmpdir=tmpdir, nChans=num_channels, parameters=par_str)
 
         matlab_cmd = ShellScript(cmd, script_path=str(tmpdir / 'run_waveclus.m'), keep_temp_files=True)
         matlab_cmd.write()
@@ -228,7 +232,6 @@ class WaveClusSorter(BaseSorter):
         result_fname = str(tmpdir / 'times_results.mat')
         if not os.path.exists(result_fname):
             raise Exception('Result file does not exist: ' + result_fname)
-
 
     @staticmethod
     def get_result_from_folder(output_folder):
