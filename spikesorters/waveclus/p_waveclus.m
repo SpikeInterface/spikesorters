@@ -17,22 +17,18 @@ function p_waveclus(vcDir_temp, nChans, par_input)
         % Run waveclus batch mode. supply parameter file (set sampling rate)
         Get_spikes(vcFile_mat{1}, 'par', S_par);
         vcFile_spikes = strrep(vcFile_mat{1}, '.mat', '_spikes.mat');
-        Do_clustering(vcFile_spikes, 'make_plots', false);
+        Do_clustering(vcFile_spikes, 'make_plots', false,'save_spikes',false);
         [vcDir_, vcFile_, vcExt_] = fileparts(vcFile_mat{1});
         vcFile_cluster = fullfile(vcDir_, ['times_', vcFile_, vcExt_]);
     else
         % Run waveclus batch mode. supply parameter file (set sampling rate)
-        elec_group = 1; %for now, only one group supported
-        pol_name = ['polytrode' num2str(elec_group)];
-        pol_fname = [pol_name '.txt'];
-        pol_file = fopen(pol_fname,'w');
+        pol_file = fopen('polytrode1.txt','w');
         cellfun(@(x) fprintf(pol_file ,'%s\n',x),vcFile_mat);
         fclose(pol_file);
-        Get_spikes_pol(elec_group, 'par', S_par);
-        vcFile_spikes = strrep(pol_fname, '.txt', '_spikes.mat');
-        Do_clustering(vcFile_spikes, 'make_plots', false);
+        Get_spikes_pol(1, 'par', S_par);
+        Do_clustering('polytrode1_spikes.mat', 'make_plots', false,'save_spikes',false);
         [vcDir_, ~, vcExt_] = fileparts(vcFile_mat{1});
-        vcFile_cluster = fullfile(vcDir_, ['times_', pol_name, vcExt_]);
+        vcFile_cluster = fullfile(vcDir_, ['times_polytrode1', vcExt_]);
     end
     
     movefile(vcFile_cluster,fullfile(vcDir_, 'times_results.mat'))

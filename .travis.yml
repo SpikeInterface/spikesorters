@@ -20,6 +20,7 @@ install:
 - pip install https://github.com/SpikeInterface/spiketoolkit/archive/master.zip
 - pip install .
 - pip install pytest==4.3
+- pip install matplotlib==3.2.2
 - pip install numpy scipy
 - pip install -r requirements_sorters.txt
 script: python -m pytest
