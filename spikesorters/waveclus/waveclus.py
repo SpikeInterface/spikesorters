@@ -182,11 +182,18 @@ class WaveClusSorter(BaseSorter):
                 num_channels, num_timepoints, duration_minutes))
 
         par_str = ''
+        par_renames = {'detect_sign':'detection','detect_threshold':'stdmin',
+                       'feature_type':'features','detect_filter_fmin':'detect_fmin',
+                       'detect_filter_fmax':'detect_fmax','detect_filter_order':'detect_order',
+                       'sort_filter_fmin':'sort_fmin','sort_filter_fmax':'sort_fmax',
+                       'sort_filter_order':'sort_order'}
         for key, value in p.items():
             if type(value) == str:
                 value = '\'{}\''.format(value)
             elif type(value) == bool:
                 value = '{}'.format(value).lower()
+            if key in par_renames:
+                key = par_renames[key]
             par_str += 'par.{} = {};'.format(key, value)
 
         if self.verbose:
