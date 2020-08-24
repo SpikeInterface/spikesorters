@@ -139,7 +139,7 @@ class BaseSorter:
             'sorter_name': str(self.sorter_name),
             'sorter_version': str(self.get_sorter_version()),
             'datetime': now,
-            'runtime_trace':[]
+            'runtime_trace': []
         }
 
         t0 = time.perf_counter()
