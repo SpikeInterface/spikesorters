@@ -47,7 +47,7 @@ class BaseSorter:
     def __init__(self, recording=None, output_folder=None, verbose=False,
                  grouping_property=None, delete_output_folder=False):
 
-        assert self.is_installed(), """This sorter {} is not installed.
+        assert self.is_installed(), """The sorter {} is not installed.
         Please install it with:  \n{} """.format(self.sorter_name, self.installation_mesg)
         if self.requires_locations:
             if 'location' not in recording.get_shared_channel_property_names():
