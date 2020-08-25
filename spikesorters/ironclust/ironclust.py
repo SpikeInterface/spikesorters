@@ -118,9 +118,10 @@ class IronClustSorter(BaseSorter):
 
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
-
-    def is_installed(self):
-        return check_if_installed(self.ironclust_path)
+    
+    @classmethod
+    def is_installed(cls):
+        return check_if_installed(cls.ironclust_path)
 
     @staticmethod
     def get_sorter_version():

@@ -65,7 +65,8 @@ class KlustaSorter(BaseSorter):
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
     
-    def is_installed(self):
+    @classmethod
+    def is_installed(cls):
         return HAVE_KLUSTA
     
     @staticmethod

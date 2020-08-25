@@ -11,7 +11,7 @@ from spikesorters import Kilosort2Sorter
 from spikesorters.tests.common_tests import SorterCommonTestSuite
 
 # This run several tests
-@pytest.mark.skipif(not Kilosort2Sorter.installed, reason='kilosort not installed')
+@pytest.mark.skipif(not Kilosort2Sorter.is_installed(), reason='kilosort not installed')
 class Kilosort2CommonTestSuite(SorterCommonTestSuite, unittest.TestCase):
     SorterClass = Kilosort2Sorter
 

@@ -7,12 +7,12 @@ from spikesorters.tests.common_tests import SorterCommonTestSuite
 
 
 # This run several tests
-@pytest.mark.skipif(not TridesclousSorter.installed, reason='tridesclous not installed')
+@pytest.mark.skipif(not TridesclousSorter.is_installed(), reason='tridesclous not installed')
 class TridesclousCommonTestSuite(SorterCommonTestSuite, unittest.TestCase):
     SorterClass = TridesclousSorter
 
 
-@pytest.mark.skipif(not TridesclousSorter.installed, reason='tridesclous not installed')
+@pytest.mark.skipif(not TridesclousSorter.is_installed(), reason='tridesclous not installed')
 def test_run_tridesclous():
     recording, sorting_gt = se.example_datasets.toy_example(num_channels=4, duration=30, seed=0)
 

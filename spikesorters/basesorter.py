@@ -36,7 +36,6 @@ from .sorter_tools import SpikeSortingError
 
 class BaseSorter:
     sorter_name = ''  # convinience for reporting
-    installed = False  # check at class level if isntalled or not
     SortingExtractor_Class = None  # convinience to get the extractor
     requires_locations = False
     compatible_with_parallel = {'loky': True, 'multiprocessing': True, 'threading': True}
@@ -48,7 +47,7 @@ class BaseSorter:
     def __init__(self, recording=None, output_folder=None, verbose=False,
                  grouping_property=None, delete_output_folder=False):
 
-        assert self.installed, """This sorter {} is not installed.
+        assert self.is_installed(), """This sorter {} is not installed.
         Please install it with:  \n{} """.format(self.sorter_name, self.installation_mesg)
         if self.requires_locations:
             if 'location' not in recording.get_shared_channel_property_names():
@@ -203,8 +202,9 @@ class BaseSorter:
     def get_sorter_version():
         # need be implemented in subclass
         raise NotImplementedError
-
-    def is_installed(self):
+    
+    @classmethod
+    def is_installed(cls):
         # need be implemented in subclass
         raise NotImplemenetdError
 

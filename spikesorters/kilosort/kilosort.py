@@ -73,8 +73,9 @@ class KilosortSorter(BaseSorter):
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
     
-    def is_installed(self):
-        return check_if_installed(self.kilosort_path)
+    @classmethod
+    def is_installed(cls):
+        return check_if_installed(cls.kilosort_path)
     
     @staticmethod
     def get_sorter_version():
