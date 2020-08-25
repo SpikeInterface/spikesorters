@@ -15,7 +15,7 @@ tridesclous==1.6
 
 # ms4
 pybind11
-isosplit
+isosplit5
 ml_ms4alg==0.3.2
 
 # herdingspikes
