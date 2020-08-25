@@ -160,7 +160,7 @@ class KilosortSorter(BaseSorter):
             dat_file=str((output_folder / 'recording.dat').absolute()),
             Nfilt=int(p['Nfilt']),
             ntbuff=int(p['ntbuff']),
-            NT=int(p['Nt']),
+            NT=int(p['NT']),
             kilo_thresh=p['detect_threshold'],
             use_car=use_car,
             freq_min=p['freq_min'],
