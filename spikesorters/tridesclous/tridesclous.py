@@ -28,7 +28,6 @@ class TridesclousSorter(BaseSorter):
     """
 
     sorter_name = 'tridesclous'
-    installed = HAVE_TDC
     requires_locations = False
     compatible_with_parallel = {'loky': True, 'multiprocessing': False, 'threading': False}
 
@@ -72,7 +71,10 @@ class TridesclousSorter(BaseSorter):
 
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
-
+    
+    def is_installed(self):
+        return HAVE_TDC
+        
     @staticmethod
     def get_sorter_version():
         return tdc.__version__

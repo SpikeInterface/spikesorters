@@ -21,7 +21,6 @@ class Mountainsort4Sorter(BaseSorter):
     """
 
     sorter_name = 'mountainsort4'
-    installed = HAVE_MS4
     requires_locations = False
     compatible_with_parallel = {'loky': True, 'multiprocessing': False, 'threading': False}
 
@@ -69,7 +68,10 @@ class Mountainsort4Sorter(BaseSorter):
 
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
-
+    
+    def is_installed(self):
+        return HAVE_MS4
+    
     @staticmethod
     def get_sorter_version():
         if hasattr(ml_ms4alg, '__version__'):

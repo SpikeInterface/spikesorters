@@ -33,7 +33,6 @@ class Kilosort2Sorter(BaseSorter):
 
     sorter_name: str = 'kilosort2'
     kilosort2_path: Union[str, None] = os.getenv('KILOSORT2_PATH', None)
-    installed = check_if_installed(kilosort2_path)
     requires_locations = False
 
     _default_params = {
@@ -87,6 +86,9 @@ class Kilosort2Sorter(BaseSorter):
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
 
+    def is_installed(self):
+        return check_if_installed(self.kilosort2_path)
+
     @staticmethod
     def get_sorter_version():
         commit = get_git_commit(os.getenv('KILOSORT2_PATH', None))
@@ -99,7 +101,6 @@ class Kilosort2Sorter(BaseSorter):
     def set_kilosort2_path(kilosort2_path: str):
         kilosort2_path = str(Path(kilosort2_path).absolute())
         Kilosort2Sorter.kilosort2_path = kilosort2_path
-        Kilosort2Sorter.installed = check_if_installed(Kilosort2Sorter.kilosort2_path)
         try:
             print("Setting KILOSORT2_PATH environment variable for subprocess calls to:", kilosort2_path)
             os.environ["KILOSORT2_PATH"] = kilosort2_path
@@ -110,9 +111,8 @@ class Kilosort2Sorter(BaseSorter):
         source_dir = Path(Path(__file__).parent)
         p = self.params
 
-        if not check_if_installed(Kilosort2Sorter.kilosort2_path):
+        if not self.is_installed():
             raise Exception(Kilosort2Sorter.installation_mesg)
-        assert isinstance(Kilosort2Sorter.kilosort2_path, str)
 
         # prepare electrode positions for this group (only one group, the split is done in basesorter)
         groups = [1] * recording.get_num_channels()

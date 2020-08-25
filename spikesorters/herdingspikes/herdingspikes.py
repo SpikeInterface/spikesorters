@@ -17,7 +17,7 @@ except ImportError:
 class HerdingspikesSorter(BaseSorter):
 
     sorter_name = 'herdingspikes'
-    installed = HAVE_HS
+    
     requires_locations = True
     compatible_with_parallel = {'loky': True, 'multiprocessing': True, 'threading': False}
     _default_params = {
@@ -124,6 +124,9 @@ class HerdingspikesSorter(BaseSorter):
 
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
+    
+    def is_installed(self):
+        return HAVE_HS
     
     @staticmethod
     def get_sorter_version():

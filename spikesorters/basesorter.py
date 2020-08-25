@@ -105,7 +105,7 @@ class BaseSorter:
     @classmethod
     def params_description(cls):
         return copy.deepcopy(cls._params_description)
-
+        
     def set_params(self, **params):
         bad_params = []
         for p in params.keys():
@@ -203,6 +203,10 @@ class BaseSorter:
     def get_sorter_version():
         # need be implemented in subclass
         raise NotImplementedError
+
+    def is_installed(self):
+        # need be implemented in subclass
+        raise NotImplemenetdError
 
     def _setup_recording(self, recording, output_folder):
         # need be implemented in subclass

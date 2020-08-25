@@ -22,7 +22,6 @@ class SpykingcircusSorter(BaseSorter):
     """
 
     sorter_name = 'spykingcircus'
-    installed = HAVE_SC
     requires_locations = False
 
     _default_params = {
@@ -67,7 +66,10 @@ class SpykingcircusSorter(BaseSorter):
 
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
-
+    
+    def is_installed(self):
+        return HAVE_SC
+    
     @staticmethod
     def get_sorter_version():
         return circus.__version__

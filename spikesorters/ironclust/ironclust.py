@@ -32,7 +32,7 @@ class IronClustSorter(BaseSorter):
 
     sorter_name: str = 'ironclust'
     ironclust_path: Union[str, None] = os.getenv('IRONCLUST_PATH', None)
-    installed = check_if_installed(ironclust_path)
+    
     requires_locations = True
 
     _default_params = {
@@ -119,6 +119,9 @@ class IronClustSorter(BaseSorter):
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
 
+    def is_installed(self):
+        return check_if_installed(self.ironclust_path)
+
     @staticmethod
     def get_sorter_version():
         version_filename = os.path.join(os.environ["IRONCLUST_PATH"], 'matlab', 'version.txt')
@@ -135,7 +138,6 @@ class IronClustSorter(BaseSorter):
     def set_ironclust_path(ironclust_path: str):
         ironclust_path = str(Path(ironclust_path).absolute())
         IronClustSorter.ironclust_path = ironclust_path
-        IronClustSorter.installed = check_if_installed(IronClustSorter.ironclust_path)
         try:
             print("Setting IRONCLUST_PATH environment variable for subprocess calls to:", ironclust_path)
             os.environ["IRONCLUST_PATH"] = ironclust_path
@@ -143,9 +145,8 @@ class IronClustSorter(BaseSorter):
             print("Could not set IRONCLUST_PATH environment variable:", e)
 
     def _setup_recording(self, recording: se.RecordingExtractor, output_folder: Path):
-        if not check_if_installed(IronClustSorter.ironclust_path):
+        if not self.is_installed():
             raise Exception(IronClustSorter.installation_mesg)
-        assert isinstance(IronClustSorter.ironclust_path, str)
 
         dataset_dir = output_folder / 'ironclust_dataset'
         # Generate three files in the dataset directory: raw.mda, geom.csv, params.json
