@@ -22,7 +22,7 @@ class KlustaSorter(BaseSorter):
     """
 
     sorter_name = 'klusta'
-    installed = HAVE_KLUSTA
+    
     requires_locations = False
 
     _default_params = {
@@ -64,7 +64,11 @@ class KlustaSorter(BaseSorter):
 
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
-
+    
+    @classmethod
+    def is_installed(cls):
+        return HAVE_KLUSTA
+    
     @staticmethod
     def get_sorter_version():
         return klusta.__version__

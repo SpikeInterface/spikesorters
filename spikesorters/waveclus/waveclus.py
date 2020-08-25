@@ -32,7 +32,6 @@ class WaveClusSorter(BaseSorter):
 
     sorter_name: str = 'waveclus'
     waveclus_path: Union[str, None] = os.getenv('WAVECLUS_PATH', None)
-    installed = check_if_installed(waveclus_path)
     requires_locations = False
 
     _default_params = {
@@ -105,7 +104,11 @@ class WaveClusSorter(BaseSorter):
 
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
-
+    
+    @classmethod
+    def is_installed(cls):
+        return check_if_installed(cls.waveclus_path)
+    
     @staticmethod
     def get_sorter_version():
         p = os.getenv('WAVECLUS_PATH', None)
@@ -120,7 +123,6 @@ class WaveClusSorter(BaseSorter):
     def set_waveclus_path(waveclus_path: str):
         waveclus_path = str(Path(waveclus_path).absolute())
         WaveClusSorter.waveclus_path = waveclus_path
-        WaveClusSorter.installed = check_if_installed(WaveClusSorter.waveclus_path)
         try:
             print("Setting WAVECLUS_PATH environment variable for subprocess calls to:", waveclus_path)
             os.environ["WAVECLUS_PATH"] = waveclus_path
@@ -128,9 +130,9 @@ class WaveClusSorter(BaseSorter):
             print("Could not set WAVECLUS_PATH environment variable:", e)
 
     def _setup_recording(self, recording, output_folder):
-        if not check_if_installed(WaveClusSorter.waveclus_path):
+        if not self.installed():
             raise Exception(WaveClusSorter.installation_mesg)
-        assert isinstance(WaveClusSorter.waveclus_path, str)
+        
         os.makedirs(str(output_folder), exist_ok=True)
         # Generate mat files in the dataset directory
         for nch, id in enumerate(recording.get_channel_ids()):

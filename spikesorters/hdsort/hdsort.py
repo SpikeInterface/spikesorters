@@ -29,7 +29,6 @@ class HDSortSorter(BaseSorter):
 
     sorter_name: str = 'hdsort'
     hdsort_path: Union[str, None] = os.getenv('HDSORT_PATH', None)
-    installed = check_if_installed(hdsort_path)
     requires_locations = False
     _default_params = {
         'detect_threshold': 4.2,
@@ -78,7 +77,11 @@ class HDSortSorter(BaseSorter):
 
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
-
+    
+    @classmethod
+    def is_installed(cls):
+        return check_if_installed(cls.hdsort_path)
+    
     @staticmethod
     def get_sorter_version():
         p = os.getenv('HDSORT_PATH', None)
@@ -91,8 +94,7 @@ class HDSortSorter(BaseSorter):
 
     @staticmethod
     def set_hdsort_path(hdsort_path: str):
-        HDSortSorter.hdsort_path = hdsort_path
-        HDSortSorter.installed = check_if_installed(HDSortSorter.hdsort_path)
+        HDSortSorter.hdsort_path = str(Path(hdsort_path).absolute())
         try:
             print("Setting HDSORT_PATH environment variable for subprocess calls to:", hdsort_path)
             os.environ["HDSORT_PATH"] = hdsort_path
@@ -100,9 +102,8 @@ class HDSortSorter(BaseSorter):
             print("Could not set HDSORT_PATH environment variable:", e)
 
     def _setup_recording(self, recording, output_folder):
-        if not check_if_installed(HDSortSorter.hdsort_path):
+        if not self.is_installed():
             raise Exception(HDSortSorter.installation_mesg)
-        assert isinstance(HDSortSorter.hdsort_path, str)
 
         source_dir = Path(__file__).parent
         utils_path = source_dir.parent / 'utils'

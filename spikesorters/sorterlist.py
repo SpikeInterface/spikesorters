@@ -23,7 +23,7 @@ sorter_full_list = [
 ]
 
 sorter_dict = {s.sorter_name: s for s in sorter_full_list}
-installed_sorter_list = [s for s in sorter_full_list if s.installed]
+
 
 
 # generic laucnher via function approach
@@ -100,8 +100,8 @@ def installed_sorters():
     '''
     Lists installed sorters.
     '''
-    return sorted(list([s.sorter_name for s in installed_sorter_list]))
-
+    l = sorted([s.sorter_name for s in sorter_full_list if s.is_installed()])
+    return l
 
 def print_sorter_versions():
     txt = ''
