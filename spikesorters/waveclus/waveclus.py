@@ -130,7 +130,7 @@ class WaveClusSorter(BaseSorter):
             print("Could not set WAVECLUS_PATH environment variable:", e)
 
     def _setup_recording(self, recording, output_folder):
-        if not self.installed():
+        if not self.is_installed():
             raise Exception(WaveClusSorter.installation_mesg)
         
         os.makedirs(str(output_folder), exist_ok=True)
