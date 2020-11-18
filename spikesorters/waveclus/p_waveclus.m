@@ -31,5 +31,5 @@ function p_waveclus(vcDir_temp, nChans, par_input)
         vcFile_cluster = fullfile(vcDir_, ['times_polytrode1', vcExt_]);
     end
     
-    movefile(vcFile_cluster,fullfile(vcDir_, 'times_results.mat'))
+    movefile(vcFile_cluster,fullfile(vcDir_, 'times_results.mat'),'f')
 end
