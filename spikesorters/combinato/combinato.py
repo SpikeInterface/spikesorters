@@ -10,6 +10,7 @@ from ..sorter_tools import recover_recording
 
 try:
     import h5py
+
     HAVE_H5PY = True
 except ImportError:
     HAVE_H5PY = False
@@ -122,8 +123,8 @@ class CombinatoSorter(BaseSorter):
         # Generate h5 files in the dataset directory
         chid = recording.get_channel_ids()[0]
         vcFile_h5 = str(output_folder / ('recording.h5'))
-        f = h5py.File(vcFile_h5,mode='w')
-        f.create_dataset("sr", data=[recording.get_sampling_frequency()],dtype='float32')
+        f = h5py.File(vcFile_h5, mode='w')
+        f.create_dataset("sr", data=[recording.get_sampling_frequency()], dtype='float32')
 
         f.create_dataset("data", data=recording.get_traces(channel_ids=[chid]).flatten())
         f.close()
@@ -149,26 +150,27 @@ class CombinatoSorter(BaseSorter):
         tmpdir = output_folder
         os.makedirs(str(tmpdir), exist_ok=True)
 
-
         if self.verbose:
             print('Running combinato in {tmpdir}...'.format(tmpdir=tmpdir))
-        outFile = open(tmpdir/"local_options.py", "w")
+        outFile = open(tmpdir / "local_options.py", "w")
         outFile.writelines("options = {}".format(p))
         outFile.close()
+
+        shell_cmd = '''
+            {extra_cmd}
+            cd "{tmpdir}"
+            python {css_folder}/css-extract --h5 --files recording.h5
+            python {css_folder}/css-simple-clustering {sign_thr} --datafile recording/data_recording.h5
+        '''
+
         if 'win' in sys.platform and sys.platform != 'darwin':
-            shell_cmd = '''
-                cd {tmpdir}
-                python {css_folder}\css-extract --h5 --files recording.h5
-                python {css_folder}\css-simple-clustering {sign_thr} --datafile recording/data_recording.h5
-            '''
+            extra_cmd = str(tmpdir)[:2]
+            shell_cmd = shell_cmd.replace('/', '\\')
         else:
-            shell_cmd = '''
-                #!/bin/bash
-                cd "{tmpdir}"
-                python {css_folder}/css-extract --h5 --files recording.h5
-                python {css_folder}/css-simple-clustering {sign_thr} --datafile recording/data_recording.h5
-            '''
-        shell_cmd = shell_cmd.format(tmpdir=tmpdir,css_folder=CombinatoSorter.combinato_path, sign_thr=sign_thr)
+            extra_cmd = '# !/bin/bash'
+
+        shell_cmd = shell_cmd.format(extra_cmd=extra_cmd, tmpdir=tmpdir, css_folder=CombinatoSorter.combinato_path,
+                                     sign_thr=sign_thr)
         shell_cmd = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}',
                                 log_path=output_folder / f'{self.sorter_name}.log', verbose=self.verbose)
         shell_cmd.start()
@@ -183,5 +185,5 @@ class CombinatoSorter(BaseSorter):
 
         output_folder = Path(output_folder)
         result_fname = str(output_folder / 'recording')
-        sorting = se.CombinatoSortingExtractor(datapath = result_fname)
+        sorting = se.CombinatoSortingExtractor(datapath=result_fname)
         return sorting
