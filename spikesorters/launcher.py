@@ -102,9 +102,9 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
         The output is nested dict[(rec_name, sorter_name)] of SortingExtractor.
 
     """
-    if mode == 'raise':
-        assert not os.path.exists(working_folder), 'working_folder already exists, please remove it'
     working_folder = Path(working_folder)
+    if mode == 'raise':
+        assert not working_folder.is_dir(), "'working_folder' already exists, please remove it"
 
     if engine is None:
         engine = 'loop'
@@ -194,7 +194,7 @@ def run_sorters(sorter_list, recording_dict_or_list, working_folder, sorter_para
 
 def is_log_ok(output_folder):
     # log is OK when run_time is not None
-    if os.path.exists(output_folder / 'spikeinterface_log.json'):
+    if (output_folder / 'spikeinterface_log.json').is_file():
         with open(output_folder / 'spikeinterface_log.json', mode='r', encoding='utf8') as logfile:
             log = json.load(logfile)
             run_time = log.get('run_time', None)
@@ -206,11 +206,11 @@ def is_log_ok(output_folder):
 def iter_output_folders(output_folders):
     output_folders = Path(output_folders)
     for rec_name in os.listdir(output_folders):
-        if not os.path.isdir(output_folders / rec_name):
+        if not (output_folders / rec_name).is_dir():
             continue
         for sorter_name in os.listdir(output_folders / rec_name):
             output_folder = output_folders / rec_name / sorter_name
-            if not os.path.isdir(output_folder):
+            if not output_folder.is_dir():
                 continue
             if not is_log_ok(output_folder):
                 continue

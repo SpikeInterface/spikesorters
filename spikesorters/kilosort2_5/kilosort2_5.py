@@ -50,7 +50,9 @@ class Kilosort2_5Sorter(BaseSorter):
         'ntbuff': 64,
         'nfilt_factor': 4,
         'NT': None,
-        'keep_good_only': False
+        'keep_good_only': False,
+        'chunk_mb': 500,
+        'n_jobs_bin': 1
     }
 
     _params_description = {
@@ -72,7 +74,9 @@ class Kilosort2_5Sorter(BaseSorter):
         'sigmaMask': "Spatial constant in um for computing residual variance of spike",
         'nPCs': "Number of PCA dimensions",
         'nfilt_factor': "Max number of clusters per good channel (even temporary ones) 4",
-        'keep_good_only': "If True only 'good' units are returned"
+        'keep_good_only': "If True only 'good' units are returned",
+        'chunk_mb': "Chunk size in Mb for saving to binary format (default 500Mb)",
+        'n_jobs_bin': "Number of jobs for saving to binary format (Default 1)"
     }
 
     sorter_description = """Kilosort2_5 is a GPU-accelerated and efficient template-matching spike sorter. On top of its 
@@ -134,7 +138,8 @@ class Kilosort2_5Sorter(BaseSorter):
 
         # save binary file
         input_file_path = output_folder / 'recording.dat'
-        recording.write_to_binary_dat_format(input_file_path, dtype='int16', chunk_mb=500)
+        recording.write_to_binary_dat_format(input_file_path, dtype='int16', chunk_mb=p["chunk_mb"],
+                                             n_jobs=p["n_jobs_bin"], verbose=self.verbose)
 
         if p['car']:
             use_car = 1

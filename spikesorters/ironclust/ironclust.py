@@ -125,9 +125,9 @@ class IronClustSorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
-        version_filename = os.path.join(os.environ["IRONCLUST_PATH"], 'matlab', 'version.txt')
-        if os.path.exists(version_filename):
-            with open(version_filename, mode='r', encoding='utf8') as f:
+        version_filename = Path(os.environ["IRONCLUST_PATH"]) / 'matlab' / 'version.txt'
+        if version_filename.is_file():
+            with open(str(version_filename), mode='r', encoding='utf8') as f:
                 line = f.readline()
                 d = {}
                 exec(line, None, d)
@@ -151,7 +151,7 @@ class IronClustSorter(BaseSorter):
 
         dataset_dir = output_folder / 'ironclust_dataset'
         # Generate three files in the dataset directory: raw.mda, geom.csv, params.json
-        se.MdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir))
+        se.MdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir), verbose=self.verbose)
 
     def _run(self, recording: se.RecordingExtractor, output_folder: Path):
         recording = recover_recording(recording)
@@ -181,7 +181,7 @@ class IronClustSorter(BaseSorter):
             f.write(txt)
 
         tmpdir = output_folder / 'tmp'
-        os.makedirs(str(tmpdir), exist_ok=True)
+        tmpdir.mkdir(parents=True, exist_ok=True)
         if self.verbose:
             print('Running ironclust in {tmpdir}...'.format(tmpdir=str(tmpdir)))
         cmd = '''
@@ -223,9 +223,9 @@ class IronClustSorter(BaseSorter):
         if retcode != 0:
             raise Exception('ironclust returned a non-zero exit code')
 
-        result_fname = str(tmpdir / 'firings.mda')
-        if not os.path.exists(result_fname):
-            raise Exception('Result file does not exist: ' + result_fname)
+        result_fname = tmpdir / 'firings.mda'
+        if not result_fname.is_file():
+            raise Exception(f'Result file does not exist: {result_fname}')
 
         samplerate_fname = str(tmpdir / 'samplerate.txt')
         with open(samplerate_fname, 'w') as f:

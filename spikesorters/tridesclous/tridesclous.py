@@ -42,6 +42,8 @@ class TridesclousSorter(BaseSorter):
         'feature_method': 'auto',  # peak_max/global_pca/by_channel_pca
         'cluster_method': 'auto',  # pruningshears/dbscan/kmeans
         'clean_catalogue_gui': False,
+        'chunk_mb': 500,
+        'n_jobs_bin': 1
     }
 
     _params_description = {
@@ -56,6 +58,8 @@ class TridesclousSorter(BaseSorter):
         'feature_method': "Feature method to use",  # peak_max/global_pca/by_channel_pca
         'cluster_method': "Feature method to use",  # pruningshears/dbscan/kmeans
         'clean_catalogue_gui': "Enable or disable interactive GUI for cleaning templates before peeler",
+        'chunk_mb': "Chunk size in Mb for saving to binary format (default 500Mb)",
+        'n_jobs_bin': "Number of jobs for saving to binary format (Default 1)"
     }
 
     sorter_description = """Tridesclous is a template-matching spike sorter with a real-time engine. 
@@ -82,9 +86,8 @@ class TridesclousSorter(BaseSorter):
 
     def _setup_recording(self, recording, output_folder):
         # reset the output folder
-        if output_folder.is_dir():
-            shutil.rmtree(str(output_folder))
-        os.makedirs(str(output_folder))
+        output_folder.mkdir(parents=True, exist_ok=True)
+        p = self.params
 
         # save prb file
         # note: only one group here, the split is done in basesorter
@@ -103,7 +106,8 @@ class TridesclousSorter(BaseSorter):
                 print('Local copy of recording')
             # save binary file (chunk by hcunk) into a new file
             raw_filename = output_folder / 'raw_signals.raw'
-            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype='float32', chunk_mb=500)
+            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype='float32', chunk_mb=p["chunk_mb"],
+                                                 n_jobs=p["n_jobs_bin"], verbose=self.verbose)
             dtype = 'float32'
             offset = 0
 
@@ -123,6 +127,7 @@ class TridesclousSorter(BaseSorter):
         tdc_dataio = tdc.DataIO(dirname=str(output_folder))
 
         params = dict(self.params)
+        del params["chunk_mb"], params["n_jobs_bin"]
 
         clean_catalogue_gui = params.pop('clean_catalogue_gui')
         # make catalogue

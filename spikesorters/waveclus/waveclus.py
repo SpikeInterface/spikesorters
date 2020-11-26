@@ -115,7 +115,7 @@ class WaveClusSorter(BaseSorter):
         if p is None:
             return 'unknown'
         else:
-            with open(os.path.join(p, 'version.txt'), mode='r', encoding='utf8') as f:
+            with open(str(Path(p) / 'version.txt'), mode='r', encoding='utf8') as f:
                 version = f.readline()
         return version
 
@@ -132,8 +132,8 @@ class WaveClusSorter(BaseSorter):
     def _setup_recording(self, recording, output_folder):
         if not self.is_installed():
             raise Exception(WaveClusSorter.installation_mesg)
-        
-        os.makedirs(str(output_folder), exist_ok=True)
+
+        output_folder.mkdir(parents=True, exist_ok=True)
         # Generate mat files in the dataset directory
         for nch, id in enumerate(recording.get_channel_ids()):
             vcFile_mat = str(output_folder / ('raw' + str(nch + 1) + '.mat'))
@@ -175,7 +175,7 @@ class WaveClusSorter(BaseSorter):
 
         num_channels = recording.get_num_channels()
         tmpdir = output_folder
-        os.makedirs(str(tmpdir), exist_ok=True)
+        tmpdir.mkdir(parents=True, exist_ok=True)
 
         if self.verbose:
             num_timepoints = recording.get_num_frames()
@@ -238,9 +238,9 @@ class WaveClusSorter(BaseSorter):
         if retcode != 0:
             raise Exception('waveclus returned a non-zero exit code')
 
-        result_fname = str(tmpdir / 'times_results.mat')
-        if not os.path.exists(result_fname):
-            raise Exception('Result file does not exist: ' + result_fname)
+        result_fname = tmpdir / 'times_results.mat'
+        if not result_fname.is_file():
+            raise Exception(f'Result file does not exist: {result_fname}')
 
     @staticmethod
     def get_result_from_folder(output_folder):

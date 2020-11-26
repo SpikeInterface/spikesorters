@@ -93,8 +93,8 @@ class BaseSorter:
 
         # make folders
         for output_folder in self.output_folders:
-            if not output_folder.is_dir():
-                os.makedirs(str(output_folder))
+            output_folder.mkdir(parents=True, exist_ok=True)
+
         self.delete_folders = delete_output_folder
 
     @classmethod
@@ -206,7 +206,7 @@ class BaseSorter:
     @classmethod
     def is_installed(cls):
         # need be implemented in subclass
-        raise NotImplemenetdError
+        raise NotImplementedError
 
     def _setup_recording(self, recording, output_folder):
         # need be implemented in subclass
