@@ -44,7 +44,9 @@ class KilosortSorter(BaseSorter):
         'freq_max': 6000,
         'ntbuff': 64,
         'Nfilt': None,
-        'NT': None
+        'NT': None,
+        'chunk_mb': 500,
+        'n_jobs_bin': 1
     }
 
     _params_description = {
@@ -55,7 +57,9 @@ class KilosortSorter(BaseSorter):
         'freq_max': "Low-pass filter cutoff frequency",
         'ntbuff': "Samples of symmetrical buffer for whitening and spike detection",
         'Nfilt': "Number of clusters to use (if None it is automatically computed)",
-        'NT': "Batch size (if None it is automatically computed)"
+        'NT': "Batch size (if None it is automatically computed)",
+        'chunk_mb': "Chunk size in Mb for saving to binary format (default 500Mb)",
+        'n_jobs_bin': "Number of jobs for saving to binary format (Default 1)"
     }
 
     sorter_description = """Kilosort is a GPU-accelerated and efficient template-matching spike sorter. 
@@ -110,7 +114,8 @@ class KilosortSorter(BaseSorter):
 
         # save binary file
         input_file_path = output_folder / 'recording'
-        recording.write_to_binary_dat_format(input_file_path, dtype='int16', chunk_mb=500)
+        recording.write_to_binary_dat_format(input_file_path, dtype='int16', chunk_mb=p["chunk_mb"],
+                                             n_jobs=p["n_jobs_bin"], verbose=self.verbose)
 
         # set up kilosort config files and run kilosort on data
         with (source_dir / 'kilosort_master.m').open('r') as f:

@@ -35,6 +35,8 @@ class KlustaSorter(BaseSorter):
         'n_features_per_channel': 3,
         'pca_n_waveforms_max': 10000,
         'num_starting_clusters': 50,
+        'chunk_mb': 500,
+        'n_jobs_bin': 1
     }
 
     _params_description = {
@@ -48,6 +50,8 @@ class KlustaSorter(BaseSorter):
         'n_features_per_channel': "Number of PCA features per channel",
         'pca_n_waveforms_max': "Maximum number of waveforms for PCA",
         'num_starting_clusters': "Number of initial clusters",
+        'chunk_mb': "Chunk size in Mb for saving to binary format (default 500Mb)",
+        'n_jobs_bin': "Number of jobs for saving to binary format (Default 1)"
     }
 
     sorter_description = """Klusta is a density-based spike sorter that uses a masked EM approach for clustering.
@@ -97,7 +101,8 @@ class KlustaSorter(BaseSorter):
             # save binary file (chunk by hcunk) into a new file
             raw_filename = output_folder / 'recording.dat'
             dtype = 'int16'
-            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype=dtype, chunk_mb=500)
+            recording.write_to_binary_dat_format(raw_filename, time_axis=0, dtype=dtype,chunk_mb=p["chunk_mb"],
+                                                n_jobs=p["n_jobs_bin"], verbose=self.verbose)
 
         if p['detect_sign'] < 0:
             detect_sign = 'negative'

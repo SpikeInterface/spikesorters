@@ -88,7 +88,7 @@ class HDSortSorter(BaseSorter):
         if p is None:
             return 'unknown'
         else:
-            with open(os.path.join(p, 'version.txt'), mode='r', encoding='utf8') as f:
+            with open(str(Path(p) / 'version.txt'), mode='r', encoding='utf8') as f:
                 version = f.readline()
         return version
 
@@ -176,7 +176,7 @@ class HDSortSorter(BaseSorter):
     def _run(self, recording, output_folder):
         recording = recover_recording(recording)
         tmpdir = output_folder
-        os.makedirs(str(tmpdir), exist_ok=True)
+        tmpdir.mkdir(parents=True, exist_ok=True)
         samplerate = recording.get_sampling_frequency()
 
         if recording.is_filtered and self.params['filter']:

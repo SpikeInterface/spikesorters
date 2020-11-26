@@ -183,7 +183,7 @@ class ShellScript():
 
 def _rmdir_with_retries(dirname, num_retries, delay_between_tries=1):
     for retry_num in range(1, num_retries + 1):
-        if not os.path.exists(dirname):
+        if not Path(dirname).is_dir():
             return
         try:
             shutil.rmtree(dirname)
