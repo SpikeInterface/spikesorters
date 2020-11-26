@@ -127,6 +127,7 @@ class TridesclousSorter(BaseSorter):
         tdc_dataio = tdc.DataIO(dirname=str(output_folder))
 
         params = dict(self.params)
+        del params["chunk_mb"], params["n_jobs_bin"]
 
         clean_catalogue_gui = params.pop('clean_catalogue_gui')
         # make catalogue
