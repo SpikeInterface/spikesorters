@@ -36,7 +36,7 @@ class Kilosort2_5Sorter(BaseSorter):
     requires_locations = False
 
     _default_params = {
-        'detect_threshold': 5,
+        'detect_threshold': 6,
         'projection_threshold': [10, 4],
         'preclust_threshold': 8,
         'car': True,
