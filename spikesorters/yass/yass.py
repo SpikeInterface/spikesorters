@@ -11,6 +11,7 @@ from ..utils.shellscript import ShellScript
 from ..sorter_tools import recover_recording
 
 try:
+    import yaml
     import yass
     HAVE_YASS = True
 except ImportError:
@@ -63,23 +64,9 @@ class YassSorter(BaseSorter):
         #################################################################
         #################### GEOMETRY FILE GENERATION ###################
         #################################################################
-        # save prb file
-        # note: only one group here, the split is done in basesorter
-        probe_file_csv = os.path.join(output_folder,'geom.csv')
         probe_file_txt = os.path.join(output_folder,'geom.txt')
-        # ALESSIO .saveto probe saved .prb file; have to d thisourselves.
-        #  
-        adjacency_radius = -1
-        recording.save_to_probe_file(probe_file_csv, 
-                                     grouping_property=None,
-                                     radius=adjacency_radius)
-        
-        import csv
-
-        with open(probe_file_csv) as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            geom_txt = np.float32(np.vstack(csv_reader))
-            np.savetxt(probe_file_txt, geom_txt)
+        geom_txt = recording.get_channel_location 
+        np.savetxt(probe_file_txt, geom_txt)
         
         #################################################################
         #################### UPDATE SAMPLING RATE #######################
