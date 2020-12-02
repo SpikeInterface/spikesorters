@@ -4,11 +4,17 @@ import os
 import numpy as np
 from numpy.lib.format import open_memmap
 import sys
+import yaml
 
 import spikeextractors as se
+
 from ..basesorter import BaseSorter
-from ..utils.shellscript import ShellScript
 from ..sorter_tools import recover_recording
+
+from ..utils.shellscript import ShellScript
+
+
+from shellscript import ShellScript
 
 try:
     import yass
@@ -16,40 +22,76 @@ try:
 except ImportError:
     HAVE_YASS = False
 
+print ("HAVE_YASS: ", HAVE_YASS) 
 
+#####################################################################
+############# YASSSORTER CLASS ######################################
+#####################################################################
 class YassSorter(BaseSorter):
-    """
+    """ 
     """
 
     sorter_name = 'yass'
     requires_locations = False
+    verbose = False
+    is_installed = HAVE_YASS
 
-    _default_params = {
-        }
+    # _default_params comes from default Yass config.yaml file; 
+    #  Should be autoloaded from yass_installation_directory/samples/10chan/config.yaml
+    #  - for now a copy is saved here: spikesorters/spikesorters/yass/config.yaml
+    
+#     _default_params = {
+#         'adjacency_radius': 100,  # Channel neighborhood adjacency radius corresponding to geom file
+#         'filter': True,
+#         }
 
+    # ALESSIO: Move thsi file locally to the yass directory;
+    default_config_fname = './config_sample.yaml'
+    with open(default_config_fname) as f:
+        _default_params = yaml.load(f, Loader=yaml.FullLoader)   
+    
     _params_description = {
+        'data': " ...",
     }
 
-    sorter_description = """Yass description; link to biorxiv"""
+    # 
+    sorter_description = """Yass uses Neural Networks and SuperResolution Deconvolution to sort Retinal and 
+                        cortical data. 
+                        For more information see https://www.biorxiv.org/content/10.1101/2020.03.18.997924v1
+                        """
 
-    installation_mesg = """\nTo use Yass run:\n
-        >>> pip install yass-algorithm
-
-        More information ...
-    """
+    installation_mesg = """\nTo Install and Use Yass follow the wiki: 
+                            https://github.com/paninski-lab/yass/wiki
+                        """
 
     def __init__(self, **kargs):
-        BaseSorter.__init__(self, **kargs)
-    
+        print (**kargs)
+        #BaseSorter.__init__(self, rec, output_folder)
+        self.params = self._default_params
+        
     @classmethod
     def is_installed(cls):
-        return YASS
+        #return HAVE_YASS
+        #return check_if_installed(cls.kilosort2_path)
+        return self.HAVE_YASS
     
     @staticmethod
     def get_sorter_version():
         return yass.__version__
 
-   def _setup_recording(self, recording, output_folder):
+    # NEED TO CHANGE THIS FOR YASS ALSO
+    # n_chan = recording.get_num_channels()
+    # n_frames = recording.get_num_frames()
+    # chunk_size = 2 ** 24 // n_chan
+    
+    # also make a default config file for
+    # https://github.com/SpikeInterface/spikesorters/blob/master/spikesorters/spyking_circus/config_default.params
+    # {} reserved for params that need to be updated at run time;
+    
+    # this function parses params and creates config file and binary data and geometry file also
+    # and saving everything to the output folder
+    # Cat: this function changes the minimum required default values; 
+    def _setup_recording(self, recording, output_folder):
         p = self.params
         source_dir = Path(output_folder).parent
 
@@ -124,7 +166,10 @@ class YassSorter(BaseSorter):
         # Expose more config file parameters that are sensiitive:
         #  e.g. spike width; smallest cluster; min firing rates;
         #  
-
+            
+    # FUNCTION TO RUN YASS 
+    #def _run(self,recording, output_folder):  # SOMETIMES want to access more information from recording in
+                                               # this step
     def _run(self, recording, output_folder):
         '''
         '''
@@ -150,7 +195,7 @@ class YassSorter(BaseSorter):
 
         if retcode != 0:
             raise Exception('yass returned a non-zero exit code')
-
+    
     # Alessio might not want to put here; 
     # better option to have a parameter "tune_nn" which 
     def train(self, recording, output_folder):
@@ -223,9 +268,13 @@ class YassSorter(BaseSorter):
                                    'config.yaml')
         
         with open(fname_config, 'w') as file:
-            documents = yaml.dump(self.params, file)   
-            
+            documents = yaml.dump(self.params, file)        
+        
+    
+    # 
     @staticmethod
     def get_result_from_folder(output_folder):
-        sorting = se.SpykingCircusSortingExtractor(folder_path=Path(output_folder) / 'recording')
+        #sorting = se.YassSortingExtractor(folder_path=Path(output_folder) / 'tmp/output/spike_train.npy')
+        sorting = se.YassSortingExtractor(folder_path=Path(output_folder))
         return sorting
+    
