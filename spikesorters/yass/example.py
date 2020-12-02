@@ -10,10 +10,10 @@ if __name__ == "__main__":
     
     # INITIALIZE YASS SORTER OBJECT
     output_folder = '/media/cat/4TBSSD/spikeinterface/'
-    sorter = YassSorter()
+    sorter = YassSorter(recording=rec, output_folder=output_folder)
     
     # RUN SETUP DIRECTLY (Bypass BaseClass)
-    sorter._setup_recording(rec, output_folder)
+    sorter._setup_recording(rec=rec, output_folder=output_folder)
 
     
     # RUN TRAINING STEP
