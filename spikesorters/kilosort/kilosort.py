@@ -194,9 +194,10 @@ class KilosortSorter(BaseSorter):
         recording = recover_recording(recording)
         if 'win' in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
+                        {disk_move}
                         cd {tmpdir}
                         matlab -nosplash -wait -log -r kilosort_master
-                    '''.format(tmpdir=output_folder)
+                    '''.format(disk_move=str(output_folder)[:2], tmpdir=output_folder)
         else:
             shell_cmd = '''
                         #!/bin/bash
