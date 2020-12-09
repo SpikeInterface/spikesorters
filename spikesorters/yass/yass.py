@@ -30,7 +30,7 @@ class YassSorter(BaseSorter):
 
     _params_description = {
     }
-
+       
     sorter_description = """Yass description; link to biorxiv"""
 
     installation_mesg = """\nTo use Yass run:\n
@@ -42,9 +42,14 @@ class YassSorter(BaseSorter):
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
     
+        config_default_location = '/home/cat/code/spikesorters_forked/spikesorters/yass/config_default.yaml'
+        
+        with open(config_default_location) as file:
+            self.yass_params = yaml.load(file, Loader=yaml.FullLoader)
+    
     @classmethod
     def is_installed(cls):
-        return YASS
+        return HAVE_YASS
     
     @staticmethod
     def get_sorter_version():
@@ -53,29 +58,29 @@ class YassSorter(BaseSorter):
     def _setup_recording(self, recording, output_folder):
         p = self.params
         source_dir = Path(output_folder).parent
-
+        
         #################################################################
         #################### UPDATE ROOT FOLDER #########################
         #################################################################
-        self.params['data']['root_folder'] = output_folder
+        self.yass_params['data']['root_folder'] = str(output_folder)
         
         #################################################################
         #################### GEOMETRY FILE GENERATION ###################
         #################################################################
         probe_file_txt = os.path.join(output_folder,'geom.txt')
-        geom_txt = recording.get_channel_location 
+        geom_txt = recording.get_channel_locations()
         np.savetxt(probe_file_txt, geom_txt)
         
         #################################################################
         #################### UPDATE SAMPLING RATE #######################
         #################################################################
-        self.params['recordings']['sampling_rate'] = recording.get_sampling_frequency()
+        self.yass_params['recordings']['sampling_rate'] = recording.get_sampling_frequency()
         
         
         #################################################################
         #################### UPDATE N_CHAN  #############################
         #################################################################
-        self.params['recordings']['n_channels'] = recording.get_num_channels()
+        self.yass_params['recordings']['n_channels'] = recording.get_num_channels()
         
         
         #################################################################
@@ -88,15 +93,25 @@ class YassSorter(BaseSorter):
                                              dtype='int16', 
                                              chunk_mb=500) # time_axis=0,1 for C/F order
         
-        
         #################################################################
         #################### SAVE UPDATED CONFIG FILE ###################
         #################################################################
         fname_config = os.path.join(output_folder,
                                    'config.yaml')
         with open(fname_config, 'w') as file:
-            documents = yaml.dump(self.params, file)
+            documents = yaml.dump(self.yass_params, file)
         
+        #################################################################
+        ############ RUN NN TRAINING ON EXISTING DATASET ################
+        #################################################################
+        self.train(recording, output_folder)
+        
+        #################################################################
+        ############ RUN NN TRAINING ON EXISTING DATASET ################
+        #################################################################
+        self.NNs_update_location(output_folder)
+
+
         #self.fname_config = fname_config
         
         # ALESSIO:
@@ -133,8 +148,13 @@ class YassSorter(BaseSorter):
     # Alessio might not want to put here; 
     # better option to have a parameter "tune_nn" which 
     def train(self, recording, output_folder):
+        ''' Train NNs on yass prior to running yass sort
         '''
-        '''
+        print ("TRAINING YASS (Note: using default spike width, radius etc.)")
+        print ("To use previously-trained NNs, change the NNs prior to running: ")
+        print ("            ss.set_NNs('path_to_NNs')")
+        print ("prior to running ss.run_sorter()") 
+        
         recording = recover_recording(recording)  # allows this to run on multiple jobs (not just multi-core)
         
         if 'win' in sys.platform and sys.platform != 'darwin':
@@ -158,19 +178,25 @@ class YassSorter(BaseSorter):
         if retcode != 0:
             raise Exception('yass returned a non-zero exit code')  
             
-    def NNs_update(self):
-        ''' Update NNs to newly trained ones
+            
+        print ("TRAINING COMPLETED. NNs located at: ", output_folder, 
+                "/tmp/nn_train/detect.pt and ",
+                output_folder,"/tmp/nn_train/denoise.pt")        
+        
+        
+    def NNs_update_location(self, output_folder):
+        ''' Update NNs to newly trained ones prior to running yass sort
         '''
         
         #################################################################
         #################### UPDATE CONFIG FILE TO NEW NNS ##############
         #################################################################
-        self.params['neuralnetwork']['denoise']['filename']= os.path.join(
+        self.yass_params['neuralnetwork']['denoise']['filename']= os.path.join(
                                             output_folder, 
                                             'tmp',
                                             'nn_train',
                                             'denoise.pt')
-        self.params['neuralnetwork']['detect']['filename']= os.path.join(
+        self.yass_params['neuralnetwork']['detect']['filename']= os.path.join(
                                             output_folder, 
                                             'tmp',
                                             'nn_train',
@@ -183,7 +209,7 @@ class YassSorter(BaseSorter):
                                    'config.yaml')
         
         with open(fname_config, 'w') as file:
-            documents = yaml.dump(self.params, file)
+            documents = yaml.dump(self.yass_params, file)
         
         
     def NNs_default(self):
@@ -192,8 +218,8 @@ class YassSorter(BaseSorter):
         #################################################################
         #################### UPDATE CONFIG FILE TO NEW NNS ##############
         #################################################################
-        self.params['neuralnetwork']['denoise']['filename']= 'denoise.pt'
-        self.params['neuralnetwork']['detect']['filename']= 'detect.pt'
+        self.yass_params['neuralnetwork']['denoise']['filename']= 'denoise.pt'
+        self.yass_params['neuralnetwork']['detect']['filename']= 'detect.pt'
         
         #################################################################
         #################### SAVE UPDATED CONFIG FILE ###################
@@ -202,7 +228,7 @@ class YassSorter(BaseSorter):
                                    'config.yaml')
         
         with open(fname_config, 'w') as file:
-            documents = yaml.dump(self.params, file)   
+            documents = yaml.dump(self.yass_params, file)   
             
     @staticmethod
     def get_result_from_folder(output_folder):
