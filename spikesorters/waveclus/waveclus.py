@@ -220,9 +220,10 @@ class WaveClusSorter(BaseSorter):
 
         if 'win' in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
+                {disk_move}
                 cd {tmpdir}
                 matlab -nosplash -wait -log -r run_waveclus
-            '''.format(tmpdir=tmpdir)
+            '''.format(disk_move=str(tmpdir)[:2], tmpdir=tmpdir)
         else:
             shell_cmd = '''
                 #!/bin/bash

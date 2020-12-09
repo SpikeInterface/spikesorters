@@ -185,9 +185,10 @@ class HDSortSorter(BaseSorter):
 
         if "win" in sys.platform and sys.platform != 'darwin':
             shell_cmd = '''
+                        {disk_move}
                         cd {tmpdir}
                         matlab -nosplash -wait -r hdsort_master
-                    '''.format(tmpdir=output_folder)
+                    '''.format(disk_move=str(output_folder)[:2], tmpdir=output_folder)
         else:
             shell_cmd = '''
                         #!/bin/bash
