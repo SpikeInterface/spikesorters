@@ -57,9 +57,7 @@ class YassSorter(BaseSorter):
         #################################################################
         #################### UPDATE ROOT FOLDER #########################
         #################################################################
-        # float(self._recording.sample_rate.rescale('Hz').magnitude)
         self.params['data']['root_folder'] = output_folder
-        #self.params['data']['geometry'] = 'geom.csv'
         
         #################################################################
         #################### GEOMETRY FILE GENERATION ###################
@@ -71,7 +69,6 @@ class YassSorter(BaseSorter):
         #################################################################
         #################### UPDATE SAMPLING RATE #######################
         #################################################################
-        # float(self._recording.sample_rate.rescale('Hz').magnitude)
         self.params['recordings']['sampling_rate'] = recording.get_sampling_frequency()
         
         
@@ -84,11 +81,6 @@ class YassSorter(BaseSorter):
         #################################################################
         #################### SAVE RAW INT16 data ########################
         #################################################################
-        # ALESSIO Look at Kilosort 
-        # There is alrady an extractor se.Mea1kRecordingExtractor()
-        # all the functions are there already to concatenate in time;
-        # multi-recording time extractor;
-        
         # save binary file; THIS IS FROM KILOSORT
         input_file_path = os.path.join(output_folder, 'data.bin')
         

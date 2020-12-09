@@ -9,6 +9,7 @@ from .kilosort2_5 import Kilosort2_5Sorter
 from .spyking_circus import SpykingcircusSorter
 from .herdingspikes import HerdingspikesSorter
 from .waveclus import WaveClusSorter
+from .yass import YassSorter
 
 sorter_full_list = [
     HDSortSorter,
@@ -21,7 +22,8 @@ sorter_full_list = [
     Kilosort2_5Sorter,
     SpykingcircusSorter,
     HerdingspikesSorter,
-    WaveClusSorter
+    WaveClusSorter,
+    YassSorter
 ]
 
 sorter_dict = {s.sorter_name: s for s in sorter_full_list}
