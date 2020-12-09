@@ -50,7 +50,7 @@ class YassSorter(BaseSorter):
     def get_sorter_version():
         return yass.__version__
 
-   def _setup_recording(self, recording, output_folder):
+    def _setup_recording(self, recording, output_folder):
         p = self.params
         source_dir = Path(output_folder).parent
 
