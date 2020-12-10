@@ -264,5 +264,5 @@ class YassSorter(BaseSorter):
             
     @staticmethod
     def get_result_from_folder(output_folder):
-        sorting = se.YassSortingExtractor(folder_path=Path(output_folder) / 'recording')
+        sorting = se.YassSortingExtractor(folder_path=Path(output_folder))
         return sorting
