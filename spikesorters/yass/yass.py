@@ -25,7 +25,7 @@ class YassSorter(BaseSorter):
     sorter_name = 'yass'
     requires_locations = False
 
-    _default_params = {'neural_nets_path':None}
+    _default_params = {'neural_nets_path': None}
 
     _params_description = { }
        
@@ -59,7 +59,6 @@ class YassSorter(BaseSorter):
         BaseSorter.__init__(self, **kargs)
       
         source_dir = Path(__file__).parent
-
         config_default_location = os.path.join(source_dir, 'config_default.yaml')
         
         with open(config_default_location) as file:
@@ -244,7 +243,7 @@ class YassSorter(BaseSorter):
             documents = yaml.dump(self.yass_params, file)
         
         
-    def NNs_default(self):
+    def NNs_default(self, output_folder):
         ''' Revert to default NNs
         '''
         #################################################################
@@ -257,7 +256,7 @@ class YassSorter(BaseSorter):
         #################### SAVE UPDATED CONFIG FILE ###################
         #################################################################
         fname_config = os.path.join(output_folder,
-                                   'config.yaml')
+                                    'config.yaml')
         
         with open(fname_config, 'w') as file:
             documents = yaml.dump(self.yass_params, file)   
