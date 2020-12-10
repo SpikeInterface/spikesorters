@@ -7,4 +7,4 @@ include spikesorters/utils/*.py
 include spikesorters/utils/mdaio/*.m
 include spikesorters/klusta/config_default.prm
 include spikesorters/spyking_circus/config_default.params
-include spikesorters/yass/config_default.params
+include spikesorters/yass/config_default.yaml
