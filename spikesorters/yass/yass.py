@@ -57,8 +57,10 @@ class YassSorter(BaseSorter):
 
     def __init__(self, **kargs):
         BaseSorter.__init__(self, **kargs)
-    
-        config_default_location = '/home/cat/code/spikesorters_forked/spikesorters/yass/config_default.yaml'
+      
+        source_dir = Path(__file__).parent
+
+        config_default_location = os.path.join(source_dir, 'config_default.yaml')
         
         with open(config_default_location) as file:
             self.yass_params = yaml.load(file, Loader=yaml.FullLoader)
