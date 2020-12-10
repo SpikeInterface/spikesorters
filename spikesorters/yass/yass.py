@@ -260,3 +260,7 @@ class YassSorter(BaseSorter):
         with open(fname_config, 'w') as file:
             documents = yaml.dump(self.yass_params, file)   
             
+    @staticmethod
+    def get_result_from_folder(output_folder):
+        sorting = se.YassSortingExtractor(folder_path=Path(output_folder) / 'recording')
+        return sorting
