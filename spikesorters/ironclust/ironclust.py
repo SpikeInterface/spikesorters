@@ -52,6 +52,8 @@ class IronClustSorter(BaseSorter):
         'batch_sec_drift': 300,  # batch duration in seconds. clustering time duration
         'step_sec_drift': 20,  # compute anatomical similarity every n sec
         'knn': 30,  # K nearest neighbors
+        'n_jobs_bin': 1, # number of jobs for binary write
+        'chunk_mb': 500,
         'min_count': 30,  # Minimum cluster size
         'fGpu': True,  # Use GPU if available
         'fft_thresh': 8,  # FFT-based noise peak threshold
@@ -104,6 +106,8 @@ class IronClustSorter(BaseSorter):
         'merge_thresh_cc': "Cross-correlogram merging threshold, set to 1 to disable",
         'nRepeat_merge': "Number of repeats for merge",
         'merge_overlap_thresh': "Knn-overlap merge threshold",
+        'chunk_mb': "Chunk size in Mb for saving to binary format (default 500Mb)",
+        'n_jobs_bin': "Number of jobs for saving to binary format (Default 1)"
     }
 
     sorter_descrpition = """Ironclust is a density-based spike sorter designed for high-density probes 
@@ -146,12 +150,14 @@ class IronClustSorter(BaseSorter):
             print("Could not set IRONCLUST_PATH environment variable:", e)
 
     def _setup_recording(self, recording: se.RecordingExtractor, output_folder: Path):
+        p = self.params
         if not self.is_installed():
             raise Exception(IronClustSorter.installation_mesg)
 
         dataset_dir = output_folder / 'ironclust_dataset'
         # Generate three files in the dataset directory: raw.mda, geom.csv, params.json
-        se.MdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir), verbose=self.verbose)
+        se.MdaRecordingExtractor.write_recording(recording=recording, save_path=str(dataset_dir),
+                                                 n_jobs=p["n_jobs_bin"], chunk_mb=p["chunk_mb"], verbose=self.verbose)
 
     def _run(self, recording: se.RecordingExtractor, output_folder: Path):
         recording = recover_recording(recording)
