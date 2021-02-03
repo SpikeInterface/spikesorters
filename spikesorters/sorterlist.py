@@ -6,6 +6,7 @@ from .ironclust import IronClustSorter
 from .kilosort import KilosortSorter
 from .kilosort2 import Kilosort2Sorter
 from .kilosort2_5 import Kilosort2_5Sorter
+from .kilosort3 import Kilosort3Sorter
 from .spyking_circus import SpykingcircusSorter
 from .herdingspikes import HerdingspikesSorter
 from .waveclus import WaveClusSorter
@@ -20,6 +21,7 @@ sorter_full_list = [
     KilosortSorter,
     Kilosort2Sorter,
     Kilosort2_5Sorter,
+    Kilosort3Sorter,
     SpykingcircusSorter,
     HerdingspikesSorter,
     WaveClusSorter,
@@ -484,6 +486,43 @@ def run_kilosort2_5(*args, **kwargs):
         The spike sorted data
     """
     return run_sorter('kilosort2_5', *args, **kwargs)
+
+
+def run_kilosort3(*args, **kwargs):
+    """
+    Runs kilosort3 sorter
+
+    Parameters
+    ----------
+    *args: arguments of 'run_sorter'
+        recording: RecordingExtractor
+            The recording extractor to be spike sorted
+        output_folder: str or Path
+            Path to output folder
+        delete_output_folder: bool
+            If True, output folder is deleted (default False)
+        grouping_property: str
+            Splits spike sorting by 'grouping_property' (e.g. 'groups')
+        parallel: bool
+            If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
+        verbose: bool
+            If True, output is verbose
+        raise_error: bool
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error
+            is logged in the log file
+        n_jobs: int
+            Number of jobs when parallel=True (default=-1)
+        joblib_backend: str
+            joblib backend when parallel=True (default='loky')
+    **kwargs: keyword args
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params('kilosort3')
+
+    Returns
+    -------
+    sortingextractor: SortingExtractor
+        The spike sorted data
+    """
+    return run_sorter('kilosort3', *args, **kwargs)
 
 
 def run_spykingcircus(*args, **kwargs):

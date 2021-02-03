@@ -1,6 +1,7 @@
 include spikesorters/kilosort/*.m
 include spikesorters/kilosort2/*.m
 include spikesorters/kilosort2_5/*.m
+include spikesorters/kilosort3/*.m
 include spikesorters/hdsort/*.m
 include spikesorters/waveclus/*.m
 include spikesorters/utils/*.m
