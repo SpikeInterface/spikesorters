@@ -32,7 +32,7 @@ class Kilosort3Sorter(BaseSorter):
     """
 
     sorter_name: str = 'kilosort3'
-    kilosort3_path: Union[str, None] = os.getenv('KILOSORT_PATH', None)
+    kilosort3_path: Union[str, None] = os.getenv('KILOSORT3_PATH', None)
     requires_locations = False
 
     _default_params = {
@@ -85,7 +85,7 @@ class Kilosort3Sorter(BaseSorter):
 
     installation_mesg = """\nTo use Kilosort3 run:\n
         >>> git clone https://github.com/MouseLand/Kilosort
-    and provide the installation path by setting the KILOSORT_PATH
+    and provide the installation path by setting the KILOSORT3_PATH
     environment variables or using Kilosort3Sorter.set_kilosort3_path().\n\n
 
     More information on Kilosort3 at:
@@ -101,7 +101,7 @@ class Kilosort3Sorter(BaseSorter):
 
     @staticmethod
     def get_sorter_version():
-        commit = get_git_commit(os.getenv('KILOSORT_PATH', None))
+        commit = get_git_commit(os.getenv('KILOSORT3_PATH', None))
         if commit is None:
             return 'unknown'
         else:
@@ -112,10 +112,10 @@ class Kilosort3Sorter(BaseSorter):
         kilosort3_path = str(Path(kilosort3_path).absolute())
         Kilosort3Sorter.kilosort3_path = kilosort3_path
         try:
-            print("Setting KILOSORT_PATH environment variable for subprocess calls to:", kilosort3_path)
-            os.environ["KILOSORT_PATH"] = kilosort3_path
+            print("Setting KILOSORT3_PATH environment variable for subprocess calls to:", kilosort3_path)
+            os.environ["KILOSORT3_PATH"] = kilosort3_path
         except Exception as e:
-            print("Could not set KILOSORT_PATH environment variable:", e)
+            print("Could not set KILOSORT3_PATH environment variable:", e)
 
     def _setup_recording(self, recording, output_folder):
         source_dir = Path(Path(__file__).parent)
