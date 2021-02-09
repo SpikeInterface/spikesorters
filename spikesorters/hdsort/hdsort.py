@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 from typing import Union
+import numpy as np
 import sys
 
 import spikeextractors as se
@@ -44,6 +45,7 @@ class HDSortSorter(BaseSorter):
         'n_pc_dims': 6,
         'chunk_size': 500000,
         'loop_mode': 'local_parfor',
+        'chunk_mb': 500
     }
 
     _params_description = {
@@ -61,6 +63,7 @@ class HDSortSorter(BaseSorter):
         'n_pc_dims': "Number of principal components dimensions to perform initial clustering",
         'chunk_size': "Chunk size in number of frames for template-matching",
         'loop_mode': "Loop mode: 'loop', 'local_parfor', 'grid' (requires a grid architecture)",
+        'chunk_mb': "Chunk size in Mb for saving to binary format (default 500Mb)",
     }
 
     sorter_description = """HDSort is a template-matching spike sorter designed for high density micro-electrode arrays. 
@@ -108,19 +111,14 @@ class HDSortSorter(BaseSorter):
         source_dir = Path(__file__).parent
         utils_path = source_dir.parent / 'utils'
 
-        if isinstance(recording, se.Mea1kRecordingExtractor):
-            self.params['file_name'] = str(Path(recording._file_path).absolute())
-            self.params['file_format'] = 'mea1k'
-            print('Using Mea1k format')
-        elif isinstance(recording, se.MaxOneRecordingExtractor):
+        if isinstance(recording, se.MaxOneRecordingExtractor):
             self.params['file_name'] = str(Path(recording._file_path).absolute())
             self.params['file_format'] = 'maxone'
             print('Using MaxOne format')
         else:
             file_name = output_folder / 'recording.h5'
             # Generate three files dataset in Mea1k format
-            se.Mea1kRecordingExtractor.write_recording(recording=recording, save_path=str(file_name))
-            self.params['file_name'] = str(file_name.absolute())
+            self.write_hdsort_input_format(recording, save_path=str(file_name), chunk_mb=self.params["chunk_mb"])
             self.params['file_format'] = 'mea1k'
 
         p = self.params
@@ -209,6 +207,7 @@ class HDSortSorter(BaseSorter):
         with open(samplerate_fname, 'w') as f:
             f.write('{}'.format(samplerate))
 
+
     @staticmethod
     def get_result_from_folder(output_folder):
         output_folder = Path(output_folder)
@@ -216,3 +215,50 @@ class HDSortSorter(BaseSorter):
                                                           'hdsort_output_results.mat'))
 
         return sorting
+
+    def write_hdsort_input_format(self, recording, save_path, chunk_size=None, chunk_mb=500):
+        try:
+            import h5py
+        except:
+            raise Exception("To use HDSort, install h5py: pip install h5py")
+
+        # check if already in write format
+        write_file = True
+        if hasattr(recording, '_file_path'):
+            if Path(recording._file_path).suffix in ['.h5', '.hdf5']:
+                with h5py.File(recording._file_path, 'r') as f:
+                    keys = f.keys()
+                    if "version" in keys and "ephys" in keys and "mapping" in keys and "frame_rate" in keys \
+                        and "frame_numbers" in keys:
+                        if "sig" in f["ephys"].keys():
+                            write_file = False
+                            self.params['file_name'] = str(Path(recording._file_path).absolute())
+
+        if write_file:
+            save_path = Path(save_path)
+            if save_path.suffix == '':
+                save_path = Path(str(save_path) + '.h5')
+            mapping_dtype = np.dtype([('electrode', np.int32), ('x', np.float64), ('y', np.float64),
+                                      ('channel', np.int32)])
+
+            assert 'location' in recording.get_shared_channel_property_names(), "'location' property is needed " \
+                                                                                "to run HDSort"
+
+            with h5py.File(save_path, 'w') as f:
+                f.create_group('ephys')
+                f.create_dataset('version', data=str(20161003))
+                ephys = f['ephys']
+                ephys.create_dataset('frame_rate', data=recording.get_sampling_frequency())
+                ephys.create_dataset('frame_numbers', data=np.arange(recording.get_num_frames()))
+                # save mapping
+                mapping = np.empty(recording.get_num_channels(), dtype=mapping_dtype)
+                x = recording.get_channel_locations()[:, 0]
+                y = recording.get_channel_locations()[:, 1]
+                for i, ch in enumerate(recording.get_channel_ids()):
+                    mapping[i] = (ch, x[i], y[i], ch)
+                ephys.create_dataset('mapping', data=mapping)
+                # save traces
+                recording.write_to_h5_dataset_format('/ephys/signal', file_handle=f, time_axis=1,
+                                                     chunk_size=chunk_size, chunk_mb=chunk_mb)
+            self.params['file_name'] = str(save_path.absolute())
+
