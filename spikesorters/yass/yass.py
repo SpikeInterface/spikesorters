@@ -229,7 +229,7 @@ class YassSorter(BaseSorter):
             # use previuosly trained NN folder location
             neural_nets_path = self.neural_nets_path
         
-        self.NNs_update_location(output_folder, neural_nets_path)
+        self.neural_nets_update_location(output_folder, neural_nets_path)
 
 
     def merge_params(self):
@@ -335,7 +335,7 @@ class YassSorter(BaseSorter):
                 output_folder,"/tmp/nn_train/denoise.pt")        
         
         
-    def NNs_update_location(self, output_folder, neural_nets_path):
+    def neural_nets_update_location(self, output_folder, neural_nets_path):
         ''' Update NNs to newly trained ones prior to running yass sort
         '''
         
@@ -362,7 +362,7 @@ class YassSorter(BaseSorter):
             documents = yaml.dump(self.merge_params, file)
         
         
-    def NNs_default(self, output_folder):
+    def neural_nets_default(self, output_folder):
         ''' Revert to default NNs
         '''
         #################################################################
