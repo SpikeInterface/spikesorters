@@ -10,6 +10,7 @@ from .kilosort3 import Kilosort3Sorter
 from .spyking_circus import SpykingcircusSorter
 from .herdingspikes import HerdingspikesSorter
 from .waveclus import WaveClusSorter
+from .yass import YassSorter
 from .combinato import CombinatoSorter
 
 sorter_full_list = [
@@ -25,14 +26,14 @@ sorter_full_list = [
     SpykingcircusSorter,
     HerdingspikesSorter,
     WaveClusSorter,
+    YassSorter,
     CombinatoSorter
 ]
 
 sorter_dict = {s.sorter_name: s for s in sorter_full_list}
 
 
-
-# generic laucnher via function approach
+# generic launcher via function approach
 def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_output_folder=False,
                grouping_property=None, parallel=False, verbose=False, raise_error=True, n_jobs=-1, joblib_backend='loky',
                **params):
@@ -663,7 +664,7 @@ def run_combinato(*args, **kwargs):
         joblib_backend: str
             joblib backend when parallel=True (default='loky')
     **kwargs: keyword args
-        Spike sorter specific arguments (they can be retrieved with 'get_default_params('waveclus')
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params('combinato')
 
     Returns
     -------
@@ -671,3 +672,40 @@ def run_combinato(*args, **kwargs):
         The spike sorted data
     """
     return run_sorter('combinato', *args, **kwargs)
+
+
+def run_yass(*args, **kwargs):
+    """
+    Runs YASS sorter
+
+    Parameters
+    ----------
+    *args: arguments of 'run_sorter'
+        recording: RecordingExtractor
+            The recording extractor to be spike sorted
+        output_folder: str or Path
+            Path to output folder
+        delete_output_folder: bool
+            If True, output folder is deleted (default False)
+        grouping_property: str
+            Splits spike sorting by 'grouping_property' (e.g. 'groups')
+        parallel: bool
+            If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
+        verbose: bool
+            If True, output is verbose
+        raise_error: bool
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error
+            is logged in the log file
+        n_jobs: int
+            Number of jobs when parallel=True (default=-1)
+        joblib_backend: str
+            joblib backend when parallel=True (default='loky')
+    **kwargs: keyword args
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params('yass')
+
+    Returns
+    -------
+    sortingextractor: SortingExtractor
+        The spike sorted data
+    """
+    return run_sorter('yass', *args, **kwargs)
