@@ -10,6 +10,8 @@ from ..utils.shellscript import ShellScript
 from ..basesorter import BaseSorter
 from ..sorter_tools import recover_recording
 
+PathType = Union[str, Path]
+
 
 def check_if_installed(ironclust_path: Union[str, None]):
     if ironclust_path is None:
@@ -140,7 +142,7 @@ class IronClustSorter(BaseSorter):
         return 'unknown'
 
     @staticmethod
-    def set_ironclust_path(ironclust_path: str):
+    def set_ironclust_path(ironclust_path: PathType):
         ironclust_path = str(Path(ironclust_path).absolute())
         IronClustSorter.ironclust_path = ironclust_path
         try:

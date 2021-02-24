@@ -11,6 +11,8 @@ from ..basesorter import BaseSorter
 from ..utils.shellscript import ShellScript
 from ..sorter_tools import get_git_commit, recover_recording
 
+PathType = Union[str, Path]
+
 
 def check_if_installed(kilosort2_path: Union[str, None]):
     if kilosort2_path is None:
@@ -100,7 +102,7 @@ class Kilosort2Sorter(BaseSorter):
             return 'git-' + commit
 
     @staticmethod
-    def set_kilosort2_path(kilosort2_path: str):
+    def set_kilosort2_path(kilosort2_path: PathType):
         kilosort2_path = str(Path(kilosort2_path).absolute())
         Kilosort2Sorter.kilosort2_path = kilosort2_path
         try:
