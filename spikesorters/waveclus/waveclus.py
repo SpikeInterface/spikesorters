@@ -10,6 +10,8 @@ from ..basesorter import BaseSorter
 from ..utils.shellscript import ShellScript
 from ..sorter_tools import recover_recording
 
+PathType = Union[str, Path]
+
 
 def check_if_installed(waveclus_path: Union[str, None]):
     if waveclus_path is None:
@@ -120,7 +122,7 @@ class WaveClusSorter(BaseSorter):
         return version
 
     @staticmethod
-    def set_waveclus_path(waveclus_path: str):
+    def set_waveclus_path(waveclus_path: PathType):
         waveclus_path = str(Path(waveclus_path).absolute())
         WaveClusSorter.waveclus_path = waveclus_path
         try:

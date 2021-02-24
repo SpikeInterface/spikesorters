@@ -9,6 +9,8 @@ from ..basesorter import BaseSorter
 from ..utils.shellscript import ShellScript
 from ..sorter_tools import recover_recording
 
+PathType = Union[str, Path]
+
 
 def check_if_installed(hdsort_path: Union[str, None]):
     if hdsort_path is None:
@@ -96,7 +98,7 @@ class HDSortSorter(BaseSorter):
         return version
 
     @staticmethod
-    def set_hdsort_path(hdsort_path: str):
+    def set_hdsort_path(hdsort_path: PathType):
         HDSortSorter.hdsort_path = str(Path(hdsort_path).absolute())
         try:
             print("Setting HDSORT_PATH environment variable for subprocess calls to:", hdsort_path)

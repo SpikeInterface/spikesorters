@@ -15,6 +15,8 @@ try:
 except ImportError:
     HAVE_H5PY = False
 
+PathType = Union[str, Path]
+
 
 def check_if_installed(combinato_path: Union[str, None]):
     if combinato_path is None:
@@ -106,7 +108,7 @@ class CombinatoSorter(BaseSorter):
         return 'unknown'
 
     @staticmethod
-    def set_combinato_path(combinato_path: str):
+    def set_combinato_path(combinato_path: PathType):
         combinato_path = str(Path(combinato_path).absolute())
         CombinatoSorter.combinato_path = combinato_path
         try:

@@ -154,5 +154,5 @@ class SpykingcircusSorter(BaseSorter):
 
     @staticmethod
     def get_result_from_folder(output_folder):
-        sorting = se.SpykingCircusSortingExtractor(folder_path=Path(output_folder) / 'recording')
+        sorting = se.SpykingCircusSortingExtractor(file_or_folder_path=Path(output_folder) / 'recording')
         return sorting
