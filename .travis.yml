@@ -16,7 +16,7 @@ addons:
     - packagekit-gtk3-module
     - libcanberra-gtk-module
 install:
-- pip install https://github.com/SpikeInterface/spikeextractors/archive/timestamps.zip
+- pip install https://github.com/SpikeInterface/spikeextractors/archive/return_scaled.zip
 - pip install https://github.com/SpikeInterface/spiketoolkit/archive/add_return_scaled.zip
 - pip install .
 - pip install pytest==4.3

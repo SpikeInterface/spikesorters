@@ -257,6 +257,6 @@ class BaseSorter:
 
         sorting.set_sampling_frequency(self.recording_list[0].get_sampling_frequency())
         sorting.copy_epochs(self.recording_list[0])
-        sorting.copy_timestamps(self.recording_list[0])
+        sorting.copy_times(self.recording_list[0])
 
         return sorting
