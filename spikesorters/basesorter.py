@@ -254,5 +254,9 @@ class BaseSorter:
                 if self.verbose:
                     print("Removing ", str(out))
                 shutil.rmtree(str(out), ignore_errors=True)
+
         sorting.set_sampling_frequency(self.recording_list[0].get_sampling_frequency())
+        sorting.copy_epochs(self.recording_list[0])
+        sorting.copy_times(self.recording_list[0])
+
         return sorting
