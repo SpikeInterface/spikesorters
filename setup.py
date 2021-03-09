@@ -21,8 +21,8 @@ setup(
     include_package_data=True,
     install_requires=[
         'numpy',
-        'spikeextractors>=0.9.3',
-        'spiketoolkit>=0.7.2',
+        'spikeextractors>=0.9.4',
+        'spiketoolkit>=0.7.3',
         'requests'
     ],
     classifiers=(
