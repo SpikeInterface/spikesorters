@@ -240,9 +240,10 @@ class BaseSorter:
 
     def get_result(self, raise_error=True):
         sorting_list = self.get_result_list(raise_error=raise_error)
+        
         if len(sorting_list) == 1:
             sorting = sorting_list[0]
-        else:
+        elif len(sorting_list) > 1:
             for i, sorting in enumerate(sorting_list):
                 property_name = self.recording_list[i].get_channel_property(self.recording_list[i].get_channel_ids()[0],
                                                                             self.grouping_property)
@@ -254,6 +255,8 @@ class BaseSorter:
             sorting_list = [sort for sort in sorting_list if sort is not None]
             multi_sorting = se.MultiSortingExtractor(sortings=sorting_list)
             sorting = multi_sorting
+        else:
+            raise SpikeSortingError(f"None of the sorting outputs could be loaded")
 
         if self.delete_folders:
             for out in self.output_folders:
