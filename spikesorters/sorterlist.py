@@ -91,7 +91,7 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
                          verbose=verbose, delete_output_folder=delete_output_folder)
     sorter.set_params(**params)
     sorter.run(raise_error=raise_error, parallel=parallel, n_jobs=n_jobs, joblib_backend=joblib_backend)
-    sortingextractor = sorter.get_result()
+    sortingextractor = sorter.get_result(raise_error=raise_error)
 
     return sortingextractor
 
