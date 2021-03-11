@@ -235,7 +235,7 @@ class BaseSorter:
                 if raise_error:
                     raise SpikeSortingError(f"Failed to load sorting output {i}")
                 else:
-                    warnings.warn(f"Sorting output {i} could not be loade")
+                    warnings.warn(f"Sorting output {i} could not be loaded")
         return sorting_list
 
     def get_result(self, raise_error=True):
