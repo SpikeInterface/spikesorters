@@ -97,30 +97,33 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
 
 
 def available_sorters():
-    '''
+    """
     Lists available sorters.
-    '''
+    """
     return sorted(list(sorter_dict.keys()))
 
 
 def installed_sorters():
-    '''
+    """
     Lists installed sorters.
-    '''
+    """
     l = sorted([s.sorter_name for s in sorter_full_list if s.is_installed()])
     return l
 
 def print_sorter_versions():
+    """
+    Prints versions of all installed sorters.
+    """
     txt = ''
     for name in installed_sorters():
         version = sorter_dict[name].get_sorter_version()
         txt += '{}: {}\n'.format(name, version)
     txt = txt[:-1]
     print(txt)
-    
+
 
 def get_default_params(sorter_name_or_class):
-    '''
+    """
     Returns default parameters for the specified sorter.
 
     Parameters
@@ -132,8 +135,7 @@ def get_default_params(sorter_name_or_class):
     -------
     default_params: dict
         Dictionary with default params for the specified sorter
-
-    '''
+    """
     if isinstance(sorter_name_or_class, str):
         SorterClass = sorter_dict[sorter_name_or_class]
     elif sorter_name_or_class in sorter_full_list:
@@ -145,7 +147,7 @@ def get_default_params(sorter_name_or_class):
 
 
 def get_params_description(sorter_name_or_class):
-    '''
+    """
     Returns a description of the parameters for the specified sorter.
 
     Parameters
@@ -157,8 +159,7 @@ def get_params_description(sorter_name_or_class):
     -------
     params_description: dict
         Dictionary with parameter description
-
-    '''
+    """
     if isinstance(sorter_name_or_class, str):
         SorterClass = sorter_dict[sorter_name_or_class]
     elif sorter_name_or_class in sorter_full_list:
@@ -170,7 +171,7 @@ def get_params_description(sorter_name_or_class):
 
 
 def get_sorter_description(sorter_name_or_class):
-    '''
+    """
     Returns a brief description of the of the specified sorter.
 
     Parameters
@@ -182,8 +183,8 @@ def get_sorter_description(sorter_name_or_class):
     -------
     params_description: dict
         Dictionary with parameter description
+    """
 
-    '''
     if isinstance(sorter_name_or_class, str):
         SorterClass = sorter_dict[sorter_name_or_class]
     elif sorter_name_or_class in sorter_full_list:
@@ -251,7 +252,7 @@ def run_klusta(*args, **kwargs):
         verbose: bool
             If True, output is verbose
         raise_error: bool
-            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error
             is logged in the log file
         n_jobs: int
             Number of jobs when parallel=True (default=-1)
@@ -288,7 +289,7 @@ def run_tridesclous(*args, **kwargs):
         verbose: bool
             If True, output is verbose
         raise_error: bool
-            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error
             is logged in the log file
         n_jobs: int
             Number of jobs when parallel=True (default=-1)
@@ -325,7 +326,7 @@ def run_mountainsort4(*args, **kwargs):
         verbose: bool
             If True, output is verbose
         raise_error: bool
-            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error
             is logged in the log file
         n_jobs: int
             Number of jobs when parallel=True (default=-1)
@@ -399,7 +400,7 @@ def run_kilosort(*args, **kwargs):
         verbose: bool
             If True, output is verbose
         raise_error: bool
-            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error
             is logged in the log file
         n_jobs: int
             Number of jobs when parallel=True (default=-1)
@@ -436,7 +437,7 @@ def run_kilosort2(*args, **kwargs):
         verbose: bool
             If True, output is verbose
         raise_error: bool
-            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error
             is logged in the log file
         n_jobs: int
             Number of jobs when parallel=True (default=-1)
@@ -546,7 +547,7 @@ def run_spykingcircus(*args, **kwargs):
         verbose: bool
             If True, output is verbose
         raise_error: bool
-            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error
             is logged in the log file
         n_jobs: int
             Number of jobs when parallel=True (default=-1)
@@ -583,7 +584,7 @@ def run_herdingspikes(*args, **kwargs):
         verbose: bool
             If True, output is verbose
         raise_error: bool
-            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error
             is logged in the log file
         n_jobs: int
             Number of jobs when parallel=True (default=-1)
@@ -620,7 +621,7 @@ def run_waveclus(*args, **kwargs):
         verbose: bool
             If True, output is verbose
         raise_error: bool
-            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error 
+            If True, an error is raised if spike sorting fails (default). If False, the process continues and the error
             is logged in the log file
         n_jobs: int
             Number of jobs when parallel=True (default=-1)
