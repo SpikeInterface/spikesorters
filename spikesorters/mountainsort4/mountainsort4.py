@@ -8,7 +8,7 @@ from ..basesorter import BaseSorter
 from ..sorter_tools import recover_recording
 
 try:
-    import ml_ms4alg
+    import mountainsort4
 
     HAVE_MS4 = True
 except ImportError:
@@ -60,7 +60,7 @@ class Mountainsort4Sorter(BaseSorter):
     method and automatic curation procedures. For more information see https://doi.org/10.1016/j.neuron.2017.08.030"""
 
     installation_mesg = """\nTo use Mountainsort4 run:\n
-       >>> pip install ml_ms4alg
+       >>> pip install mountainsort4
 
     More information on mountainsort at:
       * https://github.com/flatironinstitute/mountainsort
@@ -75,8 +75,8 @@ class Mountainsort4Sorter(BaseSorter):
     
     @staticmethod
     def get_sorter_version():
-        if hasattr(ml_ms4alg, '__version__'):
-            return ml_ms4alg.__version__
+        if hasattr(mountainsort4, '__version__'):
+            return mountainsort4.__version__
         return 'unknown'
 
     def _setup_recording(self, recording, output_folder):
@@ -104,7 +104,7 @@ class Mountainsort4Sorter(BaseSorter):
 
         # Check location no more needed done in basesorter
 
-        sorting = ml_ms4alg.mountainsort4(
+        sorting = mountainsort4.mountainsort4(
             recording=recording,
             detect_sign=p['detect_sign'],
             adjacency_radius=p['adjacency_radius'],
@@ -119,7 +119,7 @@ class Mountainsort4Sorter(BaseSorter):
         if p['noise_overlap_threshold'] is not None and p['curation'] is True:
             if self.verbose:
                 print('Curating')
-            sorting = ml_ms4alg.mountainsort4_curation(
+            sorting = mountainsort4.mountainsort4_curation(
                 recording=recording,
                 sorting=sorting,
                 noise_overlap_threshold=p['noise_overlap_threshold']
