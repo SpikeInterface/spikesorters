@@ -122,18 +122,19 @@ class CombinatoSorter(BaseSorter):
             raise Exception(CombinatoSorter.installation_mesg)
 
         os.makedirs(str(output_folder), exist_ok=True)
-        # Generate h5 files in the dataset directory
-        chid = recording.get_channel_ids()[0]
-        vcFile_h5 = str(output_folder / ('recording.h5'))
-        f = h5py.File(vcFile_h5, mode='w')
-        f.create_dataset("sr", data=[recording.get_sampling_frequency()], dtype='float32')
+        for chid in recording.get_channel_ids():
+            # Generate h5 files in the dataset directory
+            vcFile_h5 = str(output_folder / ('recording{}.h5'.format(chid)))
+            f = h5py.File(vcFile_h5, mode='w')
+            f.create_dataset("sr", data=[recording.get_sampling_frequency()], dtype='float32')
 
-        f.create_dataset("data", data=recording.get_traces(channel_ids=[chid]).flatten())
-        f.close()
+            f.create_dataset("data", data=recording.get_traces(channel_ids=[chid]).flatten())
+            f.close()
 
     def _run(self, recording, output_folder):
         recording = recover_recording(recording)
-
+        if len(recording.get_channel_ids()) > 1:
+            print("Warning! Combinato is a single-channel sorter, each channel will be sorted independently.")
         p = self.params.copy()
         p['threshold_factor'] = p.pop('detect_threshold')
         sign_thr = p.pop('detect_sign')
@@ -158,21 +159,24 @@ class CombinatoSorter(BaseSorter):
         outFile.writelines("options = {}".format(p))
         outFile.close()
 
-        shell_cmd = '''
-            {extra_cmd}
-            cd "{tmpdir}"
-            python {css_folder}/css-extract --h5 --files recording.h5
-            python {css_folder}/css-simple-clustering {sign_thr} --datafile recording/data_recording.h5
-        '''
+        shell_cmd_ch = '''
+            python {css_folder}/css-extract --h5 --files recording{chid}.h5
+            python {css_folder}/css-simple-clustering {sign_thr} --datafile recording{chid}/data_recording{chid}.h5'''
 
         if 'win' in sys.platform and sys.platform != 'darwin':
             extra_cmd = str(tmpdir)[:2]
-            shell_cmd = shell_cmd.replace('/', '\\')
+            shell_cmd_ch = shell_cmd_ch.replace('/', '\\')
         else:
             extra_cmd = '#!/bin/bash'
 
-        shell_cmd = shell_cmd.format(extra_cmd=extra_cmd, tmpdir=tmpdir, css_folder=CombinatoSorter.combinato_path,
-                                     sign_thr=sign_thr)
+        shell_cmd = '''
+            {extra_cmd}
+            cd "{tmpdir}"'''.format(extra_cmd=extra_cmd, tmpdir=tmpdir)
+
+        for chid in recording.get_channel_ids():
+            shell_cmd = shell_cmd + shell_cmd_ch.format(extra_cmd=extra_cmd, tmpdir=tmpdir,
+                                                        css_folder=CombinatoSorter.combinato_path,
+                                                        sign_thr=sign_thr, chid=chid)
         shell_cmd = ShellScript(shell_cmd, script_path=output_folder / f'run_{self.sorter_name}',
                                 log_path=output_folder / f'{self.sorter_name}.log', verbose=self.verbose)
         shell_cmd.start()
@@ -186,6 +190,14 @@ class CombinatoSorter(BaseSorter):
     def get_result_from_folder(output_folder):
 
         output_folder = Path(output_folder)
-        result_fname = str(output_folder / 'recording')
-        sorting = se.CombinatoSortingExtractor(datapath=result_fname)
-        return sorting
+        sortings = []
+        recording_folders = [f for f in os.listdir(output_folder) if (os.path.isdir(os.path.join(output_folder, f)) and f.startswith('recording'))]
+
+        for rf in recording_folders:
+            result_fname = str(output_folder / rf)
+            sorting = se.CombinatoSortingExtractor(datapath=result_fname)
+            for u in sorting.get_unit_ids():
+                sorting.set_unit_property(unit_id=u, property_name='ch_id', value=int(rf[9:]))
+            sortings.append(sorting)
+
+        return se.MultiSortingExtractor(sortings)
