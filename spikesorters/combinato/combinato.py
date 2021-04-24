@@ -197,7 +197,7 @@ class CombinatoSorter(BaseSorter):
             result_fname = str(output_folder / rf)
             sorting = se.CombinatoSortingExtractor(datapath=result_fname)
             for u in sorting.get_unit_ids():
-                sorting.set_unit_property(unit_id=u, property_name='ch_id', value=int(rf[9:]))
+                sorting.set_unit_property(unit_id=u, property_name='channel_id', value=int(rf[9:]))
             sortings.append(sorting)
 
         return se.MultiSortingExtractor(sortings)
