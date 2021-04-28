@@ -16,6 +16,7 @@ tridesclous==1.6
 # ms4
 pybind11
 isosplit5
+dask[complete]
 mountainsort4
 
 # herdingspikes
