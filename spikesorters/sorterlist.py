@@ -13,6 +13,10 @@ from .waveclus import WaveClusSorter
 from .yass import YassSorter
 from .combinato import CombinatoSorter
 
+
+from .docker_tools import HAVE_DOCKER, _run_sorter_hither
+
+
 sorter_full_list = [
     HDSortSorter,
     KlustaSorter,
@@ -32,11 +36,80 @@ sorter_full_list = [
 
 sorter_dict = {s.sorter_name: s for s in sorter_full_list}
 
+def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_output_folder=False,
+               grouping_property=None, use_docker=False, parallel=False, verbose=False, raise_error=True, n_jobs=-1,
+               joblib_backend='loky', **params):
+    """
+    Generic function to run a sorter via function approach.
+
+    Two usages with name or class:
+
+    by name:
+       >>> sorting = run_sorter('tridesclous', recording)
+
+    by class:
+       >>> sorting = run_sorter(TridesclousSorter, recording)
+
+    Parameters
+    ----------
+    sorter_name_or_class: str or SorterClass
+        The sorter to retrieve default parameters from
+    recording: RecordingExtractor
+        The recording extractor to be spike sorted
+    output_folder: str or Path
+        Path to output folder
+    delete_output_folder: bool
+        If True, output folder is deleted (default False)
+    use_docker: bool
+        If True and docker backend is installed, spike sorting is run in a docker image
+    grouping_property: str
+        Splits spike sorting by 'grouping_property' (e.g. 'groups')
+    parallel: bool
+        If True and spike sorting is by 'grouping_property', spike sorting jobs are launched in parallel
+    verbose: bool
+        If True, output is verbose
+    raise_error: bool
+        If True, an error is raised if spike sorting fails (default). If False, the process continues and the error is
+        logged in the log file.
+    n_jobs: int
+        Number of jobs when parallel=True (default=-1)
+    joblib_backend: str
+        joblib backend when parallel=True (default='loky')
+    **params: keyword args
+        Spike sorter specific arguments (they can be retrieved with 'get_default_params(sorter_name_or_class)'
+
+    Returns
+    -------
+    sortingextractor: SortingExtractor
+        The spike sorted data
+
+    """
+    if use_docker:
+        assert HAVE_DOCKER, "To run in docker, install docker on your system and >>> pip install hither docker"
+
+        # we need sorter name here
+        if isinstance(sorter_name_or_class, str):
+            sorter_name = sorter_name_or_class
+        elif sorter_name_or_class in sorter_full_list:
+            sorter_name = sorter_name_or_class.sorter_name
+        else:
+            raise ValueError('Unknown sorter')
+        sorting = _run_sorter_hither(sorter_name, recording, output_folder=output_folder,
+                                     delete_output_folder=delete_output_folder, grouping_property=grouping_property,
+                                     parallel=parallel, verbose=verbose, raise_error=raise_error, n_jobs=n_jobs,
+                                     joblib_backend='loky', **params)
+    else:
+        sorting = _run_sorter_local(sorter_name_or_class, recording, output_folder=output_folder,
+                                    delete_output_folder=delete_output_folder, grouping_property=grouping_property,
+                                    parallel=parallel, verbose=verbose, raise_error=raise_error, n_jobs=n_jobs,
+                                    joblib_backend='loky', **params)
+    return sorting
+
 
 # generic launcher via function approach
-def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_output_folder=False,
-               grouping_property=None, parallel=False, verbose=False, raise_error=True, n_jobs=-1, joblib_backend='loky',
-               **params):
+def _run_sorter_local(sorter_name_or_class, recording, output_folder=None, delete_output_folder=False,
+                      grouping_property=None, parallel=False, verbose=False, raise_error=True, n_jobs=-1,
+                      joblib_backend='loky', **params):
     """
     Generic function to run a sorter via function approach.
 
@@ -85,7 +158,7 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
     elif sorter_name_or_class in sorter_full_list:
         SorterClass = sorter_name_or_class
     else:
-        raise (ValueError('Unknown sorter'))
+        raise ValueError('Unknown sorter')
 
     sorter = SorterClass(recording=recording, output_folder=output_folder, grouping_property=grouping_property,
                          verbose=verbose, delete_output_folder=delete_output_folder)
@@ -109,6 +182,7 @@ def installed_sorters():
     """
     l = sorted([s.sorter_name for s in sorter_full_list if s.is_installed()])
     return l
+
 
 def print_sorter_versions():
     """
