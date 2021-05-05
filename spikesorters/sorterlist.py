@@ -14,7 +14,7 @@ from .yass import YassSorter
 from .combinato import CombinatoSorter
 
 
-from .docker_tools import HAVE_DOCKER, _run_sorter_hither
+from .docker_tools import HAVE_DOCKER
 
 
 sorter_full_list = [
@@ -97,13 +97,95 @@ def run_sorter(sorter_name_or_class, recording, output_folder=None, delete_outpu
         sorting = _run_sorter_hither(sorter_name, recording, output_folder=output_folder,
                                      delete_output_folder=delete_output_folder, grouping_property=grouping_property,
                                      parallel=parallel, verbose=verbose, raise_error=raise_error, n_jobs=n_jobs,
-                                     joblib_backend='loky', **params)
+                                     joblib_backend=joblib_backend, **params)
     else:
         sorting = _run_sorter_local(sorter_name_or_class, recording, output_folder=output_folder,
                                     delete_output_folder=delete_output_folder, grouping_property=grouping_property,
                                     parallel=parallel, verbose=verbose, raise_error=raise_error, n_jobs=n_jobs,
-                                    joblib_backend='loky', **params)
+                                    joblib_backend=joblib_backend, **params)
     return sorting
+
+
+if HAVE_DOCKER:
+    # conditional definition of hither tools
+    import time
+    from pathlib import Path
+    import hither2 as hither
+    import spikeextractors as se
+    import numpy as np
+    import shutil
+    from .docker_tools import modify_input_folder, default_docker_images
+
+    class SpikeSortingDockerHook(hither.RuntimeHook):
+        def __init__(self):
+            super().__init__()
+
+        def precontainer(self, context: hither.PreContainerContext):
+            # this gets run outside the container before the run, and we have a chance to mutate the kwargs,
+            # add bind mounts, and set the image
+            input_directory = context.kwargs['input_directory']
+            output_directory = context.kwargs['output_directory']
+
+            context.add_bind_mount(hither.BindMount(source=input_directory,
+                                                    target='/input', read_only=True))
+            context.add_bind_mount(hither.BindMount(source=output_directory,
+                                                    target='/output', read_only=False))
+            context.image = default_docker_images[context.kwargs['sorter_name']]
+            context.kwargs['output_directory'] = '/output'
+            context.kwargs['input_directory'] = '/input'
+
+
+    @hither.function('run_sorter_docker_with_container',
+                     '0.1.0',
+                     image=True,
+                     modules=['spikesorters'],
+                     runtime_hooks=[SpikeSortingDockerHook()])
+    def run_sorter_docker_with_container(
+            recording_dict, sorter_name, input_directory, output_directory, **kwargs
+    ):
+        recording = se.load_extractor_from_dict(recording_dict)
+        # run sorter
+        kwargs["output_folder"] = f"{output_directory}/working"
+        t_start = time.time()
+        # set output folder within the container
+        sorting = _run_sorter_local(sorter_name, recording, **kwargs)
+        t_stop = time.time()
+        print(f'{sorter_name} run time {np.round(t_stop - t_start)}s')
+        # save sorting to npz
+        se.NpzSortingExtractor.write_sorting(sorting, f"{output_directory}/sorting_docker.npz")
+
+    def _run_sorter_hither(sorter_name, recording, output_folder=None, delete_output_folder=False,
+                           grouping_property=None, parallel=False, verbose=False, raise_error=True,
+                           n_jobs=-1, joblib_backend='loky', **params):
+        assert recording.is_dumpable, "Cannot run not dumpable recordings in docker"
+        if output_folder is None:
+            output_folder = sorter_name + '_output'
+        output_folder = Path(output_folder).absolute()
+        output_folder.mkdir(exist_ok=True, parents=True)
+
+        with hither.Config(use_container=True, show_console=True):
+            dump_dict_container, input_directory = modify_input_folder(recording.dump_to_dict(), '/input')
+            kwargs = dict(recording_dict=dump_dict_container,
+                          sorter_name=sorter_name,
+                          output_folder=str(output_folder),
+                          delete_output_folder=False,
+                          grouping_property=grouping_property, parallel=parallel,
+                          verbose=verbose, raise_error=raise_error, n_jobs=n_jobs,
+                          joblib_backend=joblib_backend)
+
+            kwargs.update(params)
+            kwargs.update({'input_directory': str(input_directory), 'output_directory': str(output_folder)})
+            sorting_job = hither.Job(run_sorter_docker_with_container, kwargs)
+            sorting_job.wait()
+        sorting = se.NpzSortingExtractor(output_folder / "sorting_docker.npz")
+        if delete_output_folder:
+            shutil.rmtree(output_folder)
+        return sorting
+else:
+    def _run_sorter_hither(sorter_name, recording, output_folder=None, delete_output_folder=False,
+                           grouping_property=None, parallel=False, verbose=False, raise_error=True,
+                           n_jobs=-1, joblib_backend='loky', **params):
+        raise NotImplementedError
 
 
 # generic launcher via function approach
