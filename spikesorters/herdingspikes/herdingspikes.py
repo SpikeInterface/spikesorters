@@ -40,6 +40,7 @@ class HerdingspikesSorter(BaseSorter):
         'probe_peak_jitter': 0.2,
 
         # extra detection params
+        't_inc': 100000,
         'num_com_centers': 1,
         'maa': 12,
         'ahpthr': 11,
@@ -86,6 +87,7 @@ class HerdingspikesSorter(BaseSorter):
         'probe_peak_jitter': "Maxmimum peak misalignment for synchronous spike (ms)",
 
         # extra detection params
+        't_inc': "Number of samples per chunk during detection.",
         'num_com_centers': "Number of centroids to average when localizing.",
         'maa': "Minimum summed spike amplitude for spike acceptance.",
         'ahpthr': "Requires magnitude of spike rebound for acceptance",
@@ -181,7 +183,7 @@ class HerdingspikesSorter(BaseSorter):
             spk_evaluation_time=p['spk_evaluation_time']
         )
 
-        self.H.DetectFromRaw(load=True, tInc=100000)
+        self.H.DetectFromRaw(load=True, tInc=int(p["t_inc"]))
 
         sorted_file = str(output_folder / 'HS2_sorted.hdf5')
         if(not self.H.spikes.empty):
