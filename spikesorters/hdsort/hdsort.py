@@ -213,8 +213,15 @@ class HDSortSorter(BaseSorter):
     @staticmethod
     def get_result_from_folder(output_folder):
         output_folder = Path(output_folder)
+        samplerate_fname = Path(output_folder / 'samplerate.txt')
+
         sorting = se.HDSortSortingExtractor(file_path=str(output_folder / 'hdsort_output' /
                                                           'hdsort_output_results.mat'))
+
+        if samplerate_fname.is_file:
+            with open(samplerate_fname, 'r') as f:
+                samplerate = float(f.readline())
+                sorting.set_sampling_frequency(samplerate)
 
         return sorting
 
