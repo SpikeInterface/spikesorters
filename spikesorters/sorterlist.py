@@ -68,7 +68,6 @@ if HAVE_DOCKER:
     @hither.function('run_sorter_docker_with_container',
                      '0.1.0',
                      image=True,
-                     modules=['spikesorters'],
                      runtime_hooks=[SpikeSortingDockerHook()])
     def run_sorter_docker_with_container(
             recording_dict, sorter_name, input_directory, output_directory, **kwargs
