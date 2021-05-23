@@ -3,6 +3,8 @@ import time
 import numpy as np
 from pathlib import Path
 
+ss_folder = Path(__file__).parent
+
 try:
     import hither2 as hither
     import docker
@@ -10,8 +12,8 @@ try:
     HAVE_DOCKER = True
 
     default_docker_images = {
-        "klusta": hither.LocalDockerImage('spikeinterface/klusta-si-0.12:0.2.7'),
-        "mountainsort4": hither.LocalDockerImage('spikeinterface/mountainsort4-si-0.12:1.0.0'),
+        "klusta": hither.DockerImageFromScript(name="klusta", dockerfile=str(ss_folder / "docker_images" / "v0.12" / "klusta" / "Dockerfile")),
+        "mountainsort4": hither.DockerImageFromScript(name="ms4", dockerfile=str(ss_folder / "docker_images" / "v0.12" / "mountainsort4" / "Dockerfile")),
         "herdingspikes": hither.LocalDockerImage('spikeinterface/herdingspikes-si-0.12:0.3.7'),
         "spykingcircus": hither.LocalDockerImage('spikeinterface/spyking-circus-si-0.12:1.0.7')
     }
