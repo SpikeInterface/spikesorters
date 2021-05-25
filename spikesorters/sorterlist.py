@@ -14,7 +14,7 @@ from .yass import YassSorter
 from .combinato import CombinatoSorter
 
 
-from .run_funtions import run_functions
+from .run_funtions import _run_sorter_local, _run_sorter_hither
 from .docker_tools import HAVE_DOCKER
 
 
