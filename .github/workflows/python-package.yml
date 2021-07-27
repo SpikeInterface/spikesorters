@@ -1,0 +1,36 @@
+name: Python Package using Conda
+
+on: [push]
+
+jobs:
+  build-and-test:
+    name: Test on (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: s-weigand/setup-conda@v1
+        with:
+          python-version: 3.6
+      - name: Which python
+        run: |
+          conda --version
+          which python
+      - name: Install apt packages
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential mpich libmpich-dev libglib2.0-0 libgl1-mesa-glx qt5-default packagekit-gtk3-module libcanberra-gtk-module
+      - name: Install dependencies
+        run: |
+          pip install https://github.com/SpikeInterface/spikeextractors/archive/master.zip
+          pip install https://github.com/SpikeInterface/spiketoolkit/archive/master.zip
+          pip install -e .
+          pip install pytest
+          pip install Cython
+          pip install -r requirements_sorters.txt
+      - name: Test with pytest and build coverage report
+        run: |
+          pytest
