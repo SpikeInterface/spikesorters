@@ -1,12 +1,12 @@
 # this list is use in travis for sorters.
 
+# klusta (skip for python3.8)
+# Cython
+# h5py
+# tqdm
+# click
 # klusta
-Cython
-h5py
-tqdm
-click
-klusta
-klustakwik2==0.2.6
+# klustakwik2==0.2.6
 
 # tridesclous
 pyqt5==5.13
