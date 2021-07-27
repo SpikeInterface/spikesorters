@@ -1,6 +1,11 @@
 import unittest
 import spikeextractors as se
 
+try:
+    import matplotlib
+    matplotlib.use("agg")
+except:
+    pass
 
 class SorterCommonTestSuite:
     """
