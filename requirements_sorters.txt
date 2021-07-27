@@ -1,12 +1,12 @@
 # this list is use in travis for sorters.
 
 # klusta (skip for python3.8)
-# Cython
-# h5py
-# tqdm
-# click
-# klusta
-# klustakwik2==0.2.6
+Cython
+h5py
+tqdm
+click
+klusta
+klustakwik2==0.2.6
 
 # tridesclous
 pyqt5==5.13
@@ -22,4 +22,4 @@ ml_ms4alg==0.3.2
 herdingspikes==0.3.7
 
 # spyking-circus
-spyking-circus==1.0.9 --no-binary=mpi4py
+spyking-circus==0.9.9 --no-binary=mpi4py
