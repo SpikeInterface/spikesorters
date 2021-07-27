@@ -22,7 +22,7 @@ jobs:
       - name: Install apt packages
         run: |
           sudo apt update
-          sudo apt install -y mpich libmpich-dev libglib2.0-0 libgl1-mesa-glx qt5-default packagekit-gtk3-module libcanberra-gtk-module
+          sudo apt install -y build-essential mpich libmpich-dev libglib2.0-0 libgl1-mesa-glx qt5-default packagekit-gtk3-module libcanberra-gtk-module
       - name: Install dependencies
         run: |
           pip install https://github.com/SpikeInterface/spikeextractors/archive/master.zip
