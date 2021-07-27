@@ -31,6 +31,9 @@ jobs:
           pip install pytest
           pip install Cython
           pip install -r requirements_sorters.txt
+      - name: tdc install
+        run: |
+          python -c "import tridesclous"
       - name: Test with pytest and build coverage report
         run: |
           pytest
