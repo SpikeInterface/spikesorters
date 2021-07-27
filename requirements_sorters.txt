@@ -9,9 +9,10 @@ klusta
 klustakwik2==0.2.6
 
 # tridesclous
-pyqt5==5.13
+pyqt5
 hdbscan
-tridesclous==1.6
+loky
+tridesclous>=1.6.3
 
 # ms4
 pybind11
