@@ -27,6 +27,7 @@ jobs:
         run: |
           pip install -e .
           pip install pytest
+          pip install setuptools wheel twine
       - name: Test with pytest and build coverage report
         run: |
           pytest
