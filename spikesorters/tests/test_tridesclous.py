@@ -5,6 +5,12 @@ import spikeextractors as se
 from spikesorters import TridesclousSorter, run_tridesclous
 from spikesorters.tests.common_tests import SorterCommonTestSuite
 
+try:
+    import matplotlib
+    matplotlib.use("agg")
+except:
+    pass
+
 
 # This run several tests
 @pytest.mark.skipif(not TridesclousSorter.is_installed(), reason='tridesclous not installed')

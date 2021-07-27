@@ -7,6 +7,12 @@ import spikeextractors as se
 
 from spikesorters import run_sorters, collect_sorting_outputs
 
+try:
+    import matplotlib
+    matplotlib.use("agg")
+except:
+    pass
+
 
 def test_run_sorters_with_list():
     rec0, _ = se.example_datasets.toy_example(num_channels=4, duration=30, seed=0)
