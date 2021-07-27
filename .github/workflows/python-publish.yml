@@ -15,14 +15,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.6
-        uses: actions/setup-python@v2
+      - uses: s-weigand/setup-conda@v1
         with:
           python-version: 3.6
-      - name: Add conda to system path
+      - name: Which python
         run: |
-          # $CONDA is an environment variable pointing to the root of the miniconda directory
-          echo $CONDA/bin >> $GITHUB_PATH
+          conda --version
+          which python
       - name: Install apt packages
         run: |
           sudo apt update
