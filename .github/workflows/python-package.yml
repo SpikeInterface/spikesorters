@@ -29,6 +29,7 @@ jobs:
           pip install https://github.com/SpikeInterface/spiketoolkit/archive/master.zip
           pip install -e .
           pip install pytest
+          pip install Cython
           pip install -r requirements_sorters.txt
       - name: Test with pytest and build coverage report
         run: |
